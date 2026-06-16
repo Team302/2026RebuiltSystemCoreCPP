@@ -24,6 +24,7 @@
 #include <numbers>
 #include <span>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <vector>
 
@@ -1871,14 +1872,70 @@ namespace LimelightHelpers
     }
 
     /// @cond INTERNAL
+    namespace detail
+    {
+        template <typename T>
+        struct IsStdVector : std::false_type
+        {
+        };
+
+        template <typename T, typename Alloc>
+        struct IsStdVector<std::vector<T, Alloc>> : std::true_type
+        {
+        };
+
+        template <typename T>
+        inline constexpr bool IsStdVectorV = IsStdVector<T>::value;
+
+        template <typename T>
+        T JSONValueToType(const wpi::util::json &jsonValue)
+        {
+            if constexpr (std::is_same_v<T, std::string>)
+            {
+                return jsonValue.get_string();
+            }
+            else if constexpr (std::is_same_v<T, bool>)
+            {
+                return jsonValue.get_bool();
+            }
+            else if constexpr (std::is_floating_point_v<T>)
+            {
+                return static_cast<T>(jsonValue.get_number());
+            }
+            else if constexpr (std::is_integral_v<T>)
+            {
+                if (jsonValue.is_uint())
+                {
+                    return static_cast<T>(jsonValue.get_uint());
+                }
+                return static_cast<T>(jsonValue.get_int());
+            }
+            else if constexpr (IsStdVectorV<T>)
+            {
+                T parsed;
+                const auto &arr = jsonValue.get_array();
+                parsed.reserve(arr.size());
+                for (const auto &elem : arr)
+                {
+                    parsed.emplace_back(JSONValueToType<typename T::value_type>(elem));
+                }
+                return parsed;
+            }
+            else
+            {
+                return jsonValue.template get<T>();
+            }
+        }
+    }
+
     template <typename T, typename KeyType>
     T SafeJSONAccess(const wpi::util::json &jsonData, const KeyType &key, const T &defaultValue)
     {
         try
         {
-            return jsonData.at(key).template get<T>();
+            return detail::JSONValueToType<T>(jsonData.at(key));
         }
-        catch (wpi::util::json::exception &e)
+        catch (const std::exception &e)
         {
             std::cout << "SafeJSONAccess Limelight JSON parse error: " << e.what() << std::endl;
             return defaultValue;

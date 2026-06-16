@@ -412,6 +412,7 @@ if (m_elapsedTime > m_thresholdTime && m_numberOfExecutions >= kMinExecutions) /
 }
 return false;
 */
+    return true; // Temporary return value to allow compilation without choreo dependency
 }
 
 void TrajectoryDrive::End(bool interrupted)
