@@ -16,9 +16,10 @@
 #pragma once
 
 #include "gamepad/button/IButton.h"
+#include "wpi/driverstation/GenericHID.hpp"
 
 // forward declare
-namespace frc
+namespace wpi
 {
     class GenericHID;
 }

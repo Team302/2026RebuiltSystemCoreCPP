@@ -22,8 +22,8 @@
 #include <wpi/nt/NetworkTableEntry.hpp>
 
 // Team 302 Includes
-#include "utils/logging/debug/Logger.hpp"
-#include <utils/NetworkTableReader.hpp>
+#include "utils/NetworkTableReader.h"
+#include "utils/logging/debug/Logger.h"
 
 using namespace std;
 

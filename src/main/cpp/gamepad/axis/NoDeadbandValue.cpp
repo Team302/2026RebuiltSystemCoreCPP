@@ -34,7 +34,7 @@ NoDeadbandValue *NoDeadbandValue::GetInstance()
 
 //==================================================================================
 /// <summary>
-/// Method:         wpi::math::ApplyDeadband
+/// Method:         ApplyDeadband
 /// Description:    Apply the standard deadband
 /// </summary>
 //==================================================================================

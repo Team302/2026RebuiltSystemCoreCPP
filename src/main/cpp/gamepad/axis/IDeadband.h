@@ -27,11 +27,11 @@ class IDeadband
 public:
     //==================================================================================
     /// <summary>
-    /// Method:         wpi::math::ApplyDeadband
+    /// Method:         ApplyDeadband
     /// Description:    Apply the standard deadband
     /// </summary>
     //==================================================================================
-    virtual void wpi::math::ApplyDeadband(
+    virtual void ApplyDeadband(
         double &inputVal // <I> - value to apply profile to
     ) const = 0;
 

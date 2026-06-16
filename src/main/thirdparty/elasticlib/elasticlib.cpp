@@ -8,10 +8,10 @@
 #include <exception>
 #include <string>
 
-#include "wpi/nt/NetworkTableInstance.hpp"
+#include "wpi/nt/StringTopic.hpp"
+#include "wpi/util/json.hpp"
 #include <fmt/core.h>
-#include <wpi/nt/StringTopic.hpp>
-#include <wpi/util/json.hpp>
+#include <wpi/nt/NetworkTableInstance.hpp>
 
 namespace elastic
 {
@@ -53,7 +53,7 @@ namespace elastic
       jsonData["height"] = notification.height;
 
       // Publish the JSON string
-      publisher.Set(jsonData.dump());
+      publisher.Set(jsonData.to_string());
     }
     catch (const std::exception &e)
     {

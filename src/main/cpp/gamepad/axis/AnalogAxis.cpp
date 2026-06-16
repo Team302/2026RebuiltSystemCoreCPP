@@ -40,7 +40,7 @@ using namespace std;
 ///         has the expected direction.
 //=========================================================================================
 AnalogAxis::AnalogAxis(
-    GenericHID *gamepad,
+    wpi::GenericHID *gamepad,
     int axisID,
     bool flipAxis) : m_gamepad(gamepad),
                      m_axis(axisID),

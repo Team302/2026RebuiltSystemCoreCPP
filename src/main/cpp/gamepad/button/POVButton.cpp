@@ -14,8 +14,8 @@
 //====================================================================================================================================================
 
 #include "gamepad/button/POVButton.h"
-#include "wpi/driverstation/GenericHID.hpp"
 #include "gamepad/IDragonGamepad.h"
+#include "wpi/driverstation/GenericHID.hpp"
 
 //==================================================================================
 /// <summary>
@@ -24,9 +24,9 @@
 /// </summary>
 //==================================================================================
 POVButton::POVButton(
-    wpi::GenericHID *gamepad, // <I> - gamepad to query
-    int buttonID              // <I> - button ID this maps to
-    ) : m_gamepad(gamepad),   //       false axis in the expected direction
+    wpi::GenericHID *gamepad,  // <I> - gamepad to query
+    wpi::POVDirection buttonID // <I> - button ID this maps to
+    ) : m_gamepad(gamepad),    //       false axis in the expected direction
         m_button(buttonID)
 {
 }

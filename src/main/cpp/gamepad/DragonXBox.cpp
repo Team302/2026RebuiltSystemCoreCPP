@@ -77,14 +77,14 @@ DragonXBox::DragonXBox(
 
     // Create POVButton Objects for the POV
 
-    m_button[TeleopControlMappingEnums::POV_0] = std::make_unique<POVButton>(m_xbox, 0);
-    m_button[TeleopControlMappingEnums::POV_45] = std::make_unique<POVButton>(m_xbox, 45);
-    m_button[TeleopControlMappingEnums::POV_90] = std::make_unique<POVButton>(m_xbox, 90);
-    m_button[TeleopControlMappingEnums::POV_135] = std::make_unique<POVButton>(m_xbox, 135);
-    m_button[TeleopControlMappingEnums::POV_180] = std::make_unique<POVButton>(m_xbox, 180);
-    m_button[TeleopControlMappingEnums::POV_225] = std::make_unique<POVButton>(m_xbox, 225);
-    m_button[TeleopControlMappingEnums::POV_270] = std::make_unique<POVButton>(m_xbox, 270);
-    m_button[TeleopControlMappingEnums::POV_315] = std::make_unique<POVButton>(m_xbox, 315);
+    m_button[TeleopControlMappingEnums::POV_0] = std::make_unique<POVButton>(m_xbox, wpi::POVDirection::UP);
+    m_button[TeleopControlMappingEnums::POV_45] = std::make_unique<POVButton>(m_xbox, wpi::POVDirection::UP_RIGHT);
+    m_button[TeleopControlMappingEnums::POV_90] = std::make_unique<POVButton>(m_xbox, wpi::POVDirection::RIGHT);
+    m_button[TeleopControlMappingEnums::POV_135] = std::make_unique<POVButton>(m_xbox, wpi::POVDirection::DOWN_RIGHT);
+    m_button[TeleopControlMappingEnums::POV_180] = std::make_unique<POVButton>(m_xbox, wpi::POVDirection::DOWN);
+    m_button[TeleopControlMappingEnums::POV_225] = std::make_unique<POVButton>(m_xbox, wpi::POVDirection::DOWN_LEFT);
+    m_button[TeleopControlMappingEnums::POV_270] = std::make_unique<POVButton>(m_xbox, wpi::POVDirection::LEFT);
+    m_button[TeleopControlMappingEnums::POV_315] = std::make_unique<POVButton>(m_xbox, wpi::POVDirection::UP_LEFT);
     if (port <= 1)
     {
         m_logThis = true;
@@ -306,6 +306,7 @@ void DragonXBox::SetRumble(
     m_xbox->SetRumble(GenericHID::RumbleType::RIGHT_RUMBLE, rrum);
 }
 
+/* Systemcore To DO: SystemCore TO DO: Figure out how logging works in SystemCore
 void DragonXBox::DataLog(uint64_t timestamp)
 {
     if (m_logThis)
@@ -332,3 +333,4 @@ void DragonXBox::DataLog(uint64_t timestamp)
         // LogGamePadData(timestamp, m_dataLogPath, axes, buttons, std::array<int, 1>{m_xbox->GetPOV()});
     }
 }
+    */

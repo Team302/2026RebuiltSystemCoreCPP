@@ -160,7 +160,7 @@ void Robot::DisabledPeriodic()
 /// starts Rewind recording if FMS-attached (first time only), and transitions PeriodicLooper to autonomous state.
 void Robot::AutonomousInit()
 {
-    wpi::SetCurrentThreadPriority(15);
+    // wpi::SetCurrentThreadPriority(15); // Systemcore To Do: deprecated and they don't recommend changing thread priority unless you are a expert
 
     if (m_cyclePrims != nullptr)
     {
@@ -211,13 +211,6 @@ void Robot::TeleopInit()
 /// @brief Called periodically while in teleop mode.
 /// Updates the PeriodicLooper's teleop state for mode-specific behavior.
 void Robot::TeleopPeriodic() { PeriodicLooper::GetInstance()->TeleopRunCurrentState(); }
-
-/// @brief Called once when test mode begins.
-/// Cancels any outstanding commands to reset the robot state for testing.
-void Robot::TestInit()
-{
-    wpi::cmd::CommandScheduler::GetInstance().CancelAll();
-}
 
 void Robot::TeleopExit()
 {

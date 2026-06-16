@@ -23,22 +23,22 @@
 // Team 302 includes
 
 // Third Party Includes
-#include <wpi/driverstation/GenericHID.hpp>
-#include <gamepad/IDragonGamepad.h>
-#include <gamepad/DragonXBox.h>
-#include <gamepad/DragonGamepad.h>
 #include "teleopcontrol/TeleopControl.h"
+#include "utils/logging/debug/Logger.h"
+#include <gamepad/DragonGamepad.h>
+#include <gamepad/DragonXBox.h>
+#include <gamepad/IDragonGamepad.h>
 #include <teleopcontrol/TeleopControlFunctions.h>
 #include <teleopcontrol/TeleopControlMap.h>
 #include <wpi/driverstation/DriverStation.hpp>
-#include "utils/logging/debug/Logger.h"
+#include <wpi/driverstation/GenericHID.hpp>
 
-using wpi::DriverStation;
-using wpi::GenericHID;
 using std::make_pair;
 using std::pair;
 using std::string;
 using std::vector;
+using wpi::DriverStation;
+using wpi::GenericHID;
 
 //----------------------------------------------------------------------------------
 // Method:      GetInstance
@@ -68,7 +68,7 @@ TeleopControl::TeleopControl() : m_controller(),
 								 m_numControllers(0)
 
 {
-	for (auto i = 0; i < DriverStation::kJoystickPorts; ++i)
+	for (auto i = 0; i < wpi::internal::DriverStationBackend::JOYSTICK_PORTS; ++i)
 	{
 		m_controller[i] = nullptr;
 	}
@@ -86,7 +86,7 @@ void TeleopControl::Initialize()
 
 void TeleopControl::InitializeControllers()
 {
-	for (int inx = 0; inx < DriverStation::kJoystickPorts; ++inx)
+	for (int inx = 0; inx < wpi::internal::DriverStationBackend::JOYSTICK_PORTS; ++inx)
 	{
 		InitializeController(inx);
 	}
@@ -367,7 +367,7 @@ void TeleopControl::SetRumble(
 
 void TeleopControl::LogInformation()
 {
-	for (int inx = 0; inx < DriverStation::kJoystickPorts; ++inx)
+	for (int inx = 0; inx < wpi::internal::DriverStationBackend::JOYSTICK_PORTS; ++inx)
 	{
 		if (m_controller[inx] != nullptr)
 		{
@@ -395,7 +395,7 @@ wpi::cmd::Trigger TeleopControl::GetCommandTrigger(TeleopControlFunctions::FUNCT
 	{
 		Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, string("TeleopControl-Command"), std::to_string(function), "Function not found in button map.");
 		return wpi::cmd::Trigger([]()
-							 { return false; });
+								 { return false; });
 	}
 	const auto &buttonInfo = itr->second;
 
@@ -452,11 +452,11 @@ wpi::cmd::Trigger TeleopControl::GetCommandTrigger(TeleopControlFunctions::FUNCT
 		Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, string("TeleopControl-Command"), std::to_string(function), "Controller is null.");
 	}
 	return wpi::cmd::Trigger([]()
-						 { return false; }); // Return a trigger that is always inactive if the controller is null or the function is not mapped
+							 { return false; }); // Return a trigger that is always inactive if the controller is null or the function is not mapped
 }
 
 wpi::cmd::Trigger TeleopControl::GetAxisAsTrigger(TeleopControlFunctions::FUNCTION function, double threshold)
 {
 	return wpi::cmd::Trigger([this, function, threshold]
-						 { return this->GetAxisValue(function) > threshold; });
+							 { return this->GetAxisValue(function) > threshold; });
 }

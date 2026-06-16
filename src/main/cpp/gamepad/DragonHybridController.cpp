@@ -17,12 +17,11 @@
 #include "wpi/driverstation/DriverStation.hpp"
 
 DragonHybridController::DragonHybridController(int port)
-    : m_commandController(new wpi::cmd::CommandXboxController(port)), m_nonCommandController(new DragonXBox(port))
+    : m_commandController(new wpi::cmd::CommandNiDsXboxController(port)), m_nonCommandController(new DragonXBox(port))
 {
-    wpi::RobotBase::SilenceJoystickConnectionWarning(!wpi::RobotBase::IsFMSAttached());
 }
 
-wpi::cmd::CommandXboxController *DragonHybridController::GetCommandController()
+wpi::cmd::CommandNiDsXboxController *DragonHybridController::GetCommandController()
 {
     return m_commandController;
 }

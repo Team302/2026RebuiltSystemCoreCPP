@@ -27,6 +27,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "wpi/math/geometry/Quaternion.hpp"
 #include "wpi/nt/DoubleArrayTopic.hpp"
 #include "wpi/nt/NetworkTable.hpp"
 #include "wpi/nt/NetworkTableEntry.hpp"
@@ -1615,7 +1616,7 @@ namespace LimelightHelpers
     struct IMUResults
     {
         std::vector<double> data;
-        std::vector<double> wpi::math::Quaternion{4, 0.0};
+        std::vector<double> quaternion{4, 0.0};
         double yaw{0};
 
         // Parsed from data array
@@ -1829,7 +1830,7 @@ namespace LimelightHelpers
      */
     inline void SetupPortForwarding(const std::string &limelightName)
     {
-        auto &portForwarder = wpi::PortForwarder::GetInstance();
+        auto &portForwarder = wpi::net::PortForwarder::GetInstance();
         portForwarder.Add(5800, sanitizeName(limelightName), 5800);
         portForwarder.Add(5801, sanitizeName(limelightName), 5801);
         portForwarder.Add(5802, sanitizeName(limelightName), 5802);
@@ -1862,7 +1863,7 @@ namespace LimelightHelpers
         std::string ip = "172.29." + std::to_string(usbIndex) + ".1";
         int basePort = 5800 + (usbIndex * 10);
 
-        auto &portForwarder = wpi::PortForwarder::GetInstance();
+        auto &portForwarder = wpi::net::PortForwarder::GetInstance();
         for (int i = 0; i < 10; i++)
         {
             portForwarder.Add(basePort + i, ip, 5800 + i);
@@ -2130,7 +2131,7 @@ namespace LimelightHelpers
         wpi::util::json data;
         try
         {
-            data = wpi::util::json::parse(jsonString);
+            data = wpi::util::json::parse(std::string_view(jsonString)).value();
         }
         catch (const std::exception &e)
         {

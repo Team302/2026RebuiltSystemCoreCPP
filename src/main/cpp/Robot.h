@@ -48,7 +48,6 @@ public:
     void AutonomousPeriodic() override;
     void TeleopInit() override;
     void TeleopPeriodic() override;
-    void TestInit() override;
     void TeleopExit() override;
 
 private:

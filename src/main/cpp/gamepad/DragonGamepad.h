@@ -23,7 +23,7 @@
 #include "teleopcontrol/TeleopControlMappingEnums.h"
 
 // forward declares
-namespace frc
+namespace wpi
 {
     class Joystick;
 }

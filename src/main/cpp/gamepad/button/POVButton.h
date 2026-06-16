@@ -16,9 +16,11 @@
 #pragma once
 
 #include "gamepad/button/IButton.h"
+#include "wpi/driverstation/GenericHID.hpp"
+#include "wpi/driverstation/POVDirection.hpp"
 
 // forward declare
-namespace frc
+namespace wpi
 {
     class GenericHID;
 }
@@ -33,8 +35,8 @@ class POVButton : public IButton
 {
 public:
     POVButton(
-        wpi::GenericHID *gamepad, // <I> - gamepad to query
-        int buttonID              // <I> - button ID this maps to
+        wpi::GenericHID *gamepad,  // <I> - gamepad to query
+        wpi::POVDirection buttonID // <I> - button ID this maps to
     );
 
     ~POVButton() = default;
@@ -68,5 +70,5 @@ public:
 
 private:
     wpi::GenericHID *m_gamepad;
-    int m_button;
+    wpi::POVDirection m_button;
 };

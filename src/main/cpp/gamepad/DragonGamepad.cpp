@@ -31,7 +31,7 @@
 using namespace std;
 
 DragonGamepad::DragonGamepad(
-    int port) : m_gamepad(new Joystick(port)),
+    int port) : m_gamepad(new wpi::Joystick(port)),
                 m_axis{},
                 m_button{}
 {
@@ -243,8 +243,8 @@ void DragonGamepad::SetRumble(
         double lrum = leftRumble ? 1.0 : 0.0;
         double rrum = rightRumble ? 1.0 : 0.0;
 
-        m_gamepad->SetRumble(GenericHID::RumbleType::kLeftRumble, lrum);
-        m_gamepad->SetRumble(GenericHID::RumbleType::kRightRumble, rrum);
+        m_gamepad->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, lrum);
+        m_gamepad->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, rrum);
     }
     else
     {

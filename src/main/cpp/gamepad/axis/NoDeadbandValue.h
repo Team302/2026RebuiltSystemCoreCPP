@@ -41,7 +41,7 @@ public:
     /// Description:    Apply the standard deadband
     /// </summary>
     //==================================================================================
-    void wpi::math::ApplyDeadband(
+    void ApplyDeadband(
         double &inputVal // <I> - value to apply profile to
     ) const override;
 

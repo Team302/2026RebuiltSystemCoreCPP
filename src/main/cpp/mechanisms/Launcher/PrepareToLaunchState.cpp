@@ -82,3 +82,4 @@ bool PrepareToLaunchState::IsTransitionCondition(bool considerGamepadTransitions
 
 	return ((wantsToLaunch && m_mechanism->GetCurrentState() != Launcher::STATE_LAUNCH && !overrideButton) ||
 			(m_mechanism->GetCurrentState() == Launcher::STATE_LAUNCH && (!m_mechanism->IsInLaunchZone() || !m_mechanism->IsTurretAtTarget())));
+}
