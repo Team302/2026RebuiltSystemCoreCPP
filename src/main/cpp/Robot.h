@@ -15,11 +15,12 @@
 
 #pragma once
 
+#include <memory>
 #include <optional>
 
 #include "wpi/commands2/CommandPtr.hpp"
 #include "wpi/nt/NetworkTable.hpp"
-#include <wpi/framework/TimedRobot.hpp>
+#include "wpi/framework/OpModeRobot.hpp"
 
 class CyclePrimitives;
 class TeleopControl;
@@ -32,25 +33,22 @@ class DragonVisionPoseEstimatorContainer;
 class DragonQuest;
 class DragonVision;
 class DriverFeedback;
+class AutonomousOpMode;
 
 namespace subsystems
 {
     class CommandSwerveDrivetrain;
 }
 
-class Robot : public wpi::TimedRobot
+class Robot : public wpi::OpModeRobot<Robot>
 {
 public:
     Robot();
     void RobotPeriodic() override;
     void DisabledPeriodic() override;
-    void AutonomousInit() override;
-    void AutonomousPeriodic() override;
-    void TeleopInit() override;
-    void TeleopPeriodic() override;
-    void TeleopExit() override;
 
 private:
+    friend class AutonomousOpMode;
     void InitializeRobot();
     void InitializeAutonOptions();
     void InitializeDriveteamFeedback();

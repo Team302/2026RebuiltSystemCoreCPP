@@ -78,6 +78,8 @@
 #include "RobotIdentifier.h"
 #include "auton/AutonPreviewer.h"
 #include "auton/CyclePrimitives.h"
+#include "opmode/AutonomousOpMode.h"
+#include "opmode/TeleopOpMode.h"
 #include "wpi/nt/NetworkTableInstance.hpp"
 #include <chrono>
 #include <wpi/commands2/CommandScheduler.hpp>
@@ -155,76 +157,6 @@ void Robot::DisabledPeriodic()
     FMSData::UpdateAllianceColor();
 }
 
-/// @brief Called once when autonomous mode begins.
-/// Elevates thread priority to reduce jitter, initializes cycle primitives,
-/// starts Rewind recording if FMS-attached (first time only), and transitions PeriodicLooper to autonomous state.
-void Robot::AutonomousInit()
-{
-    // wpi::SetCurrentThreadPriority(15); // Systemcore To Do: deprecated and they don't recommend changing thread priority unless you are a expert
-
-    if (m_cyclePrims != nullptr)
-    {
-        m_cyclePrims->Init();
-    }
-    PeriodicLooper::GetInstance()->AutonRunCurrentState();
-
-    if (m_isFMSAttached && !m_rewindLatch)
-    {
-        auto vision = DragonVision::GetDragonVision();
-        if (vision != nullptr)
-        {
-            vision->StartRewind();
-        }
-        m_rewindLatch = true;
-    }
-}
-
-/// @brief Called periodically while in autonomous mode.
-/// Executes the current cycle primitives routine and updates the PeriodicLooper's autonomous state.
-void Robot::AutonomousPeriodic()
-{
-    if (m_cyclePrims != nullptr)
-    {
-        m_cyclePrims->Run();
-    }
-    PeriodicLooper::GetInstance()->AutonRunCurrentState();
-}
-
-/// @brief Called once when teleop mode begins.
-/// Transitions PeriodicLooper to teleop state and cancels any outstanding commands.
-void Robot::TeleopInit()
-{
-    PeriodicLooper::GetInstance()->TeleopRunCurrentState();
-    wpi::cmd::CommandScheduler::GetInstance().CancelAll();
-
-    if (m_isFMSAttached && !m_rewindLatch)
-    {
-        auto vision = DragonVision::GetDragonVision();
-        if (vision != nullptr)
-        {
-            vision->StartRewind();
-        }
-        m_rewindLatch = true;
-    }
-}
-
-/// @brief Called periodically while in teleop mode.
-/// Updates the PeriodicLooper's teleop state for mode-specific behavior.
-void Robot::TeleopPeriodic() { PeriodicLooper::GetInstance()->TeleopRunCurrentState(); }
-
-void Robot::TeleopExit()
-{
-    if (m_isFMSAttached)
-    {
-        auto vision = DragonVision::GetDragonVision();
-        if (vision != nullptr)
-        {
-            vision->SaveRewind(165.0); // Save full buffer (max 165 seconds)
-            vision->StartRewind();
-        }
-    }
-}
-
 /// @brief Initializes all core robot subsystems in the correct order.
 /// Sets up singletons (FieldConstants, RoboRio), creates the drivetrain via ChassisConfigMgr,
 /// instantiates RobotContainer to bind commands and subsystems, configures mechanisms,
@@ -242,6 +174,10 @@ void Robot::InitializeRobot()
 
     m_robotState = RobotState::GetInstance();
     m_robotState->Init();
+
+    AddOpMode<TeleopOpMode>(wpi::RobotMode::TELEOPERATED, "Teleop");
+    AddOpMode<AutonomousOpMode>(wpi::RobotMode::AUTONOMOUS, "Autonomous");
+    PublishOpModes();
 }
 
 /// @brief Initializes autonomous options and routines.
