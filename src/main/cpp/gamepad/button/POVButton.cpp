@@ -41,7 +41,7 @@ POVButton::POVButton(
 bool POVButton::IsButtonPressed() const
 {
     bool pressed = false;
-    if (m_gamepad != nullptr)
+    if (m_gamepad != nullptr && m_gamepad->IsConnected())
     {
         pressed = (m_button == m_gamepad->GetPOV());
     }
