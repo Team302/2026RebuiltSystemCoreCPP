@@ -17,14 +17,14 @@
 
 #pragma once
 
-#include "frc2/command/Command.h"
-#include "frc2/command/CommandHelper.h"
+#include "wpi/commands2/Command.hpp"
+#include "wpi/commands2/CommandHelper.hpp"
 
 class Intake;
 
 namespace IntakeCommands
 {
-    class IntakeLaunchCommand : public frc2::CommandHelper<frc2::Command, IntakeLaunchCommand>
+    class IntakeLaunchCommand : public wpi::cmd::CommandHelper<wpi::cmd::Command, IntakeLaunchCommand>
     {
     public:
         IntakeLaunchCommand() = delete;

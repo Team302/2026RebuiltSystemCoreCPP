@@ -19,7 +19,7 @@
 #include <string>
 
 // FRC Includes
-#include "frc2/command/SubsystemBase.h"
+#include "wpi/commands2/SubsystemBase.hpp"
 
 // Team 302 Includes
 #include "mechanisms/MechanismTypes.h"
@@ -36,7 +36,7 @@
 ///     and requirement support for command bindings)
 ///
 /// Mechanism behavior that used to live in individual @c State classes is now
-/// expressed as @c frc2::CommandPtr factories on the concrete mechanism, and the
+/// expressed as @c wpi::cmd::CommandPtr factories on the concrete mechanism, and the
 /// per-loop housekeeping that used to live in @c StateMgr::RunCommonTasks() now
 /// lives in the overridden @c Periodic().
 class BaseMechSubsystem : public BaseMech, public frc2::SubsystemBase

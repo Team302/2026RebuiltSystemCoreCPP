@@ -16,14 +16,14 @@
 
 #pragma once
 
-#include "frc2/command/Command.h"
-#include "frc2/command/CommandHelper.h"
+#include "wpi/commands2/Command.hpp"
+#include "wpi/commands2/CommandHelper.hpp"
 
 class Intake;
 
 namespace IntakeCommands
 {
-    class IntakeIntakeCommand : public frc2::CommandHelper<frc2::Command, IntakeIntakeCommand>
+    class IntakeIntakeCommand : public wpi::cmd::CommandHelper<wpi::cmd::Command, IntakeIntakeCommand>
     {
     public:
         IntakeIntakeCommand() = delete;

@@ -19,7 +19,7 @@
 #include <string>
 
 // FRC Includes
-#include <networktables/NetworkTable.h>
+#include "wpi/nt/NetworkTable.hpp"
 
 #include "RobotIdentifier.h"
 #include "mechanisms/base/BaseMech.h"
@@ -35,7 +35,6 @@
 #include "ctre/phoenix6/TalonFX.hpp"
 #include "ctre/phoenix6/TalonFXS.hpp"
 #include "ctre/phoenix6/configs/Configuration.hpp"
-#include "utils/logging/signals/DragonDataLogger.h"
 
 // Intake command classes
 #include "mechanisms/intake/commands/IntakeExpelCommand.h"
@@ -44,7 +43,7 @@
 #include "mechanisms/intake/commands/IntakeLoadHopperCommand.h"
 #include "mechanisms/intake/commands/IntakeOffCommand.h"
 
-class Intake : public BaseMechSubsystem, public IRobotStateChangeSubscriber, public DragonDataLogger
+class Intake : public BaseMechSubsystem, public IRobotStateChangeSubscriber
 {
 public:
 	enum STATE_NAMES
@@ -70,17 +69,17 @@ public:
 	RobotIdentifier getActiveRobotId() { return m_activeRobotId; }
 
 	void Periodic() override;
-	void DataLog(uint64_t timestamp) override;
+	// void DataLog(uint64_t timestamp) override;
 
 	// Command Getters
-	frc2::CommandPtr GetOffCommand() { return IntakeCommands::IntakeOffCommand(this).ToPtr(); }
-	frc2::CommandPtr GetIntakeCommand() { return IntakeCommands::IntakeIntakeCommand(this).ToPtr(); }
-	frc2::CommandPtr GetExpelCommand() { return IntakeCommands::IntakeExpelCommand(this).ToPtr(); }
-	frc2::CommandPtr GetLaunchCommand() { return IntakeCommands::IntakeLaunchCommand(this).ToPtr(); }
-	frc2::CommandPtr GetLoadHopperCommand() { return IntakeCommands::IntakeLoadHopperCommand(this).ToPtr(); }
+	wpi::cmd::CommandPtr GetOffCommand() { return IntakeCommands::IntakeOffCommand(this).ToPtr(); }
+	wpi::cmd::CommandPtr GetIntakeCommand() { return IntakeCommands::IntakeIntakeCommand(this).ToPtr(); }
+	wpi::cmd::CommandPtr GetExpelCommand() { return IntakeCommands::IntakeExpelCommand(this).ToPtr(); }
+	wpi::cmd::CommandPtr GetLaunchCommand() { return IntakeCommands::IntakeLaunchCommand(this).ToPtr(); }
+	wpi::cmd::CommandPtr GetLoadHopperCommand() { return IntakeCommands::IntakeLoadHopperCommand(this).ToPtr(); }
 
 	/// @brief Map a STATE_NAMES value to the matching command (used by the autonomous bridge).
-	frc2::CommandPtr GetCommandForState(STATE_NAMES state)
+	wpi::cmd::CommandPtr GetCommandForState(STATE_NAMES state)
 	{
 		switch (state)
 		{
@@ -165,7 +164,7 @@ private:
 
 	// Command-based mode tracking + autonomous command handle (replaces StateMgr internals)
 	int m_currentState = STATE_OFF;
-	frc2::CommandPtr m_autonCommand;
+	wpi::cmd::CommandPtr m_autonCommand;
 
 	// Hardware Initializtion Methods
 	void InitializeTalonFXIntakeCompBot302();

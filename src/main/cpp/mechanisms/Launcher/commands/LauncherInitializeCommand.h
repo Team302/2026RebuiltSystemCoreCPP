@@ -16,14 +16,14 @@
 
 #pragma once
 
-#include "frc2/command/Command.h"
-#include "frc2/command/CommandHelper.h"
+#include "wpi/commands2/Command.hpp"
+#include "wpi/commands2/CommandHelper.hpp"
 
 class Launcher;
 
 namespace LauncherCommands
 {
-    class LauncherInitializeCommand : public frc2::CommandHelper<frc2::Command, LauncherInitializeCommand>
+    class LauncherInitializeCommand : public wpi::cmd::CommandHelper<wpi::cmd::Command, LauncherInitializeCommand>
     {
     public:
         LauncherInitializeCommand() = delete;

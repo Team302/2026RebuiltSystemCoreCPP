@@ -19,8 +19,6 @@
 #include <string>
 
 // FRC Includes
-#include <networktables/NetworkTable.h>
-
 #include "RobotIdentifier.h"
 #include "auton/AllianceZoneManager.h"
 #include "auton/DeadZoneManager.h"
@@ -33,13 +31,13 @@
 #include "state/IRobotStateChangeSubscriber.h"
 #include "state/RobotStateChanges.h"
 #include "utils/RebuiltTargetCalculator.h"
+#include "wpi/nt/NetworkTable.hpp"
 
 // Hardware Includes
 #include "ctre/phoenix6/CANdi.hpp"
 #include "ctre/phoenix6/TalonFX.hpp"
 #include "ctre/phoenix6/TalonFXS.hpp"
 #include "ctre/phoenix6/configs/Configuration.hpp"
-#include "utils/logging/signals/DragonDataLogger.h"
 
 // Launcher command classes
 #include "mechanisms/launcher/commands/LauncherIdleCommand.h"
@@ -50,7 +48,7 @@
 #include "mechanisms/launcher/commands/LauncherOffCommand.h"
 #include "mechanisms/launcher/commands/LauncherPrepareToLaunchCommand.h"
 
-class Launcher : public BaseMechSubsystem, public IRobotStateChangeSubscriber, public DragonDataLogger
+class Launcher : public BaseMechSubsystem, public IRobotStateChangeSubscriber
 {
 public:
     enum STATE_NAMES
@@ -78,19 +76,19 @@ public:
     RobotIdentifier getActiveRobotId() { return m_activeRobotId; }
 
     void Periodic() override;
-    void DataLog(uint64_t timestamp) override;
+    // void DataLog(uint64_t timestamp) override;
 
     // Command Getters
-    frc2::CommandPtr GetOffCommand() { return LauncherCommands::LauncherOffCommand(this).ToPtr(); }
-    frc2::CommandPtr GetInitializeCommand() { return LauncherCommands::LauncherInitializeCommand(this).ToPtr(); }
-    frc2::CommandPtr GetIdleCommand() { return LauncherCommands::LauncherIdleCommand(this).ToPtr(); }
-    frc2::CommandPtr GetPrepareToLaunchCommand() { return LauncherCommands::LauncherPrepareToLaunchCommand(this).ToPtr(); }
-    frc2::CommandPtr GetLaunchCommand() { return LauncherCommands::LauncherLaunchCommand(this).ToPtr(); }
-    frc2::CommandPtr GetLauncherTuningCommand() { return LauncherCommands::LauncherLauncherTuningCommand(this).ToPtr(); }
-    frc2::CommandPtr GetManualLaunchCommand() { return LauncherCommands::LauncherManualLaunchCommand(this).ToPtr(); }
+    wpi::cmd::CommandPtr GetOffCommand() { return LauncherCommands::LauncherOffCommand(this).ToPtr(); }
+    wpi::cmd::CommandPtr GetInitializeCommand() { return LauncherCommands::LauncherInitializeCommand(this).ToPtr(); }
+    wpi::cmd::CommandPtr GetIdleCommand() { return LauncherCommands::LauncherIdleCommand(this).ToPtr(); }
+    wpi::cmd::CommandPtr GetPrepareToLaunchCommand() { return LauncherCommands::LauncherPrepareToLaunchCommand(this).ToPtr(); }
+    wpi::cmd::CommandPtr GetLaunchCommand() { return LauncherCommands::LauncherLaunchCommand(this).ToPtr(); }
+    wpi::cmd::CommandPtr GetLauncherTuningCommand() { return LauncherCommands::LauncherLauncherTuningCommand(this).ToPtr(); }
+    wpi::cmd::CommandPtr GetManualLaunchCommand() { return LauncherCommands::LauncherManualLaunchCommand(this).ToPtr(); }
 
     /// @brief Map a STATE_NAMES value to the matching command (used by the autonomous bridge).
-    frc2::CommandPtr GetCommandForState(STATE_NAMES state)
+    wpi::cmd::CommandPtr GetCommandForState(STATE_NAMES state)
     {
         switch (state)
         {
@@ -267,7 +265,7 @@ private:
 
     // Command-based mode tracking + autonomous command handle (replaces StateMgr internals)
     int m_currentState = STATE_OFF;
-    frc2::CommandPtr m_autonCommand;
+    wpi::cmd::CommandPtr m_autonCommand;
 
     // Hardware Initializtion Methods
     void InitializeTalonFXLauncherCompBot302();
