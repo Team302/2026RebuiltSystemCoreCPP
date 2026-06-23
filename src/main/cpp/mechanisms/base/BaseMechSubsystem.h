@@ -39,7 +39,7 @@
 /// expressed as @c wpi::cmd::CommandPtr factories on the concrete mechanism, and the
 /// per-loop housekeeping that used to live in @c StateMgr::RunCommonTasks() now
 /// lives in the overridden @c Periodic().
-class BaseMechSubsystem : public BaseMech, public frc2::SubsystemBase
+class BaseMechSubsystem : public BaseMech, public wpi::cmd::Subsystem
 {
 public:
     /// @brief Construct the mechanism subsystem.
