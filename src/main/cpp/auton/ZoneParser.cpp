@@ -25,9 +25,8 @@
 #include "utils/logging/debug/Logger.h"
 #include "wpi/system/Filesystem.hpp"
 
-#include "mechanisms/Climber/Climber.h"
-#include "mechanisms/Intake/Intake.h"
-#include "mechanisms/Launcher/Launcher.h"
+#include "mechanisms/intake/Intake.h"
+#include "mechanisms/launcher/Launcher.h"
 
 using namespace std;
 using namespace pugi;
@@ -94,7 +93,6 @@ std::pair<ZoneParams *, bool> ZoneParser::ParseXML(string fulldirfile)
             // TODO: add zoneType parsing and check
             bool isLauncherStateChanged = false;
             bool isIntakeStateChanged = false;
-            bool isClimberStateChanged = false;
             ChassisOptionEnums::AutonChassisOptions chassisChosenOption = ChassisOptionEnums::AutonChassisOptions::NO_VISION;
             ChassisOptionEnums::HeadingOption chosenHeadingOption = ChassisOptionEnums::HeadingOption::IGNORE;
 
@@ -104,7 +102,6 @@ std::pair<ZoneParams *, bool> ZoneParser::ParseXML(string fulldirfile)
 
             Launcher::STATE_NAMES launcherState = Launcher::STATE_NAMES::STATE_OFF;
             Intake::STATE_NAMES intakeState = Intake::STATE_NAMES::STATE_OFF;
-            Climber::STATE_NAMES climberState = Climber::STATE_NAMES::STATE_OFF;
 
             auto config = MechanismConfigMgr::GetInstance()->GetCurrentConfig();
 
@@ -252,25 +249,6 @@ std::pair<ZoneParams *, bool> ZoneParser::ParseXML(string fulldirfile)
                         }
                     }
                 }
-                else if (strcmp(attr.name(), "climberState") == 0)
-                {
-                    if (config != nullptr && config->GetMechanism(MechanismTypes::MECHANISM_TYPE::CLIMBER) != nullptr)
-                    {
-                        Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, string("PrimitiveParser"), string("Found climber mechanism"), string(attr.value()));
-
-                        auto climberStateItr = Climber::stringToSTATE_NAMESEnumMap.find(attr.value());
-                        if (climberStateItr != Climber::stringToSTATE_NAMESEnumMap.end())
-                        {
-                            climberState = climberStateItr->second;
-                            isClimberStateChanged = true;
-                        }
-                        else
-                        {
-                            Logger::GetLogger()->LogData(LOGGER_LEVEL::ERROR, string("PrimitiveParser"), string("ParseXML invalid climber state"), attr.value());
-                            hasError = true;
-                        }
-                    }
-                }
             }
 
             if (!hasError) // if no error returns the zone parameters
@@ -279,7 +257,7 @@ std::pair<ZoneParams *, bool> ZoneParser::ParseXML(string fulldirfile)
                 auto circlePose2d = wpi::math::Pose2d(wpi::units::length::meter_t(circleX), wpi::units::length::meter_t(circleY), wpi::units::degree_t(0));
 
                 std::pair<ZoneParams *, bool> zoneParamPair = std::make_pair(new ZoneParams(circlePose2d,
-                                                                                            wpi::units::inch_t(radius),
+                                                                                            units::inch_t(radius),
                                                                                             xgrid1rect,
                                                                                             xgrid2rect,
                                                                                             ygrid1rect,
@@ -292,10 +270,8 @@ std::pair<ZoneParams *, bool> ZoneParser::ParseXML(string fulldirfile)
                                                                                             zoneMode,
                                                                                             isLauncherStateChanged,
                                                                                             isIntakeStateChanged,
-                                                                                            isClimberStateChanged,
                                                                                             launcherState,
-                                                                                            intakeState,
-                                                                                            climberState),
+                                                                                            intakeState),
                                                                              false);
                 return zoneParamPair;
             }

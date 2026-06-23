@@ -16,6 +16,10 @@
 #include "RobotContainer.h"
 
 #include "chassis/SwerveContainer.h"
+#include "frc/RobotController.h"
+#include "mechanisms/configs/MechanismConfigMgr.h"
+#include "mechanisms/intake/IntakeContainer.h"
+#include "mechanisms/launcher/LauncherContainer.h"
 #include "teleopcontrol/SweepLaneChanger.h"
 #include "vision/DragonVisionPoseEstimator.h"
 
@@ -25,4 +29,11 @@ RobotContainer::RobotContainer()
     SwerveContainer::GetInstance();
     new DragonVisionPoseEstimator();
     SweepLaneChanger::GetInstance();
+
+    // Mechanism
+    int32_t teamNumber = frc::RobotController::GetTeamNumber();
+    MechanismConfigMgr::GetInstance()->InitRobot((RobotIdentifier)teamNumber);
+    // has created the mechanisms so the container can find and bind whatever exists on this robot.
+    IntakeContainer::GetInstance()->ConfigureBindings();
+    LauncherContainer::GetInstance()->ConfigureBindings();
 }

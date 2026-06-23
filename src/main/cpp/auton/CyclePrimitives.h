@@ -81,5 +81,4 @@ private:
     // Cached mechanism pointers to avoid repeated lookups
     Launcher *m_cachedLauncher;
     Intake *m_cachedIntake;
-    Climber *m_cachedClimber;
 };

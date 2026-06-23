@@ -212,8 +212,6 @@ void DriverFeedback::UpdateLEDStates()
                 break;
 
             case Launcher::STATE_IDLE:
-            case Launcher::STATE_CLIMB:
-            case Launcher::STATE_EMPTY_HOPPER:
             case Launcher::STATE_LAUNCHER_TUNING:
             case Launcher::STATE_AGITATOR:
             case Launcher::STATE_MANUAL_LAUNCH:
@@ -331,19 +329,14 @@ void DriverFeedback::UpdateDiagnosticLEDs()
 
     if (m_launcher != nullptr)
     {
-        hoodZeroSwitch = m_launcher->GetHood()->GetReverseLimit(false).GetValue().value;
+        hoodZeroSwitch = m_launcher->GetHoodTalonFXS()->GetReverseLimit(false).GetValue().value;
         if (m_turretEnabled)
         {
-            turretZero = m_launcher->GetTurret()->GetReverseLimit(false).GetValue().value;
-            turretEnd = m_launcher->GetTurret()->GetForwardLimit(false).GetValue().value;
+            turretZero = m_launcher->GetTurretTalonFXS()->GetReverseLimit(false).GetValue().value;
+            turretEnd = m_launcher->GetTurretTalonFXS()->GetForwardLimit(false).GetValue().value;
         }
     }
 
-    if (m_intake != nullptr)
-    {
-        m_isIntakeIn = m_intake->IsIntakeIn();
-    }
-    m_LEDStates->SetIntakeSensor(m_isIntakeIn);
     m_LEDStates->SetHoodSwitch(hoodZeroSwitch);
     m_LEDStates->SetTurretZero(turretZero);
     m_LEDStates->SetTurretEnd(turretEnd);

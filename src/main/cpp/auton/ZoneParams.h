@@ -24,9 +24,8 @@
 #include "auton/AutonGrid.h"
 #include "auton/PrimitiveEnums.h"
 #include "chassis/ChassisOptionEnums.h"
-#include "mechanisms/Climber/Climber.h"
-#include "mechanisms/Intake/Intake.h"
-#include "mechanisms/Launcher/Launcher.h"
+#include "mechanisms/intake/Intake.h"
+#include "mechanisms/launcher/Launcher.h"
 
 // Third Party Includes
 
@@ -61,10 +60,8 @@ public:
                ZoneMode zoneMode,
                bool isLauncherStateChanged,
                bool isIntakeStateChanged,
-               bool isClimberStateChanged,
                Launcher::STATE_NAMES launcherState,
-               Intake::STATE_NAMES intakeState,
-               Climber::STATE_NAMES climberState); // declare ZoneParams public constructor with parameters xgrid1, etc.
+               Intake::STATE_NAMES intakeState); // declare ZoneParams public constructor with parameters xgrid1, etc.
 
     ZoneParams() = delete;
     ~ZoneParams() = default; // Destructor
@@ -91,10 +88,8 @@ public:
 
     bool IsLauncherStateChanging() const { return m_isLauncherStateChanged; }
     bool IsIntakeStateChanging() const { return m_isIntakeStateChanged; }
-    bool IsClimberStateChanging() const { return m_isClimberStateChanged; }
     Launcher::STATE_NAMES GetLauncherState() const { return m_launcherState; }
     Intake::STATE_NAMES GetIntakeState() const { return m_intakeState; }
-    Climber::STATE_NAMES GetClimberState() const { return m_climberState; }
 
 private:
     wpi::math::Pose2d m_circlePose;
@@ -116,10 +111,8 @@ private:
 
     bool m_isLauncherStateChanged;
     bool m_isIntakeStateChanged;
-    bool m_isClimberStateChanged;
     Launcher::STATE_NAMES m_launcherState;
     Intake::STATE_NAMES m_intakeState;
-    Climber::STATE_NAMES m_climberState;
 };
 
 typedef std::vector<std::pair<ZoneParams *, bool>> ZoneParamsVector; // create typedef ZoneParamsVector
