@@ -18,7 +18,7 @@
 // C++ Includes
 #include <string>
 
-// FRC Includes
+// Systemcore WPI Includes
 #include "wpi/commands2/SubsystemBase.hpp"
 
 // Team 302 Includes
@@ -31,7 +31,7 @@
 /// This is the command-based replacement for the old @c StateMgr base class. A
 /// mechanism derives from @c BaseMechSubsystem to gain:
 ///   - @c BaseMech behavior (mechanism type, network-table name, control-data reading)
-///   - @c frc2::SubsystemBase behavior (automatic registration with the
+///   - @c wpi::cmd::SubsystemBase behavior (automatic registration with the
 ///     @c CommandScheduler so @c Periodic() runs every loop, plus default-command
 ///     and requirement support for command bindings)
 ///
@@ -39,7 +39,7 @@
 /// expressed as @c wpi::cmd::CommandPtr factories on the concrete mechanism, and the
 /// per-loop housekeeping that used to live in @c StateMgr::RunCommonTasks() now
 /// lives in the overridden @c Periodic().
-class BaseMechSubsystem : public BaseMech, public wpi::cmd::Subsystem
+class BaseMechSubsystem : public BaseMech, public wpi::cmd::SubsystemBase
 {
 public:
     /// @brief Construct the mechanism subsystem.

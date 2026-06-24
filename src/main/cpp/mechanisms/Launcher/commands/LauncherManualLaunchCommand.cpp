@@ -18,16 +18,16 @@
 #include "mechanisms/launcher/Launcher.h"
 
 // Unit Includes
-#include "units/angle.h"
-#include "units/angular_velocity.h"
+#include "wpi/units/angle.hpp"
+#include "wpi/units/angular_velocity.hpp"
 
 using namespace LauncherCommands;
 
-static constexpr units::angular_velocity::revolutions_per_minute_t m_launcherTarget{2200.0};
-static constexpr units::angle::turn_t m_hoodTarget{0.4};
-static constexpr units::angular_velocity::revolutions_per_minute_t m_transferTarget{80.0};
-static constexpr units::angular_velocity::revolutions_per_minute_t m_indexerTarget{25.0};
-static constexpr units::angular_velocity::revolutions_per_minute_t m_spindexerTarget{22.0};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_launcherTarget{2200.0};
+static constexpr wpi::units::angle::turn_t m_hoodTarget{0.4};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_transferTarget{80.0};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_indexerTarget{25.0};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_spindexerTarget{22.0};
 static constexpr double m_turretTarget{0.0};
 
 LauncherManualLaunchCommand::LauncherManualLaunchCommand(Launcher *mechanism) : m_mechanism(mechanism)

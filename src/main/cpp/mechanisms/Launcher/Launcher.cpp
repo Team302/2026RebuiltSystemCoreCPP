@@ -16,20 +16,24 @@
 
 // FRC Includes
 #include "mechanisms/launcher/Launcher.h"
-#include "frc/DriverStation.h"
-#include "frc/RobotBase.h"
-#include "networktables/NetworkTableInstance.h"
 #include "wpi/commands2/Command.hpp"
+#include "wpi/framework/RobotBase.hpp"
+#include "wpi/nt/NetworkTableInstance.hpp"
 
 #include "state/RobotState.h"
 #include "teleopcontrol/TeleopControl.h"
-#include "units/math.h"
 #include "utils/InterpolateUtils.h"
 #include "utils/logging/debug/Logger.h"
 
 #include "ctre/phoenix6/TalonFX.hpp"
 #include "ctre/phoenix6/TalonFXS.hpp"
 #include "ctre/phoenix6/configs/Configuration.hpp"
+
+// Unit Includes
+#include "wpi/units/angle.hpp"
+#include "wpi/units/current.hpp"
+#include "wpi/units/time.hpp"
+#include "wpi/units/voltage.hpp"
 
 using ctre::phoenix6::configs::CANdiConfiguration;
 using ctre::phoenix6::configs::TalonFXConfiguration;
@@ -40,7 +44,7 @@ using std::string;
 Launcher::Launcher(RobotIdentifier id) : BaseMechSubsystem(MechanismTypes::MECHANISM_TYPE::LAUNCHER, std::string("Launcher")),
 										 m_activeRobotId(id),
 										 m_stateMap(),
-										 m_autonCommand(frc2::cmd::None()),
+										 m_autonCommand(wpi::cmd::None()),
 										 m_chassis(ChassisConfigMgr::GetInstance()->GetSwerveChassis())
 {
 	RobotState::GetInstance()->RegisterForStateChanges(this, RobotStateChanges::StateChange::AllowedToClimbStatus_Bool);
@@ -255,29 +259,29 @@ void Launcher::InitializeCompBot302()
 void Launcher::InitializeTalonFXLauncherCompBot302()
 {
 	TalonFXConfiguration configs{};
-	configs.CurrentLimits.StatorCurrentLimit = units::current::ampere_t(120.0);
+	configs.CurrentLimits.StatorCurrentLimit = wpi::units::current::ampere_t(120.0);
 	configs.CurrentLimits.StatorCurrentLimitEnable = true;
-	configs.CurrentLimits.SupplyCurrentLimit = units::current::ampere_t(70.0);
+	configs.CurrentLimits.SupplyCurrentLimit = wpi::units::current::ampere_t(70.0);
 	configs.CurrentLimits.SupplyCurrentLimitEnable = true;
-	configs.CurrentLimits.SupplyCurrentLowerLimit = units::current::ampere_t(40.0);
-	configs.CurrentLimits.SupplyCurrentLowerTime = units::time::second_t(0.0);
+	configs.CurrentLimits.SupplyCurrentLowerLimit = wpi::units::current::ampere_t(40.0);
+	configs.CurrentLimits.SupplyCurrentLowerTime = wpi::units::time::second_t(0.0);
 
-	configs.Voltage.PeakForwardVoltage = units::voltage::volt_t(16.0);
-	configs.Voltage.PeakReverseVoltage = units::voltage::volt_t(4.5);
-	configs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = units::time::second_t(0.1);
-	configs.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = units::time::second_t(0.1);
+	configs.Voltage.PeakForwardVoltage = wpi::units::voltage::volt_t(16.0);
+	configs.Voltage.PeakReverseVoltage = wpi::units::voltage::volt_t(4.5);
+	configs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = wpi::units::time::second_t(0.1);
+	configs.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = wpi::units::time::second_t(0.1);
 
 	configs.HardwareLimitSwitch.ForwardLimitEnable = false;
 	configs.HardwareLimitSwitch.ForwardLimitRemoteSensorID = 0;
 	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = false;
-	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = units::angle::turn_t(0.0);
+	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ForwardLimitSource = ctre::phoenix6::signals::ForwardLimitSourceValue::LimitSwitchPin;
 	configs.HardwareLimitSwitch.ForwardLimitType = ctre::phoenix6::signals::ForwardLimitTypeValue::NormallyOpen;
 
 	configs.HardwareLimitSwitch.ReverseLimitEnable = false;
 	configs.HardwareLimitSwitch.ReverseLimitRemoteSensorID = 0;
 	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = false;
-	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = units::angle::turn_t(0.0);
+	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ReverseLimitSource = ctre::phoenix6::signals::ReverseLimitSourceValue::LimitSwitchPin;
 	configs.HardwareLimitSwitch.ReverseLimitType = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
 
@@ -303,7 +307,7 @@ void Launcher::InitializeTalonFXLauncherCompBot302()
 	ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
 	for (int i = 0; i < 5; ++i)
 	{
-		status = m_launcherMotor->GetConfigurator().Apply(configs, units::time::second_t(0.25));
+		status = m_launcherMotor->GetConfigurator().Apply(configs, wpi::units::time::second_t(0.25));
 		if (status.IsOK())
 			break;
 	}
@@ -314,29 +318,29 @@ void Launcher::InitializeTalonFXLauncherCompBot302()
 void Launcher::InitializeTalonFXSHoodCompBot302()
 {
 	TalonFXSConfiguration configs{};
-	configs.CurrentLimits.StatorCurrentLimit = units::current::ampere_t(100.0);
+	configs.CurrentLimits.StatorCurrentLimit = wpi::units::current::ampere_t(100.0);
 	configs.CurrentLimits.StatorCurrentLimitEnable = true;
-	configs.CurrentLimits.SupplyCurrentLimit = units::current::ampere_t(70.0);
+	configs.CurrentLimits.SupplyCurrentLimit = wpi::units::current::ampere_t(70.0);
 	configs.CurrentLimits.SupplyCurrentLimitEnable = true;
-	configs.CurrentLimits.SupplyCurrentLowerLimit = units::current::ampere_t(35.0);
-	configs.CurrentLimits.SupplyCurrentLowerTime = units::time::second_t(0.0);
+	configs.CurrentLimits.SupplyCurrentLowerLimit = wpi::units::current::ampere_t(35.0);
+	configs.CurrentLimits.SupplyCurrentLowerTime = wpi::units::time::second_t(0.0);
 
-	configs.Voltage.PeakForwardVoltage = units::voltage::volt_t(11.0);
-	configs.Voltage.PeakReverseVoltage = units::voltage::volt_t(-11.0);
-	configs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = units::time::second_t(0.1);
-	configs.OpenLoopRamps.VoltageOpenLoopRampPeriod = units::time::second_t(0.1);
+	configs.Voltage.PeakForwardVoltage = wpi::units::voltage::volt_t(11.0);
+	configs.Voltage.PeakReverseVoltage = wpi::units::voltage::volt_t(-11.0);
+	configs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = wpi::units::time::second_t(0.1);
+	configs.OpenLoopRamps.VoltageOpenLoopRampPeriod = wpi::units::time::second_t(0.1);
 
 	configs.HardwareLimitSwitch.ForwardLimitEnable = false;
 	configs.HardwareLimitSwitch.ForwardLimitRemoteSensorID = 0;
 	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = false;
-	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = units::angle::turn_t(0.0);
+	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ForwardLimitSource = ctre::phoenix6::signals::ForwardLimitSourceValue::RemoteCANifier;
 	configs.HardwareLimitSwitch.ForwardLimitType = ctre::phoenix6::signals::ForwardLimitTypeValue::NormallyClosed;
 
 	configs.HardwareLimitSwitch.ReverseLimitEnable = true;
 	configs.HardwareLimitSwitch.ReverseLimitRemoteSensorID = 7;
 	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
-	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = units::angle::turn_t(0.0);
+	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ReverseLimitSource = ctre::phoenix6::signals::ReverseLimitSourceValue::RemoteCANdiS1;
 	configs.HardwareLimitSwitch.ReverseLimitType = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
 
@@ -346,8 +350,8 @@ void Launcher::InitializeTalonFXSHoodCompBot302()
 	configs.MotorOutput.PeakReverseDutyCycle = -1.0;
 	configs.MotorOutput.DutyCycleNeutralDeadband = 0.0;
 
-	configs.MotionMagic.MotionMagicCruiseVelocity = units::angular_velocity::turns_per_second_t(m_positionDegreesHood->GetCruiseVelocity());
-	configs.MotionMagic.MotionMagicAcceleration = units::angular_acceleration::turns_per_second_squared_t(m_positionDegreesHood->GetMaxAcceleration());
+	configs.MotionMagic.MotionMagicCruiseVelocity = wpi::units::angular_velocity::turns_per_second_t(m_positionDegreesHood->GetCruiseVelocity());
+	configs.MotionMagic.MotionMagicAcceleration = wpi::units::angular_acceleration::turns_per_second_squared_t(m_positionDegreesHood->GetMaxAcceleration());
 
 	configs.Commutation.MotorArrangement = ctre::phoenix6::signals::MotorArrangementValue::Minion_JST;
 
@@ -367,7 +371,7 @@ void Launcher::InitializeTalonFXSHoodCompBot302()
 	ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
 	for (int i = 0; i < 5; ++i)
 	{
-		status = m_hoodMotor->GetConfigurator().Apply(configs, units::time::second_t(0.25));
+		status = m_hoodMotor->GetConfigurator().Apply(configs, wpi::units::time::second_t(0.25));
 		if (status.IsOK())
 			break;
 	}
@@ -378,29 +382,29 @@ void Launcher::InitializeTalonFXSHoodCompBot302()
 void Launcher::InitializeTalonFXTransferCompBot302()
 {
 	TalonFXConfiguration configs{};
-	configs.CurrentLimits.StatorCurrentLimit = units::current::ampere_t(100.0);
+	configs.CurrentLimits.StatorCurrentLimit = wpi::units::current::ampere_t(100.0);
 	configs.CurrentLimits.StatorCurrentLimitEnable = true;
-	configs.CurrentLimits.SupplyCurrentLimit = units::current::ampere_t(70.0);
+	configs.CurrentLimits.SupplyCurrentLimit = wpi::units::current::ampere_t(70.0);
 	configs.CurrentLimits.SupplyCurrentLimitEnable = true;
-	configs.CurrentLimits.SupplyCurrentLowerLimit = units::current::ampere_t(35.0);
-	configs.CurrentLimits.SupplyCurrentLowerTime = units::time::second_t(0.0);
+	configs.CurrentLimits.SupplyCurrentLowerLimit = wpi::units::current::ampere_t(35.0);
+	configs.CurrentLimits.SupplyCurrentLowerTime = wpi::units::time::second_t(0.0);
 
-	configs.Voltage.PeakForwardVoltage = units::voltage::volt_t(11.0);
-	configs.Voltage.PeakReverseVoltage = units::voltage::volt_t(-11.0);
-	configs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = units::time::second_t(0.25);
-	configs.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = units::time::second_t(0.1);
+	configs.Voltage.PeakForwardVoltage = wpi::units::voltage::volt_t(11.0);
+	configs.Voltage.PeakReverseVoltage = wpi::units::voltage::volt_t(-11.0);
+	configs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = wpi::units::time::second_t(0.25);
+	configs.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = wpi::units::time::second_t(0.1);
 
 	configs.HardwareLimitSwitch.ForwardLimitEnable = false;
 	configs.HardwareLimitSwitch.ForwardLimitRemoteSensorID = 0;
 	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = false;
-	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = units::angle::turn_t(0.0);
+	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ForwardLimitSource = ctre::phoenix6::signals::ForwardLimitSourceValue::LimitSwitchPin;
 	configs.HardwareLimitSwitch.ForwardLimitType = ctre::phoenix6::signals::ForwardLimitTypeValue::NormallyOpen;
 
 	configs.HardwareLimitSwitch.ReverseLimitEnable = false;
 	configs.HardwareLimitSwitch.ReverseLimitRemoteSensorID = 0;
 	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = false;
-	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = units::angle::turn_t(0.0);
+	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ReverseLimitSource = ctre::phoenix6::signals::ReverseLimitSourceValue::LimitSwitchPin;
 	configs.HardwareLimitSwitch.ReverseLimitType = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
 
@@ -426,7 +430,7 @@ void Launcher::InitializeTalonFXTransferCompBot302()
 	ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
 	for (int i = 0; i < 5; ++i)
 	{
-		status = m_transferMotor->GetConfigurator().Apply(configs, units::time::second_t(0.25));
+		status = m_transferMotor->GetConfigurator().Apply(configs, wpi::units::time::second_t(0.25));
 		if (status.IsOK())
 			break;
 	}
@@ -437,29 +441,29 @@ void Launcher::InitializeTalonFXTransferCompBot302()
 void Launcher::InitializeTalonFXIndexerCompBot302()
 {
 	TalonFXConfiguration configs{};
-	configs.CurrentLimits.StatorCurrentLimit = units::current::ampere_t(100.0);
+	configs.CurrentLimits.StatorCurrentLimit = wpi::units::current::ampere_t(100.0);
 	configs.CurrentLimits.StatorCurrentLimitEnable = true;
-	configs.CurrentLimits.SupplyCurrentLimit = units::current::ampere_t(70.0);
+	configs.CurrentLimits.SupplyCurrentLimit = wpi::units::current::ampere_t(70.0);
 	configs.CurrentLimits.SupplyCurrentLimitEnable = true;
-	configs.CurrentLimits.SupplyCurrentLowerLimit = units::current::ampere_t(35.0);
-	configs.CurrentLimits.SupplyCurrentLowerTime = units::time::second_t(0.0);
+	configs.CurrentLimits.SupplyCurrentLowerLimit = wpi::units::current::ampere_t(35.0);
+	configs.CurrentLimits.SupplyCurrentLowerTime = wpi::units::time::second_t(0.0);
 
-	configs.Voltage.PeakForwardVoltage = units::voltage::volt_t(11.0);
-	configs.Voltage.PeakReverseVoltage = units::voltage::volt_t(-11.0);
-	configs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = units::time::second_t(0.25);
-	configs.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = units::time::second_t(0.1);
+	configs.Voltage.PeakForwardVoltage = wpi::units::voltage::volt_t(11.0);
+	configs.Voltage.PeakReverseVoltage = wpi::units::voltage::volt_t(-11.0);
+	configs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = wpi::units::time::second_t(0.25);
+	configs.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = wpi::units::time::second_t(0.1);
 
 	configs.HardwareLimitSwitch.ForwardLimitEnable = false;
 	configs.HardwareLimitSwitch.ForwardLimitRemoteSensorID = 0;
 	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = false;
-	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = units::angle::turn_t(0.0);
+	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ForwardLimitSource = ctre::phoenix6::signals::ForwardLimitSourceValue::LimitSwitchPin;
 	configs.HardwareLimitSwitch.ForwardLimitType = ctre::phoenix6::signals::ForwardLimitTypeValue::NormallyOpen;
 
 	configs.HardwareLimitSwitch.ReverseLimitEnable = false;
 	configs.HardwareLimitSwitch.ReverseLimitRemoteSensorID = 0;
 	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = false;
-	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = units::angle::turn_t(0.0);
+	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ReverseLimitSource = ctre::phoenix6::signals::ReverseLimitSourceValue::LimitSwitchPin;
 	configs.HardwareLimitSwitch.ReverseLimitType = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
 
@@ -485,7 +489,7 @@ void Launcher::InitializeTalonFXIndexerCompBot302()
 	ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
 	for (int i = 0; i < 5; ++i)
 	{
-		status = m_indexerMotor->GetConfigurator().Apply(configs, units::time::second_t(0.25));
+		status = m_indexerMotor->GetConfigurator().Apply(configs, wpi::units::time::second_t(0.25));
 		if (status.IsOK())
 			break;
 	}
@@ -496,29 +500,29 @@ void Launcher::InitializeTalonFXIndexerCompBot302()
 void Launcher::InitializeTalonFXSpindexerCompBot302()
 {
 	TalonFXConfiguration configs{};
-	configs.CurrentLimits.StatorCurrentLimit = units::current::ampere_t(100.0);
+	configs.CurrentLimits.StatorCurrentLimit = wpi::units::current::ampere_t(100.0);
 	configs.CurrentLimits.StatorCurrentLimitEnable = true;
-	configs.CurrentLimits.SupplyCurrentLimit = units::current::ampere_t(70.0);
+	configs.CurrentLimits.SupplyCurrentLimit = wpi::units::current::ampere_t(70.0);
 	configs.CurrentLimits.SupplyCurrentLimitEnable = true;
-	configs.CurrentLimits.SupplyCurrentLowerLimit = units::current::ampere_t(35.0);
-	configs.CurrentLimits.SupplyCurrentLowerTime = units::time::second_t(0.0);
+	configs.CurrentLimits.SupplyCurrentLowerLimit = wpi::units::current::ampere_t(35.0);
+	configs.CurrentLimits.SupplyCurrentLowerTime = wpi::units::time::second_t(0.0);
 
-	configs.Voltage.PeakForwardVoltage = units::voltage::volt_t(11.0);
-	configs.Voltage.PeakReverseVoltage = units::voltage::volt_t(-11.0);
-	configs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = units::time::second_t(0.25);
-	configs.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = units::time::second_t(0.1);
+	configs.Voltage.PeakForwardVoltage = wpi::units::voltage::volt_t(11.0);
+	configs.Voltage.PeakReverseVoltage = wpi::units::voltage::volt_t(-11.0);
+	configs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = wpi::units::time::second_t(0.25);
+	configs.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = wpi::units::time::second_t(0.1);
 
 	configs.HardwareLimitSwitch.ForwardLimitEnable = false;
 	configs.HardwareLimitSwitch.ForwardLimitRemoteSensorID = 0;
 	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = false;
-	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = units::angle::turn_t(0.0);
+	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ForwardLimitSource = ctre::phoenix6::signals::ForwardLimitSourceValue::LimitSwitchPin;
 	configs.HardwareLimitSwitch.ForwardLimitType = ctre::phoenix6::signals::ForwardLimitTypeValue::NormallyOpen;
 
 	configs.HardwareLimitSwitch.ReverseLimitEnable = false;
 	configs.HardwareLimitSwitch.ReverseLimitRemoteSensorID = 0;
 	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = false;
-	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = units::angle::turn_t(0.0);
+	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ReverseLimitSource = ctre::phoenix6::signals::ReverseLimitSourceValue::LimitSwitchPin;
 	configs.HardwareLimitSwitch.ReverseLimitType = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
 
@@ -544,7 +548,7 @@ void Launcher::InitializeTalonFXSpindexerCompBot302()
 	ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
 	for (int i = 0; i < 5; ++i)
 	{
-		status = m_spindexerMotor->GetConfigurator().Apply(configs, units::time::second_t(0.25));
+		status = m_spindexerMotor->GetConfigurator().Apply(configs, wpi::units::time::second_t(0.25));
 		if (status.IsOK())
 			break;
 	}
@@ -564,7 +568,7 @@ void Launcher::InitializeCANdiHoodCompBot302()
 	ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
 	for (int i = 0; i < 5; ++i)
 	{
-		status = m_hoodCANdi->GetConfigurator().Apply(CANdiConfig, units::time::second_t(0.25));
+		status = m_hoodCANdi->GetConfigurator().Apply(CANdiConfig, wpi::units::time::second_t(0.25));
 		if (status.IsOK())
 			break;
 	}
@@ -584,7 +588,7 @@ void Launcher::InitializeCANdiTurretCompBot302()
 	ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
 	for (int i = 0; i < 5; ++i)
 	{
-		status = m_turretCANdi->GetConfigurator().Apply(CANdiConfig, units::time::second_t(0.25));
+		status = m_turretCANdi->GetConfigurator().Apply(CANdiConfig, wpi::units::time::second_t(0.25));
 		if (status.IsOK())
 			break;
 	}
@@ -595,29 +599,29 @@ void Launcher::InitializeCANdiTurretCompBot302()
 void Launcher::InitializeTalonFXSTurretCompBot302()
 {
 	TalonFXSConfiguration configs{};
-	configs.CurrentLimits.StatorCurrentLimit = units::current::ampere_t(45.0);
+	configs.CurrentLimits.StatorCurrentLimit = wpi::units::current::ampere_t(45.0);
 	configs.CurrentLimits.StatorCurrentLimitEnable = true;
-	configs.CurrentLimits.SupplyCurrentLimit = units::current::ampere_t(70.0);
+	configs.CurrentLimits.SupplyCurrentLimit = wpi::units::current::ampere_t(70.0);
 	configs.CurrentLimits.SupplyCurrentLimitEnable = true;
-	configs.CurrentLimits.SupplyCurrentLowerLimit = units::current::ampere_t(35.0);
-	configs.CurrentLimits.SupplyCurrentLowerTime = units::time::second_t(0.0);
+	configs.CurrentLimits.SupplyCurrentLowerLimit = wpi::units::current::ampere_t(35.0);
+	configs.CurrentLimits.SupplyCurrentLowerTime = wpi::units::time::second_t(0.0);
 
-	configs.Voltage.PeakForwardVoltage = units::voltage::volt_t(11.0);
-	configs.Voltage.PeakReverseVoltage = units::voltage::volt_t(-11.0);
-	configs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = units::time::second_t(0.25);
-	configs.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = units::time::second_t(0.1);
+	configs.Voltage.PeakForwardVoltage = wpi::units::voltage::volt_t(11.0);
+	configs.Voltage.PeakReverseVoltage = wpi::units::voltage::volt_t(-11.0);
+	configs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = wpi::units::time::second_t(0.25);
+	configs.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = wpi::units::time::second_t(0.1);
 
 	configs.HardwareLimitSwitch.ForwardLimitEnable = true;
 	configs.HardwareLimitSwitch.ForwardLimitRemoteSensorID = 6;
 	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = false;
-	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = units::angle::turn_t(0.0);
+	configs.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ForwardLimitSource = ctre::phoenix6::signals::ForwardLimitSourceValue::RemoteCANdiS2;
 	configs.HardwareLimitSwitch.ForwardLimitType = ctre::phoenix6::signals::ForwardLimitTypeValue::NormallyOpen;
 
 	configs.HardwareLimitSwitch.ReverseLimitEnable = true;
 	configs.HardwareLimitSwitch.ReverseLimitRemoteSensorID = 6;
 	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = false;
-	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = units::angle::turn_t(0.0);
+	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ReverseLimitSource = ctre::phoenix6::signals::ReverseLimitSourceValue::RemoteCANdiS1;
 	configs.HardwareLimitSwitch.ReverseLimitType = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
 
@@ -627,8 +631,8 @@ void Launcher::InitializeTalonFXSTurretCompBot302()
 	configs.MotorOutput.PeakReverseDutyCycle = -1.0;
 	configs.MotorOutput.DutyCycleNeutralDeadband = 0.0;
 
-	configs.MotionMagic.MotionMagicCruiseVelocity = units::angular_velocity::turns_per_second_t(m_positionDegreesTurret->GetCruiseVelocity());
-	configs.MotionMagic.MotionMagicAcceleration = units::angular_acceleration::turns_per_second_squared_t(m_positionDegreesTurret->GetMaxAcceleration());
+	configs.MotionMagic.MotionMagicCruiseVelocity = wpi::units::angular_velocity::turns_per_second_t(m_positionDegreesTurret->GetCruiseVelocity());
+	configs.MotionMagic.MotionMagicAcceleration = wpi::units::angular_acceleration::turns_per_second_squared_t(m_positionDegreesTurret->GetMaxAcceleration());
 
 	configs.Commutation.MotorArrangement = ctre::phoenix6::signals::MotorArrangementValue::Minion_JST;
 
@@ -648,7 +652,7 @@ void Launcher::InitializeTalonFXSTurretCompBot302()
 	ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
 	for (int i = 0; i < 5; ++i)
 	{
-		status = m_turretMotor->GetConfigurator().Apply(configs, units::time::second_t(0.25));
+		status = m_turretMotor->GetConfigurator().Apply(configs, wpi::units::time::second_t(0.25));
 		if (status.IsOK())
 			break;
 	}
@@ -673,10 +677,10 @@ void Launcher::RefreshCachedData()
 {
 	m_cachedLauncherVelocity = m_launcherMotor->GetVelocity().GetValue();
 	m_cachedHoodPosition = m_hoodMotor->GetPosition().GetValue();
-	m_cachedTurretPosition = m_turretEnabled ? units::angle::degree_t(m_turretMotor->GetPosition().GetValueAsDouble()) : 180.0_deg;
+	m_cachedTurretPosition = m_turretEnabled ? wpi::units::angle::degree_t(m_turretMotor->GetPosition().GetValueAsDouble()) : 180.0_deg;
 	m_cachedLauncherCurrent = m_launcherMotor->GetStatorCurrent().GetValue();
 
-	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "Launcher Speed", units::angular_velocity::revolutions_per_minute_t(m_cachedLauncherVelocity).value());
+	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "Launcher Speed", wpi::units::angular_velocity::revolutions_per_minute_t(m_cachedLauncherVelocity).value());
 	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "Hood Position", m_cachedHoodPosition.value());
 	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "turret position", m_cachedTurretPosition.value());
 }
@@ -692,7 +696,7 @@ void Launcher::Periodic()
 
 	Update();
 
-	if (frc::DriverStation::IsDisabled())
+	if (wpi::RobotBase::IsDisabled())
 	{
 		InitializeLauncher();
 		m_targetCalculator->ForceUpdateChassisPose();
@@ -805,7 +809,7 @@ void Launcher::PublishLaunchMode(bool launching)
 
 bool Launcher::IsLauncherAtTarget()
 {
-	if (frc::RobotBase::IsSimulation() && !(GetCurrentState() == STATE_NAMES::STATE_LAUNCHER_TUNING))
+	if (wpi::RobotBase::IsSimulation() && !(GetCurrentState() == STATE_NAMES::STATE_LAUNCHER_TUNING))
 	{
 		return m_cachedinLaunchzone;
 	}
@@ -844,8 +848,8 @@ void Launcher::CalculateTargets()
 	}
 	else
 	{
-		m_targetHoodAngle = InterpolateUtils::linearInterpolate(m_passingDistanceArray, m_passingHoodAngleArray, units::length::foot_t(m_distanceToTarget));
-		m_targetLauncherAngularVelocity = InterpolateUtils::linearInterpolate(m_passingDistanceArray, m_passingLauncherVelocityArray, units::length::foot_t(m_distanceToTarget));
+		m_targetHoodAngle = InterpolateUtils::linearInterpolate(m_passingDistanceArray, m_passingHoodAngleArray, wpi::units::length::foot_t(m_distanceToTarget));
+		m_targetLauncherAngularVelocity = InterpolateUtils::linearInterpolate(m_passingDistanceArray, m_passingLauncherVelocityArray, wpi::units::length::foot_t(m_distanceToTarget));
 	}
 
 	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "Distance", m_distanceToTarget.value());
@@ -901,7 +905,7 @@ void Launcher::InitializeLauncher()
 
 	if ((m_turretEnabled && m_turretHasReset && hoodReverseLimitSwitchTripped) ||
 		(!m_turretEnabled && hoodReverseLimitSwitchTripped) ||
-		frc::RobotBase::IsSimulation())
+		wpi::RobotBase::IsSimulation())
 	{
 		m_launcherInitialized = true;
 	}
@@ -926,7 +930,7 @@ void Launcher::SetLauncherProtect()
 bool Launcher::IsTurretAtTarget()
 {
 	m_cachedTurretAtTarget = false;
-	if (frc::RobotBase::IsSimulation() && !(GetCurrentState() == STATE_NAMES::STATE_LAUNCHER_TUNING))
+	if (wpi::RobotBase::IsSimulation() && !(GetCurrentState() == STATE_NAMES::STATE_LAUNCHER_TUNING))
 	{
 		return true;
 	}
@@ -934,8 +938,8 @@ bool Launcher::IsTurretAtTarget()
 	{
 		if (m_hasValidTurretAngle)
 		{
-			units::angle::degree_t turretError = m_cachedTurretPosition - m_targetTurretAngle;
-			m_cachedTurretAtTarget = ((units::math::abs(turretError) < m_turretAngleThreshold));
+			wpi::units::angle::degree_t turretError = m_cachedTurretPosition - m_targetTurretAngle;
+			m_cachedTurretAtTarget = ((wpi::units::math::abs(turretError) < m_turretAngleThreshold));
 		}
 	}
 	else
@@ -975,11 +979,11 @@ bool Launcher::IsFinishedLaunching()
 
 void Launcher::UpdateCachedLoggingValues()
 {
-	units::angle::degree_t hoodError = units::angle::degree_t(std::abs((m_cachedHoodPosition - m_targetHoodAngle).value()));
-	units::angular_velocity::revolutions_per_minute_t launcherSpeedError = units::math::abs((m_cachedLauncherVelocity - m_targetLauncherAngularVelocity));
+	wpi::units::angle::degree_t hoodError = wpi::units::angle::degree_t(std::abs((m_cachedHoodPosition - m_targetHoodAngle).value()));
+	wpi::units::angular_velocity::revolutions_per_minute_t launcherSpeedError = wpi::units::math::abs((m_cachedLauncherVelocity - m_targetLauncherAngularVelocity));
 	bool inLaunchzone = IsInLaunchZone();
-	auto chassisSpeeds = m_chassis != nullptr ? m_chassis->GetState().Speeds : frc::ChassisSpeeds();
-	auto Speed = units::math::sqrt(units::math::abs(chassisSpeeds.vx * chassisSpeeds.vx) + units::math::abs(chassisSpeeds.vy * chassisSpeeds.vy));
+	auto chassisSpeeds = m_chassis != nullptr ? m_chassis->GetState().Velocity : wpi::math::ChassisVelocities();
+	auto Speed = wpi::units::math::sqrt(wpi::units::math::abs(chassisSpeeds.vx * chassisSpeeds.vx) + wpi::units::math::abs(chassisSpeeds.vy * chassisSpeeds.vy));
 
 	m_hasValidTurretAngle = m_targetCalculator->IsValidTurretAngle();
 	m_cachedHoodError = (hoodError < m_hoodAngleThreshold);

@@ -18,7 +18,7 @@
 #include "mechanisms/launcher/Launcher.h"
 
 // Unit Includes
-#include "units/angular_velocity.h"
+#include "wpi/units/angular_velocity.hpp"
 
 using namespace LauncherCommands;
 
@@ -26,7 +26,7 @@ static constexpr double m_launcherTarget{0.0};
 static constexpr double m_hoodTarget{-0.15};
 static constexpr double m_transferTarget{0.0};
 static constexpr double m_indexerTarget{0.0};
-static constexpr units::angular_velocity::revolutions_per_minute_t m_spindexerTarget{0.0};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_spindexerTarget{0.0};
 static constexpr double m_turretTarget{-0.075};
 
 LauncherInitializeCommand::LauncherInitializeCommand(Launcher *mechanism) : m_mechanism(mechanism)

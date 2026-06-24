@@ -15,20 +15,20 @@
 
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <cmath>
-#include <algorithm>
 #include <wpi/units/angle.hpp>
+#include <wpi/units/angular_velocity.hpp>
 #include <wpi/units/length.hpp>
 #include <wpi/units/velocity.hpp>
-#include <wpi/units/angular_velocity.hpp>
 #include <wpi/units/voltage.hpp>
 
 class InterpolateUtils
 {
 public:
     /**
-     * @brief Smart interpolation for any types (Units or doubles).
+     * @brief Smart interpolation for any types (wpi::units or doubles).
      * Automatically handles unit wrappers by using .value() for calculations.
      */
     template <typename T, typename U, size_t N>

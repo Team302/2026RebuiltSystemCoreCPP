@@ -213,7 +213,6 @@ void DriverFeedback::UpdateLEDStates()
 
             case Launcher::STATE_IDLE:
             case Launcher::STATE_LAUNCHER_TUNING:
-            case Launcher::STATE_AGITATOR:
             case Launcher::STATE_MANUAL_LAUNCH:
                 desiredPrimaryColor = wpi::util::Color::GREEN;
                 desiredAnimation = DragonCANdle::AnimationMode::SOLID;

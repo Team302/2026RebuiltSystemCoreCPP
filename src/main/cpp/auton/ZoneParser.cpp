@@ -257,7 +257,7 @@ std::pair<ZoneParams *, bool> ZoneParser::ParseXML(string fulldirfile)
                 auto circlePose2d = wpi::math::Pose2d(wpi::units::length::meter_t(circleX), wpi::units::length::meter_t(circleY), wpi::units::degree_t(0));
 
                 std::pair<ZoneParams *, bool> zoneParamPair = std::make_pair(new ZoneParams(circlePose2d,
-                                                                                            units::inch_t(radius),
+                                                                                            wpi::units::inch_t(radius),
                                                                                             xgrid1rect,
                                                                                             xgrid2rect,
                                                                                             ygrid1rect,

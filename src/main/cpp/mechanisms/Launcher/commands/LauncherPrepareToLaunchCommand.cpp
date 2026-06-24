@@ -18,11 +18,11 @@
 #include "mechanisms/launcher/Launcher.h"
 
 // Unit Includes
-#include "units/angular_velocity.h"
+#include "wpi/units/angular_velocity.hpp"
 
 using namespace LauncherCommands;
 
-static constexpr units::angular_velocity::revolutions_per_minute_t m_transferTarget{80.0};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_transferTarget{80.0};
 static constexpr double m_indexerTarget{0.0};
 static constexpr double m_spindexerTarget{0.0};
 

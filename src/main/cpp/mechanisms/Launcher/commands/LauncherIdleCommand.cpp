@@ -17,14 +17,17 @@
 #include "mechanisms/launcher/commands/LauncherIdleCommand.h"
 #include "mechanisms/launcher/Launcher.h"
 
+// Unit Includes
+#include "wpi/units/angular_velocity.hpp"
+
 using namespace LauncherCommands;
 
 static constexpr double m_transferTarget{0.0};
 static constexpr double m_indexerTarget{0.0};
 static constexpr double m_spindexerTarget{0.0};
 
-static constexpr units::angular_velocity::revolutions_per_minute_t m_scoringLauncherTarget{2000};
-static constexpr units::angular_velocity::revolutions_per_minute_t m_passingLauncherTarget{4000};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_scoringLauncherTarget{2000};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_passingLauncherTarget{4000};
 
 LauncherIdleCommand::LauncherIdleCommand(Launcher *mechanism) : m_mechanism(mechanism)
 {

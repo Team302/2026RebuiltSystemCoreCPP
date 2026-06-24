@@ -28,10 +28,10 @@
 ///          reported by the vision system (higher = more ambiguous).
 struct AprilTagSpecificData
 {
-    FieldAprilTagIDs tagID;                    ///< AprilTag ID enum (field reference)
+    FieldAprilTagIDs tagID;                         ///< AprilTag ID enum (field reference)
     wpi::units::length::meter_t distToCamera = 0_m; ///< Distance from camera to tag in meters
     wpi::units::length::meter_t distToRobot = 0_m;  ///< Distance from robot center to tag in meters
-    double ambiguity = 1.0;                    ///< Detection ambiguity/confidence (implementation-specific)
+    double ambiguity = 1.0;                         ///< Detection ambiguity/confidence (implementation-specific)
 };
 
 /// @brief Per-detection data specific to object-detection results (neural or shape detectors).
@@ -40,7 +40,7 @@ struct AprilTagSpecificData
 struct ObjectDectcionSpecificData
 {
     int classID = -1;      ///< Class identifier returned by the detector (-1 = unknown)
-    double corner0X = 0.0; ///< X coordinate of corner 0 (units depend on detector output)
+    double corner0X = 0.0; ///< X coordinate of corner 0 (wpi::units depend on detector output)
     double corner0Y = 0.0; ///< Y coordinate of corner 0
     double corner1X = 0.0; ///< X coordinate of corner 1
     double corner1Y = 0.0; ///< Y coordinate of corner 1
@@ -67,10 +67,10 @@ struct ObjectDectcionSpecificData
 struct DragonVisionStruct
 {
     DragonTargetType targetType = DragonTargetType::UNKNOWN; ///< Detection type enum
-    wpi::units::angle::degree_t horizontalOffset = 0_deg;         ///< Horizontal angular offset to target
-    wpi::units::angle::degree_t verticalOffset = 0_deg;           ///< Vertical angular offset to target
+    wpi::units::angle::degree_t horizontalOffset = 0_deg;    ///< Horizontal angular offset to target
+    wpi::units::angle::degree_t verticalOffset = 0_deg;      ///< Vertical angular offset to target
     double targetAreaPercent = 0.0;                          ///< Target area as reported by vision (fraction)
-    wpi::units::time::millisecond_t pipelineLatency = 0_ms;       ///< Pipeline + capture latency estimate
+    wpi::units::time::millisecond_t pipelineLatency = 0_ms;  ///< Pipeline + capture latency estimate
     AprilTagSpecificData aprilTagData;                       ///< AprilTag-specific values (if targetType==APRIL_TAG)
     ObjectDectcionSpecificData objectDetectionData;          ///< Object-detection-specific values (if targetType==OBJECT_DETECTION)
 };

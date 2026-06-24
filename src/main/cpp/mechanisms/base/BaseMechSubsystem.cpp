@@ -16,10 +16,13 @@
 // C++ Includes
 #include <string>
 
+// FRC Includes
+#include "wpi/commands2/SubsystemBase.hpp"
+
 // Team 302 Includes
 #include "mechanisms/base/BaseMechSubsystem.h"
 
 BaseMechSubsystem::BaseMechSubsystem(MechanismTypes::MECHANISM_TYPE type, std::string networkTableName)
-    : BaseMech(type, networkTableName), frc2::SubsystemBase()
+    : BaseMech(type, networkTableName), wpi::cmd::SubsystemBase()
 {
 }

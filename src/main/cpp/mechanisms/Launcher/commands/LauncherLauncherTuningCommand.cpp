@@ -20,11 +20,11 @@
 #include "utils/logging/debug/Logger.h"
 
 // Unit Includes
-#include "units/angular_velocity.h"
+#include "wpi/units/angular_velocity.hpp"
 
 using namespace LauncherCommands;
 
-units::angular_velocity::revolutions_per_minute_t m_launcherTarget{1000.0};
+wpi::units::angular_velocity::revolutions_per_minute_t m_launcherTarget{1000.0};
 static constexpr double m_hoodTarget{0.0};
 static constexpr double m_transferTarget{0.0};
 static constexpr double m_indexerTarget{0.0};
@@ -61,7 +61,7 @@ void LauncherLauncherTuningCommand::Execute()
         if (m_speedUpButtonReleased)
         {
             m_launcherPercentOut += 0.05;
-            m_launcherTarget += units::angular_velocity::revolutions_per_minute_t(50);
+            m_launcherTarget += wpi::units::angular_velocity::revolutions_per_minute_t(50);
         }
         m_speedUpButtonReleased = false;
     }
@@ -70,7 +70,7 @@ void LauncherLauncherTuningCommand::Execute()
         if (m_speedDownButtonReleased)
         {
             m_launcherPercentOut -= 0.05;
-            m_launcherTarget -= units::angular_velocity::revolutions_per_minute_t(50);
+            m_launcherTarget -= wpi::units::angular_velocity::revolutions_per_minute_t(50);
         }
         m_speedDownButtonReleased = false;
     }
@@ -100,7 +100,7 @@ void LauncherLauncherTuningCommand::Execute()
 
     Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, "LauncherTuningState", "Launcher Target RPM", m_launcherTarget.value());
     Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, "LauncherTuningState", "Launcher Percent Out", m_launcherPercentOut);
-    units::length::inch_t distanceToTarget = RebuiltTargetCalculator::GetInstance()->CalculateMechanismDistanceToTarget();
+    wpi::units::length::inch_t distanceToTarget = RebuiltTargetCalculator::GetInstance()->CalculateMechanismDistanceToTarget();
     Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, "LauncherTuningState", "Distance", distanceToTarget.value());
 }
 

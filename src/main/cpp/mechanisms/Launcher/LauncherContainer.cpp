@@ -16,8 +16,8 @@
 #include "mechanisms/launcher/LauncherContainer.h"
 
 // FRC Includes
-#include <frc2/command/button/RobotModeTriggers.h>
-#include <frc2/command/button/Trigger.h>
+#include "wpi/commands2/button/RobotModeTriggers.hpp"
+#include "wpi/commands2/button/Trigger.hpp"
 
 // Team 302 Includes
 #include "mechanisms/MechanismTypes.h"
@@ -66,7 +66,7 @@ void LauncherContainer::ConfigureBindings()
 
     m_launcher->SetDefaultCommand(m_launcher->GetOffCommand());
 
-    auto considerGamePadTransitions = frc2::RobotModeTriggers::Teleop();
+    auto considerGamePadTransitions = wpi::cmd::RobotModeTriggers::Teleop();
 
     // Consider Gamepad Transitions (Telop)
 

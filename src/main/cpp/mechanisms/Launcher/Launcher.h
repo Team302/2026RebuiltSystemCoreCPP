@@ -141,42 +141,42 @@ public:
         m_turretPercentOut.Output = percentOut;
         m_turretActiveTarget = &m_turretPercentOut;
     }
-    void UpdateTargetSpindexerVelocityLauncher(units::angular_velocity::revolutions_per_minute_t value)
+    void UpdateTargetSpindexerVelocityLauncher(wpi::units::angular_velocity::revolutions_per_minute_t value)
     {
         m_spindexerVelocityLauncher.Velocity = value;
         m_spindexerActiveTarget = &m_spindexerVelocityLauncher.WithSlot(0);
     }
-    void UpdateTargetLauncherVelocityLauncher(units::angular_velocity::revolutions_per_minute_t value)
+    void UpdateTargetLauncherVelocityLauncher(wpi::units::angular_velocity::revolutions_per_minute_t value)
     {
         m_launcherVelocityLauncher.Velocity = value;
         m_launcherActiveTarget = &m_launcherVelocityLauncher.WithSlot(0);
     }
-    void UpdateTargetHoodPositionDegreesHood(units::angle::turn_t value)
+    void UpdateTargetHoodPositionDegreesHood(wpi::units::angle::turn_t value)
     {
         m_hoodPositionDegreesHood.Position = value;
         m_hoodActiveTarget = &m_hoodPositionDegreesHood.WithSlot(0);
     }
-    void UpdateTargetSpindexerPositionTurnSpindexer(units::angle::turn_t position)
+    void UpdateTargetSpindexerPositionTurnSpindexer(wpi::units::angle::turn_t position)
     {
         m_spindexerPositionTurnSpindexer.Position = position;
         m_spindexerActiveTarget = &m_spindexerPositionTurnSpindexer.WithSlot(0);
     }
-    void UpdateTargetTurretPositionDegreesTurret(units::angle::turn_t value)
+    void UpdateTargetTurretPositionDegreesTurret(wpi::units::angle::turn_t value)
     {
         m_turretPositionDegreesTurret.Position = value;
         m_turretActiveTarget = &m_turretPositionDegreesTurret.WithSlot(0);
     }
-    void UpdateTargetTransferVelocityTransfer(units::angular_velocity::revolutions_per_minute_t value)
+    void UpdateTargetTransferVelocityTransfer(wpi::units::angular_velocity::revolutions_per_minute_t value)
     {
         m_transferVelocityTransfer.Velocity = value;
         m_transferActiveTarget = &m_transferVelocityTransfer.WithSlot(0);
     }
-    void UpdateTargetIndexerVelocityIndexer(units::angular_velocity::revolutions_per_minute_t value)
+    void UpdateTargetIndexerVelocityIndexer(wpi::units::angular_velocity::revolutions_per_minute_t value)
     {
         m_indexerVelocityIndexer.Velocity = value;
         m_indexerActiveTarget = &m_indexerVelocityIndexer.WithSlot(0);
     }
-    void UpdateTargetSpindexerVelocitySpindexer(units::angular_velocity::revolutions_per_minute_t value)
+    void UpdateTargetSpindexerVelocitySpindexer(wpi::units::angular_velocity::revolutions_per_minute_t value)
     {
         m_spindexerVelocitySpindexer.Velocity = value;
         m_spindexerActiveTarget = &m_spindexerVelocitySpindexer.WithSlot(0);
@@ -235,7 +235,7 @@ public:
     void InitializeLauncher();
     void SetLauncherProtect();
     bool IsTurretAtTarget();
-    units::angle::degree_t GetTargetTurretAngle() const { return m_targetTurretAngle; }
+    wpi::units::angle::degree_t GetTargetTurretAngle() const { return m_targetTurretAngle; }
     void UpdateTurretEnabled();
     bool IsFinishedLaunching();
     void UpdateCachedLoggingValues();
@@ -248,7 +248,7 @@ public:
     void AgitateSpindexer();
     void InitializeSpindexerTargets();
     void TurretHasReset(bool turretHasReset) { m_turretHasReset = turretHasReset; }
-    units::length::inch_t GetDistanceToTarget() { return m_distanceToTarget; };
+    wpi::units::length::inch_t GetDistanceToTarget() { return m_distanceToTarget; };
 
 protected:
     RobotIdentifier m_activeRobotId;
@@ -321,12 +321,12 @@ private:
     ctre::phoenix6::controls::ControlRequest *m_turretActiveTarget = &m_turretPercentOut;
 
     // Cached Sensor Values
-    units::angular_velocity::revolutions_per_minute_t m_cachedLauncherVelocityLauncher = units::angular_velocity::revolutions_per_minute_t(0.0);
-    units::angle::turn_t m_cachedHoodPositionDegreesHood = units::angle::turn_t(0.0);
-    units::angular_velocity::revolutions_per_minute_t m_cachedTransferVelocityTransfer = units::angular_velocity::revolutions_per_minute_t(0.0);
-    units::angular_velocity::revolutions_per_minute_t m_cachedIndexerVelocityIndexer = units::angular_velocity::revolutions_per_minute_t(0.0);
-    units::angular_velocity::revolutions_per_minute_t m_cachedSpindexerVelocityLauncher = units::angular_velocity::revolutions_per_minute_t(0.0);
-    units::angle::turn_t m_cachedTurretPositionDegreesTurret = units::angle::turn_t(0.0);
+    wpi::units::angular_velocity::revolutions_per_minute_t m_cachedLauncherVelocityLauncher = wpi::units::angular_velocity::revolutions_per_minute_t(0.0);
+    wpi::units::angle::turn_t m_cachedHoodPositionDegreesHood = wpi::units::angle::turn_t(0.0);
+    wpi::units::angular_velocity::revolutions_per_minute_t m_cachedTransferVelocityTransfer = wpi::units::angular_velocity::revolutions_per_minute_t(0.0);
+    wpi::units::angular_velocity::revolutions_per_minute_t m_cachedIndexerVelocityIndexer = wpi::units::angular_velocity::revolutions_per_minute_t(0.0);
+    wpi::units::angular_velocity::revolutions_per_minute_t m_cachedSpindexerVelocityLauncher = wpi::units::angular_velocity::revolutions_per_minute_t(0.0);
+    wpi::units::angle::turn_t m_cachedTurretPositionDegreesTurret = wpi::units::angle::turn_t(0.0);
 
     void RefreshCachedData();
 
@@ -360,56 +360,55 @@ private:
     bool m_startLaunching = false;
     bool m_isIntaking = false;
 
-    units::angle::degree_t m_targetTurretAngle = 90.0_deg;
-    units::angular_velocity::revolutions_per_minute_t m_targetLauncherAngularVelocity = 0.0_rpm;
-    units::angle::turn_t m_targetHoodAngle = 0.0_tr;
-    units::angle::turn_t m_minHoodAngle = 0.0_tr;
-    units::angle::turn_t m_maxHoodAngle = 30.0_tr;
-    units::angle::turn_t m_minTurretAngle = 90_tr;
-    units::angle::turn_t m_maxTurretAngle = 268_tr;
-    units::angle::degree_t m_turretAngleThreshold = 5.0_deg;
-    units::angular_velocity::revolutions_per_minute_t m_launcherVelocityThreshold = 150.0_rpm;
-    units::angle::turn_t m_hoodAngleThreshold = 0.5_tr;
-    units::velocity::meters_per_second_t m_chassisSpeedThreshold = 3.0_mps;
-    units::angle::turn_t m_minTurretSoftLimit{93};
-    units::angle::turn_t m_maxTurretSoftLimit{265};
+    wpi::units::angle::degree_t m_targetTurretAngle = 90.0_deg;
+    wpi::units::angular_velocity::revolutions_per_minute_t m_targetLauncherAngularVelocity = 0.0_rpm;
+    wpi::units::angle::turn_t m_targetHoodAngle = 0.0_tr;
+    wpi::units::angle::turn_t m_minHoodAngle = 0.0_tr;
+    wpi::units::angle::turn_t m_maxHoodAngle = 30.0_tr;
+    wpi::units::angle::turn_t m_minTurretAngle = 90_tr;
+    wpi::units::angle::turn_t m_maxTurretAngle = 268_tr;
+    wpi::units::angle::degree_t m_turretAngleThreshold = 5.0_deg;
+    wpi::units::angular_velocity::revolutions_per_minute_t m_launcherVelocityThreshold = 150.0_rpm;
+    wpi::units::angle::turn_t m_hoodAngleThreshold = 0.5_tr;
+    wpi::units::velocity::meters_per_second_t m_chassisSpeedThreshold = 3.0_mps;
+    wpi::units::angle::turn_t m_minTurretSoftLimit{93};
+    wpi::units::angle::turn_t m_maxTurretSoftLimit{265};
 
     RebuiltTargetCalculator *m_targetCalculator;
     subsystems::CommandSwerveDrivetrain *m_chassis;
 
     void CalculateTargets();
-    void RefreshCachedMotorData();
 
     bool m_launcherInitialized = false;
     bool m_tuningLauncher = false;
 
     // All values in turns are actually Degree's
     // MECH_TODO: Need to verify values after 116 inches, may need to add more points on both sides
-    static constexpr std::array<units::length::inch_t, 11> m_scoringDistanceArray = {50.0_in, 80.0_in, 110.0_in, 130.0_in, 140_in, 150_in, 170.0_in, 200.0_in, 230.0_in, 260.0_in, 290.0_in};
-    static constexpr std::array<units::angle::turn_t, 11> m_scoringHoodAngleArray = {0.0_tr, 8.0_tr, 15.2_tr, 18_tr, 19_tr, 20_tr, 21.8_tr, 24.4_tr, 25.5_tr, 30.0_tr, 30.0_tr};
-    static constexpr std::array<units::angular_velocity::revolutions_per_minute_t, 11> m_scoringLauncherVelocityArray = {2000.0_rpm, 2050.0_rpm, 2150.0_rpm, 2350.0_rpm, 2375_rpm, 2475_rpm, 2600.0_rpm, 2850.0_rpm, 3200.0_rpm, 3525.0_rpm, 3950.0_rpm};
+    inline static const std::array<wpi::units::length::inch_t, 11> m_scoringDistanceArray = {50.0_in, 80.0_in, 110.0_in, 130.0_in, 140_in, 150_in, 170.0_in, 200.0_in, 230.0_in, 260.0_in, 290.0_in};
+    inline static const std::array<wpi::units::angle::turn_t, 11> m_scoringHoodAngleArray = {0.0_tr, 8.0_tr, 15.2_tr, 18_tr, 19_tr, 20_tr, 21.8_tr, 24.4_tr, 25.5_tr, 30.0_tr, 30.0_tr};
+    inline static const std::array<wpi::units::angular_velocity::revolutions_per_minute_t, 11> m_scoringLauncherVelocityArray = {2000.0_rpm, 2050.0_rpm, 2150.0_rpm, 2350.0_rpm, 2375_rpm, 2475_rpm, 2600.0_rpm, 2850.0_rpm, 3200.0_rpm, 3525.0_rpm, 3950.0_rpm};
 
-    static constexpr std::array<units::length::foot_t, 8> m_passingDistanceArray = {10.0_ft, 16.66666667_ft, 20.0_ft, 23.08333333_ft, 26.33333333_ft, 30.0_ft, 35.0_ft, 42.33333333_ft};
-    static constexpr std::array<units::angle::turn_t, 8> m_passingHoodAngleArray = {23.5_tr, 23.5_tr, 23.5_tr, 29.7_tr, 30.0_tr, 30.0_tr, 30.0_tr, 30.0_tr};
-    static constexpr std::array<units::angular_velocity::revolutions_per_minute_t, 8> m_passingLauncherVelocityArray = {1900.0_rpm, 2150.0_rpm, 2450.0_rpm, 2500.0_rpm, 3000.0_rpm, 3600.0_rpm, 4300.0_rpm, 5500.0_rpm};
+    inline static const std::array<wpi::units::length::foot_t, 8> m_passingDistanceArray = {10.0_ft, 16.66666667_ft, 20.0_ft, 23.08333333_ft, 26.33333333_ft, 30.0_ft, 35.0_ft, 42.33333333_ft};
+    inline static const std::array<wpi::units::angle::turn_t, 8> m_passingHoodAngleArray = {23.5_tr, 23.5_tr, 23.5_tr, 29.7_tr, 30.0_tr, 30.0_tr, 30.0_tr, 30.0_tr};
+    inline static const std::array<wpi::units::angular_velocity::revolutions_per_minute_t, 8> m_passingLauncherVelocityArray = {1900.0_rpm, 2150.0_rpm, 2450.0_rpm, 2500.0_rpm, 3000.0_rpm, 3600.0_rpm, 4300.0_rpm, 5500.0_rpm};
     // All values in turns are actually Degree's
 
     // Cached motor status signals for performance optimization
     // These are refreshed once per loop in RunCommonTasks() to avoid multiple CAN bus queries
-    units::angular_velocity::turns_per_second_t m_cachedLauncherVelocity = 0.0_tps;
-    units::angle::turn_t m_cachedHoodPosition = 0.0_tr;
-    units::angle::degree_t m_cachedTurretPosition = 0.0_deg;
-    units::current::ampere_t m_cachedLauncherCurrent = 0.0_A;
+    wpi::units::angular_velocity::turns_per_second_t m_cachedLauncherVelocity = 0.0_tps;
+    wpi::units::angle::turn_t m_cachedHoodPosition = 0.0_tr;
+    wpi::units::angle::degree_t m_cachedTurretPosition = 0.0_deg;
+    wpi::units::current::ampere_t m_cachedLauncherCurrent = 0.0_A;
 
-    units::angle::turn_t m_passingHoodTargetAngle = 25.0_tr;
-    units::angular_velocity::revolutions_per_minute_t m_passingLauncherTargetVelocity = 2500.0_rpm;
+    wpi::units::angle::turn_t m_passingHoodTargetAngle = 25.0_tr;
+    wpi::units::angular_velocity::revolutions_per_minute_t m_passingLauncherTargetVelocity = 2500.0_rpm;
 
     bool m_turretEnabled = true;
     bool m_turretEnabledButtonReleased = true;
 
-    units::current::ampere_t m_isLaunchingCurrentThreshold = 21.0_A;
-    frc::Timer m_launchCurrentTimer;
-    units::time::second_t m_isLaunchingTimeThreshold = 1.0_s;
+    wpi::units::current::ampere_t m_isLaunchingCurrentThreshold = 21.0_A;
+    wpi::Timer m_launchCurrentTimer;
+    wpi::units::time::second_t m_isLaunchingTimeThreshold = 1.0_s;
     bool m_hasValidTurretAngle = false;
     bool m_cachedHoodError = false;
     bool m_cachedLauncherSpeedError = false;
@@ -421,9 +420,9 @@ private:
     DeadZoneManager *m_deadZoneManager;
 
     // Agitate Spindexer
-    units::angle::degree_t m_minSpindexerTarget;
-    units::angle::degree_t m_maxSpindexerTarget;
+    wpi::units::angle::degree_t m_minSpindexerTarget;
+    wpi::units::angle::degree_t m_maxSpindexerTarget;
     bool m_minReached;
-    static constexpr units::angle::degree_t m_spindexerTargetAng{30};
-    units::length::inch_t m_distanceToTarget{0.0};
+    static constexpr wpi::units::angle::degree_t m_spindexerTargetAng{30};
+    wpi::units::length::inch_t m_distanceToTarget{0.0};
 };

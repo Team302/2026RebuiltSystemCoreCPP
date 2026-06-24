@@ -17,16 +17,15 @@
 
 #include "mechanisms/intake/commands/IntakeLaunchCommand.h"
 #include "mechanisms/intake/Intake.h"
-
-#include <frc/DriverStation.h>
+#include "wpi/framework/RobotBase.hpp"
 
 // Unit Includes
-#include <units/angle.h>
+#include "wpi/units/angle.hpp"
 
 using namespace IntakeCommands;
 
 static constexpr double m_intakeTarget{1.0};
-static constexpr units::angle::turn_t m_extenderTarget{20.0_tr};
+static constexpr wpi::units::angle::turn_t m_extenderTarget{20.0};
 
 IntakeLaunchCommand::IntakeLaunchCommand(Intake *mechanism) : m_mechanism(mechanism)
 {
@@ -64,7 +63,7 @@ bool IntakeLaunchCommand::IsFinished()
 void IntakeLaunchCommand::BumpIntake()
 {
     // Periodically "bump" the extender during autonomous launching (moved from LaunchState).
-    if ((m_bumpCounter > m_counterMax) && frc::DriverStation::IsAutonomous())
+    if ((m_bumpCounter > m_counterMax) && wpi::RobotBase::IsAutonomous())
     {
         m_currentExtenderBumpTarget = (m_currentExtenderBumpTarget > 0) ? m_extenderTargetDown : m_extenderTargetUp;
         m_mechanism->UpdateTargetExtenderPercentOut(m_currentExtenderBumpTarget);

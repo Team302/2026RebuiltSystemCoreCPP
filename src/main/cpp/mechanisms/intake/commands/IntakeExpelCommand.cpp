@@ -18,12 +18,12 @@
 #include "mechanisms/intake/Intake.h"
 
 // Unit Includes
-#include <units/angle.h>
+#include "wpi/units/angle.hpp"
 
 using namespace IntakeCommands;
 
 static constexpr double m_intakeTarget{-1.0};
-static constexpr units::angle::turn_t m_extenderTarget{-0.5};
+static constexpr wpi::units::angle::turn_t m_extenderTarget{-0.5};
 
 IntakeExpelCommand::IntakeExpelCommand(Intake *mechanism) : m_mechanism(mechanism)
 {

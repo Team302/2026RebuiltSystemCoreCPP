@@ -108,7 +108,7 @@ public:
 		m_extenderPercentOut.Output = percentOut;
 		m_extenderActiveTarget = &m_extenderPercentOut;
 	}
-	void UpdateTargetExtenderPositionDeg(units::angle::turn_t position)
+	void UpdateTargetExtenderPositionDeg(wpi::units::angle::turn_t position)
 	{
 		m_extenderPositionDeg.Position = position;
 		m_extenderActiveTarget = &m_extenderPositionDeg.WithSlot(0);
@@ -147,7 +147,7 @@ public:
 	bool HasBeenEnabled() const { return m_hasEnabled; }
 	void SetHasBeenEnabled(bool hasEnabled) { m_hasEnabled = hasEnabled; }
 	bool IsLaunching() const { return m_isLaunching; }
-	units::angle::turn_t GetCahcedExtenderPositionDegrees() { return m_cachedExtenderPositionDeg; };
+	wpi::units::angle::turn_t GetCahcedExtenderPositionDegrees() { return m_cachedExtenderPositionDeg; };
 
 protected:
 	RobotIdentifier m_activeRobotId;
@@ -203,11 +203,11 @@ private:
 	bool m_prevIntakeSwitchState = false;
 	bool m_hasEnabled = false;
 
-	units::angle::turn_t m_intakeRetractedPositionTarget{80.0};
-	units::angle::turn_t m_intakeExtendedPositionTarget{0.0};
-	units::angle::turn_t m_cachedExtenderPositionDeg{0.0};
+	wpi::units::angle::turn_t m_intakeRetractedPositionTarget{80.0};
+	wpi::units::angle::turn_t m_intakeExtendedPositionTarget{0.0};
+	wpi::units::angle::turn_t m_cachedExtenderPositionDeg{0.0};
 
 	static constexpr double m_percentModifier = 0.5;
-	static constexpr units::angle::turn_t m_protectExtenderPositionDegDown{-20.0};
-	static constexpr units::angle::turn_t m_protectExtenderPositionDegUp{50.0};
+	static constexpr wpi::units::angle::turn_t m_protectExtenderPositionDegDown{-20.0};
+	static constexpr wpi::units::angle::turn_t m_protectExtenderPositionDegUp{50.0};
 };

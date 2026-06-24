@@ -16,8 +16,7 @@
 
 #include "mechanisms/intake/commands/IntakeOffCommand.h"
 #include "mechanisms/intake/Intake.h"
-
-#include "frc/DriverStation.h"
+#include "wpi/framework/RobotBase.hpp"
 
 using namespace IntakeCommands;
 static constexpr double m_intakeTarget{0.0};
@@ -41,17 +40,17 @@ void IntakeOffCommand::Initialize()
 void IntakeOffCommand::Execute()
 {
     // First time the robot is enabled, zero/reset the extender (was OffState::Run()).
-    if (frc::DriverStation::IsEnabled() && !m_mechanism->HasBeenEnabled())
+    if (wpi::RobotBase::IsEnabled() && !m_mechanism->HasBeenEnabled())
     {
         m_mechanism->SetHasBeenEnabled(true);
-        if (frc::DriverStation::IsTeleop())
+        if (wpi::RobotBase::IsTeleop())
         {
             m_mechanism->UpdateTargetExtenderPercentOut(0.0);
-            m_mechanism->GetExtenderTalonFXS()->SetPosition(units::angle::turn_t(0.0));
+            m_mechanism->GetExtenderTalonFXS()->SetPosition(wpi::units::angle::turn_t(0.0));
         }
         else
         {
-            m_mechanism->UpdateTargetExtenderPositionDeg(units::angle::turn_t(0.0));
+            m_mechanism->UpdateTargetExtenderPositionDeg(wpi::units::angle::turn_t(0.0));
         }
     }
 }

@@ -17,17 +17,18 @@
 #include "mechanisms/launcher/commands/LauncherLaunchCommand.h"
 #include "mechanisms/launcher/Launcher.h"
 #include "teleopcontrol/TeleopControl.h"
+#include "wpi/framework/RobotBase.hpp"
 
 // Unit Includes
-#include "units/angular_velocity.h"
+#include "wpi/units/angular_velocity.hpp"
 
 using namespace LauncherCommands;
 
-static constexpr units::angular_velocity::revolutions_per_minute_t m_transferTarget{80.0};
-static constexpr units::angular_velocity::revolutions_per_minute_t m_indexerTarget{25.0};
-static constexpr units::angular_velocity::revolutions_per_minute_t m_spindexerTarget{22.0};
-static constexpr units::angular_velocity::turns_per_second_t m_passingTransferTarget{160};
-static constexpr units::angular_velocity::turns_per_second_t m_passingIndexerTarget{50};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_transferTarget{80.0};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_indexerTarget{25.0};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_spindexerTarget{22.0};
+static constexpr wpi::units::angular_velocity::turns_per_second_t m_passingTransferTarget{160};
+static constexpr wpi::units::angular_velocity::turns_per_second_t m_passingIndexerTarget{50};
 
 LauncherLaunchCommand::LauncherLaunchCommand(Launcher *mechanism) : m_mechanism(mechanism)
 {
@@ -62,7 +63,7 @@ void LauncherLaunchCommand::Execute()
     if (!TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::LAUNCH) &&
         !TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::LAUNCH_OVERRIDE) &&
         !TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::MANUAL_LAUNCH) &&
-        frc::DriverStation::IsTeleop())
+        wpi::RobotBase::IsTeleop())
     {
         m_mechanism->UpdateTargetSpindexerPercentOut(0.0);
     }
