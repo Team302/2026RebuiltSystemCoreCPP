@@ -65,4 +65,4 @@ jobs:
             -w /workspace \
             -e GRADLE_USER_HOME=/workspace/.gradle-home \
             wpilib/roborio-cross-ubuntu:2025-22.04 \
-            ./gradlew checkWpilibUserProgramLinuxx86-64ReleaseExecutable --no-daemon --build-cache
+            ./gradlew build --no-daemon --build-cache
