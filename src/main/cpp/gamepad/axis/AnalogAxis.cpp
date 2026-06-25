@@ -60,7 +60,7 @@ AnalogAxis::AnalogAxis(
 
 double AnalogAxis::GetAxisValue()
 {
-    if (m_gamepad != nullptr)
+    if (m_gamepad != nullptr && m_gamepad->IsConnected())
     {
         auto value = m_gamepad->GetRawAxis(m_axis);
         m_deadband->ApplyDeadband(value);

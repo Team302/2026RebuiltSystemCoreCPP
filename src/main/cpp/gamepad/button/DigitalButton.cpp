@@ -45,7 +45,7 @@ DigitalButton::DigitalButton(
 //==================================================================================
 bool DigitalButton::IsButtonPressed() const
 {
-    if (m_gamepad != nullptr)
+    if (m_gamepad != nullptr && m_gamepad->IsConnected())
     {
         return m_gamepad->GetRawButton(m_button);
     }
@@ -55,7 +55,7 @@ bool DigitalButton::IsButtonPressed() const
 
 bool DigitalButton::WasButtonReleased() const
 {
-    if (m_gamepad != nullptr)
+    if (m_gamepad != nullptr && m_gamepad->IsConnected())
     {
         return m_gamepad->GetRawButtonReleased(m_button);
     }
@@ -65,7 +65,7 @@ bool DigitalButton::WasButtonReleased() const
 
 bool DigitalButton::WasButtonPressed() const
 {
-    if (m_gamepad != nullptr)
+    if (m_gamepad != nullptr && m_gamepad->IsConnected())
     {
         return m_gamepad->GetRawButtonPressed(m_button);
     }
