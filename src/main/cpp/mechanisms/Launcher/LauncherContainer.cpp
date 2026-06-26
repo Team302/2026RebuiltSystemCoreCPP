@@ -65,71 +65,114 @@ void LauncherContainer::ConfigureBindings()
         return;
     }
 
-    m_launcher->SetDefaultCommand(m_launcher->GetIdleCommand().IgnoringDisable(true));
+    //==============================================================================================
+    // Binding table.
+    //
+    // One line per command. The transition logic for each command lives in its matching
+    // Get<Command>Trigger() method further down, so this table stays a flat, readable list and the
+    // per-command conditions can be regenerated/edited in isolation. Each command picks the binding
+    // flavor that fits it:
+    //
+    //   .WhileTrue(cmd) - "held" command: scheduled on the condition's false->true edge, CANCELLED on
+    //                     its true->false edge. Falls back to the default command the moment the
+    //                     condition stops being true.
+    //   .OnTrue(cmd)    - "self-governing" command: scheduled on the false->true edge, then left alone.
+    //                     Runs until its OWN IsFinished() returns true (or another command interrupts by
+    //                     requiring the subsystem).
+    //
+    // The resting state is bound as the subsystem's DEFAULT command - it runs whenever no other command
+    // requires the subsystem.
+    //==============================================================================================
 
-    Launcher *launcher = m_launcher;
+    if (m_launcher->IsTuningLauncherMode()) // Later can get rid of tuning mode and use opModes
+    {
+        m_launcher->SetDefaultCommand(m_launcher->GetLauncherTuningCommand().IgnoringDisable(true));
+    }
+    else
+    {
+        m_launcher->SetDefaultCommand(m_launcher->GetIdleCommand().IgnoringDisable(true));
+    }
 
-    // NOTE on WhileTrue semantics: a Trigger only SCHEDULES on a false->true edge and only CANCELS on a
-    // true->false edge. So unlike the old StateMgr (which polled an "enter this state" condition against
-    // the CURRENT state), every condition below is written as a "should I be running this command right
-    // now" HOLDING condition. That makes the edges line up: when the desired command changes, the old
-    // command's condition falls (cancel) and the new command's condition rises (schedule) in the same loop.
+    GetLauncherOffTrigger().WhileTrue(m_launcher->GetLauncherOffCommand().IgnoringDisable(true));
 
-    // --- Off (protected mode) -------------------------------------------------------------------------
-    // Highest priority. Every other condition is gated on !IsLauncherInProtectedMode() so Off always wins.
-    wpi::cmd::Trigger off([launcher]()
-                          { return launcher->IsLauncherInProtectedMode(); });
-    off.WhileTrue(m_launcher->GetOffCommand().IgnoringDisable(true));
-
-    // Cold-start edge for OFF->INITIALIZE (already true at bind time, so it needs a one-shot kick).
-    if (!m_launcher->IsLauncherInProtectedMode() && !m_launcher->IsLauncherInitialized())
+    auto initialize = GetInitializeTrigger();
+    if (initialize.Get())
     {
         wpi::cmd::CommandScheduler::GetInstance().Schedule(m_launcher->GetInitializeCommand().IgnoringDisable(true));
     }
 
-    // --- Manual launch --------------------------------------------------------------------------------
-    // Old ManualLaunchState: enter while the MANUAL_LAUNCH button is held; leave (to Idle) when released.
-    wpi::cmd::Trigger manualLaunch([launcher]()
-                                   { return !launcher->IsLauncherInProtectedMode() &&
-                                            TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::MANUAL_LAUNCH); });
-    manualLaunch.WhileTrue(m_launcher->GetManualLaunchCommand());
+    GetManualLaunchTrigger().WhileTrue(m_launcher->GetManualLaunchCommand());
 
-    // --- Launcher tuning ------------------------------------------------------------------------------
-    // Old LauncherTuningState: stay while IsTuningLauncherMode(). It hands off to Launch when the override
-    // launch button is pressed (LAUNCH_OVERRIDE && !EXTENDER_MODIFIER), so exclude that case here - when
-    // the override is pressed the tuning condition falls (cancel tuning) and the launch condition rises.
-    wpi::cmd::Trigger tuning([launcher]()
-                             {
-        auto tc = TeleopControl::GetInstance();
-        bool overrideToLaunch = tc->IsButtonPressed(TeleopControlFunctions::LAUNCH_OVERRIDE) &&
-                                !tc->IsButtonPressed(TeleopControlFunctions::EXTENDER_MODIFIER);
-        return !launcher->IsLauncherInProtectedMode() &&
-               launcher->IsTuningLauncherMode() &&
-               !overrideToLaunch; });
-    tuning.WhileTrue(m_launcher->GetLauncherTuningCommand());
+    GetPrepareToLaunchTrigger().WhileTrue(m_launcher->GetPrepareToLaunchCommand());
+    GetLaunchTrigger().OnTrue(m_launcher->GetLaunchCommand());
 
-    // --- Prepare to launch ----------------------------------------------------------------------------
-    // Normal operation (not tuning): hold the LAUNCH button to spin up in PrepareToLaunch until we are at
-    // target. The !IsLauncherAtTarget() term is what sends us BACK to Prepare from Launch if we fall off
-    // target while still holding LAUNCH (this rises again, interrupting Launch).
-    wpi::cmd::Trigger prepare([launcher]()
-                              { return !launcher->IsLauncherInProtectedMode() &&
-                                       !launcher->IsTuningLauncherMode() &&
-                                       TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::LAUNCH) &&
-                                       !launcher->IsLauncherAtTarget(); });
-    prepare.WhileTrue(m_launcher->GetPrepareToLaunchCommand());
+    Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, std::string("LauncherContainer"), std::string("Configured"), std::string("Launcher"));
+}
 
-    // --- Launch ---------------------------------------------------------------------------------------
+//==================================================================================================
+// Per-command transition triggers
+//==================================================================================================
+
+wpi::cmd::Trigger LauncherContainer::GetLauncherOffTrigger()
+{
+    // --- Off (protected mode) ---------------------------------------------------------------------
+    // Highest priority. Every other trigger is gated on !IsLauncherInProtectedMode() so Off wins.
+    Launcher *launcher = m_launcher;
+    return wpi::cmd::Trigger([launcher]()
+                             { return launcher->IsLauncherInProtectedMode(); });
+}
+
+wpi::cmd::Trigger LauncherContainer::GetInitializeTrigger()
+{
+    // --- Initialize -------------------------------------------------------------------------------
+    // Run the homing routine from boot until the launcher reports initialized. The command self-finishes
+    // (LauncherInitializeCommand::IsFinished() == IsLauncherInitialized()), so when initialization
+    // completes the command ends and the default Idle command takes over. The holding condition stays
+    // true the whole time it should run so WhileTrue and IsFinished() agree.
+    Launcher *launcher = m_launcher;
+    return wpi::cmd::Trigger([launcher]()
+                             { return !launcher->IsLauncherInProtectedMode() &&
+                                      !launcher->IsLauncherInitialized(); });
+}
+
+wpi::cmd::Trigger LauncherContainer::GetManualLaunchTrigger()
+{
+    // --- Manual launch ----------------------------------------------------------------------------
+    // Old ManualLaunchState: run while the MANUAL_LAUNCH button is held; fall back to Idle on release.
+    Launcher *launcher = m_launcher;
+    return wpi::cmd::Trigger([launcher]()
+                             { return !launcher->IsLauncherInProtectedMode() &&
+                                      TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::MANUAL_LAUNCH); });
+}
+
+wpi::cmd::Trigger LauncherContainer::GetPrepareToLaunchTrigger()
+{
+    // --- Prepare to launch ------------------------------------------------------------------------
+    // Normal operation (not tuning): hold the LAUNCH button to spin up in PrepareToLaunch until we are
+    // at target. The !IsLauncherAtTarget() term is what sends us BACK to Prepare from Launch if we fall
+    // off target while still holding LAUNCH (this rises again, interrupting Launch).
+    Launcher *launcher = m_launcher;
+    return wpi::cmd::Trigger([launcher]()
+                             { return !launcher->IsLauncherInProtectedMode() &&
+                                      !launcher->IsTuningLauncherMode() &&
+                                      TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::LAUNCH) &&
+                                      !launcher->IsLauncherAtTarget(); });
+}
+
+wpi::cmd::Trigger LauncherContainer::GetLaunchTrigger()
+{
+    // --- Launch -----------------------------------------------------------------------------------
     // Two ways in, matching the old LaunchState:
     //   1. Normal: holding LAUNCH (not tuning) once we ARE at target -> mutually exclusive with Prepare.
-    //   2. Override: LAUNCH_OVERRIDE && !EXTENDER_MODIFIER -> the path out of LauncherTuning, also forces a
-    //      launch from PrepareToLaunch regardless of at-target.
+    //   2. Override: LAUNCH_OVERRIDE && !EXTENDER_MODIFIER -> the path out of LauncherTuning, also forces
+    //      a launch from PrepareToLaunch regardless of at-target.
     // Bound with OnTrue (NOT WhileTrue): once scheduled, Launch is NOT cancelled when this condition goes
     // false. It is self-governing - it runs until LauncherLaunchCommand::IsFinished() returns true (launch
     // buttons released for the debounce window, or auton launch detector) or until another command
     // (Prepare when we fall off target while still holding LAUNCH, or Off) interrupts by requiring the
     // subsystem. This is what prevents bouncing straight back to Idle the instant the condition drops.
-    wpi::cmd::Trigger launch([launcher]()
+    Launcher *launcher = m_launcher;
+    return wpi::cmd::Trigger([launcher]()
                              {
         auto tc = TeleopControl::GetInstance();
         bool overrideToLaunch = tc->IsButtonPressed(TeleopControlFunctions::LAUNCH_OVERRIDE) &&
@@ -138,7 +181,4 @@ void LauncherContainer::ConfigureBindings()
                           tc->IsButtonPressed(TeleopControlFunctions::LAUNCH) &&
                           launcher->IsLauncherAtTarget();
         return !launcher->IsLauncherInProtectedMode() && (autoLaunch || overrideToLaunch); });
-    launch.OnTrue(m_launcher->GetLaunchCommand());
-
-    Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, std::string("LauncherContainer"), std::string("Configured"), std::string("Launcher"));
 }

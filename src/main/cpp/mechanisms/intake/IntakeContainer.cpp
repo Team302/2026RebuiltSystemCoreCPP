@@ -63,25 +63,76 @@ void IntakeContainer::ConfigureBindings()
         return;
     }
 
-    m_intake->SetDefaultCommand(m_intake->GetOffCommand());
+    //==============================================================================================
+    // Binding table.
+    //
+    // One line per command. The transition logic for each command lives in its matching
+    // Get<Command>Trigger() method further down, so this table stays a flat, readable list and the
+    // per-command conditions can be regenerated/edited in isolation. Each command picks the binding
+    // flavor that fits it:
+    //
+    //   .WhileTrue(cmd) - "held" command: scheduled on the condition's false->true edge, CANCELLED on
+    //                     its true->false edge. Falls back to the default command the moment the
+    //                     condition stops being true.
+    //   .OnTrue(cmd)    - "self-governing" command: scheduled on the false->true edge, then left alone.
+    //                     Runs until its OWN IsFinished() returns true (or another command interrupts by
+    //                     requiring the subsystem).
+    //
+    // The resting state is bound as the subsystem's DEFAULT command - it runs whenever no other command
+    // requires the subsystem.
+    //==============================================================================================
+    m_intake->SetDefaultCommand(m_intake->GetIntakeOffCommand());
 
-    auto considerGamePadTransitions = wpi::cmd::RobotModeTriggers::Teleop();
-
-    auto intakeButton = controller->GetCommandTrigger(TeleopControlFunctions::INTAKE);
-    auto expelButton = controller->GetCommandTrigger(TeleopControlFunctions::EXPEL);
-    auto loadHopperButton = controller->GetCommandTrigger(TeleopControlFunctions::DRIVE_TO_OUTPOST);
-
-    // Consider Gamepad Transitions (Telop)
-    Intake *intake = m_intake;
-
-    (intakeButton && considerGamePadTransitions).WhileTrue(m_intake->GetIntakeCommand());
-    (expelButton && considerGamePadTransitions).WhileTrue(m_intake->GetExpelCommand());
-    (loadHopperButton && considerGamePadTransitions).WhileTrue(m_intake->GetLoadHopperCommand());
-
-    // Sensor Transitions (Auton + Telop)
-    wpi::cmd::Trigger launching([intake, intakeButton]()
-                                { return intake->IsLaunching() && intakeButton.Get(); });
-    launching.WhileTrue(m_intake->GetLaunchCommand());
+    GetIntakeTrigger().WhileTrue(m_intake->GetIntakeCommand());
+    GetExpelTrigger().WhileTrue(m_intake->GetExpelCommand());
+    GetLoadHopperTrigger().WhileTrue(m_intake->GetLoadHopperCommand());
+    GetLaunchTrigger().WhileTrue(m_intake->GetLaunchCommand());
 
     Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, std::string("IntakeContainer"), std::string("Configured"), std::string("Intake"));
+}
+
+//==================================================================================================
+// Per-command transition triggers
+//==================================================================================================
+
+wpi::cmd::Trigger IntakeContainer::GetIntakeTrigger()
+{
+    // --- Intake -----------------------------------------------------------------------------------
+    // Run while the INTAKE button is held (teleop only); fall back to Off on release.
+    Intake *intake = m_intake;
+    return wpi::cmd::RobotModeTriggers::Teleop() &&
+           wpi::cmd::Trigger([intake]()
+                             { return TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::INTAKE); });
+}
+
+wpi::cmd::Trigger IntakeContainer::GetExpelTrigger()
+{
+    // --- Expel ------------------------------------------------------------------------------------
+    // Run while the EXPEL button is held (teleop only); fall back to Off on release.
+    Intake *intake = m_intake;
+    return wpi::cmd::RobotModeTriggers::Teleop() &&
+           wpi::cmd::Trigger([intake]()
+                             { return TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::EXPEL); });
+}
+
+wpi::cmd::Trigger IntakeContainer::GetLoadHopperTrigger()
+{
+    // --- Load hopper ------------------------------------------------------------------------------
+    // Run while the DRIVE_TO_OUTPOST (load hopper) button is held (teleop only); fall back to Off on
+    // release.
+    Intake *intake = m_intake;
+    return wpi::cmd::RobotModeTriggers::Teleop() &&
+           wpi::cmd::Trigger([intake]()
+                             { return TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::DRIVE_TO_OUTPOST); });
+}
+
+wpi::cmd::Trigger IntakeContainer::GetLaunchTrigger()
+{
+    // --- Launch -----------------------------------------------------------------------------------
+    // Sensor transition (auton + teleop, so NOT gated on teleop): feed the launcher while it reports
+    // it is launching AND the INTAKE button is held. Falls back to Off when either drops.
+    Intake *intake = m_intake;
+    return wpi::cmd::Trigger([intake]()
+                             { return intake->IsLaunching() &&
+                                      !TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::INTAKE); });
 }

@@ -79,7 +79,7 @@ public:
     // void DataLog(uint64_t timestamp) override;
 
     // Command Getters
-    wpi::cmd::CommandPtr GetOffCommand() { return LauncherCommands::LauncherOffCommand(this).ToPtr(); }
+    wpi::cmd::CommandPtr GetLauncherOffCommand() { return LauncherCommands::LauncherOffCommand(this).ToPtr(); }
     wpi::cmd::CommandPtr GetInitializeCommand() { return LauncherCommands::LauncherInitializeCommand(this).ToPtr(); }
     wpi::cmd::CommandPtr GetIdleCommand() { return LauncherCommands::LauncherIdleCommand(this).ToPtr(); }
     wpi::cmd::CommandPtr GetPrepareToLaunchCommand() { return LauncherCommands::LauncherPrepareToLaunchCommand(this).ToPtr(); }
@@ -106,7 +106,7 @@ public:
             return GetManualLaunchCommand();
         case STATE_OFF:
         default:
-            return GetOffCommand();
+            return GetLauncherOffCommand();
         }
     }
 

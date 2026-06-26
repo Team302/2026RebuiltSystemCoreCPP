@@ -72,7 +72,7 @@ public:
 	// void DataLog(uint64_t timestamp) override;
 
 	// Command Getters
-	wpi::cmd::CommandPtr GetOffCommand() { return IntakeCommands::IntakeOffCommand(this).ToPtr(); }
+	wpi::cmd::CommandPtr GetIntakeOffCommand() { return IntakeCommands::IntakeOffCommand(this).ToPtr(); }
 	wpi::cmd::CommandPtr GetIntakeCommand() { return IntakeCommands::IntakeIntakeCommand(this).ToPtr(); }
 	wpi::cmd::CommandPtr GetExpelCommand() { return IntakeCommands::IntakeExpelCommand(this).ToPtr(); }
 	wpi::cmd::CommandPtr GetLaunchCommand() { return IntakeCommands::IntakeLaunchCommand(this).ToPtr(); }
@@ -93,7 +93,7 @@ public:
 			return GetLoadHopperCommand();
 		case STATE_OFF:
 		default:
-			return GetOffCommand();
+			return GetIntakeOffCommand();
 		}
 	}
 

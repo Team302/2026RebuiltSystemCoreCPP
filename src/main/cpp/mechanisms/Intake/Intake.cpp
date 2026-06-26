@@ -284,7 +284,7 @@ void Intake::Periodic()
 	ManualControl();
 
 	// Logging
-	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "State", GetCurrentStateName());
+	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "Current State", GetCurrentStateName());
 	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "Intake Position", m_cachedExtenderPositionDeg.value());
 	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "Extender Target", m_extenderPositionDeg.Position.value());
 }
