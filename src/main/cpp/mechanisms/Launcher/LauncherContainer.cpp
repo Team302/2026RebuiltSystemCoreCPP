@@ -117,6 +117,7 @@ wpi::cmd::Trigger LauncherContainer::GetLauncherOffTrigger()
 {
     // --- Off (protected mode) ---------------------------------------------------------------------
     // Highest priority. Every other trigger is gated on !IsLauncherInProtectedMode() so Off wins.
+
     Launcher *launcher = m_launcher;
     return wpi::cmd::Trigger([launcher]()
                              { return launcher->IsLauncherInProtectedMode(); });

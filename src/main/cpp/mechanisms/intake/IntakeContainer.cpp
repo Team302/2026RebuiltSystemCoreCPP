@@ -99,20 +99,14 @@ wpi::cmd::Trigger IntakeContainer::GetIntakeTrigger()
 {
     // --- Intake -----------------------------------------------------------------------------------
     // Run while the INTAKE button is held (teleop only); fall back to Off on release.
-    Intake *intake = m_intake;
-    return wpi::cmd::RobotModeTriggers::Teleop() &&
-           wpi::cmd::Trigger([intake]()
-                             { return TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::INTAKE); });
+    return wpi::cmd::RobotModeTriggers::Teleop() && TeleopControl::GetInstance()->GetCommandTrigger(TeleopControlFunctions::INTAKE);
 }
 
 wpi::cmd::Trigger IntakeContainer::GetExpelTrigger()
 {
     // --- Expel ------------------------------------------------------------------------------------
     // Run while the EXPEL button is held (teleop only); fall back to Off on release.
-    Intake *intake = m_intake;
-    return wpi::cmd::RobotModeTriggers::Teleop() &&
-           wpi::cmd::Trigger([intake]()
-                             { return TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::EXPEL); });
+    return wpi::cmd::RobotModeTriggers::Teleop() && TeleopControl::GetInstance()->GetCommandTrigger(TeleopControlFunctions::EXPEL);
 }
 
 wpi::cmd::Trigger IntakeContainer::GetLoadHopperTrigger()
@@ -120,10 +114,7 @@ wpi::cmd::Trigger IntakeContainer::GetLoadHopperTrigger()
     // --- Load hopper ------------------------------------------------------------------------------
     // Run while the DRIVE_TO_OUTPOST (load hopper) button is held (teleop only); fall back to Off on
     // release.
-    Intake *intake = m_intake;
-    return wpi::cmd::RobotModeTriggers::Teleop() &&
-           wpi::cmd::Trigger([intake]()
-                             { return TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::DRIVE_TO_OUTPOST); });
+    return wpi::cmd::RobotModeTriggers::Teleop() && TeleopControl::GetInstance()->GetCommandTrigger(TeleopControlFunctions::DRIVE_TO_OUTPOST);
 }
 
 wpi::cmd::Trigger IntakeContainer::GetLaunchTrigger()
