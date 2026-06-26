@@ -17,6 +17,7 @@
 #include "mechanisms/launcher/commands/LauncherLaunchCommand.h"
 #include "mechanisms/launcher/Launcher.h"
 #include "teleopcontrol/TeleopControl.h"
+#include "teleopcontrol/TeleopControlFunctions.h"
 #include "wpi/framework/RobotBase.hpp"
 
 // Unit Includes
@@ -56,6 +57,9 @@ void LauncherLaunchCommand::Initialize()
 
     m_mechanism->PublishLaunchMode(true);
     m_mechanism->StartLaunchCurrentTimer();
+
+    m_launchReleaseTimer.Stop();
+    m_launchReleaseTimer.Reset();
 }
 
 void LauncherLaunchCommand::Execute()
@@ -71,9 +75,36 @@ void LauncherLaunchCommand::Execute()
 
 void LauncherLaunchCommand::End(bool interrupted)
 {
+    m_launchReleaseTimer.Stop();
+    m_launchReleaseTimer.Reset();
 }
 
 bool LauncherLaunchCommand::IsFinished()
 {
-    return false; // Default continuous execution
+    // Self-governed exit back to Idle (this command is bound with OnTrue, so the trigger never cancels
+    // it). This replaces the old IdleState "launchingDone" timer logic.
+    //
+    // Auton has no driver buttons, so defer to the current-based launch detector like the old
+    // IdleState auton clause (IsAutonomous() && IsFinishedLaunching()).
+    if (wpi::RobotBase::IsAutonomous())
+    {
+        return m_mechanism->IsFinishedLaunching();
+    }
+
+    auto tc = TeleopControl::GetInstance();
+    bool launchButtonsReleased = !tc->IsButtonPressed(TeleopControlFunctions::LAUNCH) &&
+                                 !tc->IsButtonPressed(TeleopControlFunctions::LAUNCH_OVERRIDE) &&
+                                 !tc->IsButtonPressed(TeleopControlFunctions::MANUAL_LAUNCH);
+
+    if (launchButtonsReleased)
+    {
+        // Only finish once the launch buttons have been released for the full debounce window.
+        m_launchReleaseTimer.Start();
+        return m_launchReleaseTimer.Get() > m_launchReleaseTimeout;
+    }
+
+    // Still launching - keep the timer reset so the debounce window restarts on the next release.
+    m_launchReleaseTimer.Stop();
+    m_launchReleaseTimer.Reset();
+    return false;
 }

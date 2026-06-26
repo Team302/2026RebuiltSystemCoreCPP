@@ -18,6 +18,8 @@
 
 #include "wpi/commands2/Command.hpp"
 #include "wpi/commands2/CommandHelper.hpp"
+#include "wpi/system/Timer.hpp"
+#include "wpi/units/time.hpp"
 
 class Launcher;
 
@@ -36,5 +38,12 @@ namespace LauncherCommands
 
     private:
         Launcher *m_mechanism;
+
+        // Self-governed return to the default (Idle) command. The Launch trigger uses OnTrue, so once
+        // scheduled this command keeps running until IsFinished() returns true (or another command
+        // interrupts it). In teleop that happens after the launch buttons have been released for
+        // m_launchReleaseTimeout; in auton it defers to Launcher::IsFinishedLaunching().
+        wpi::Timer m_launchReleaseTimer;
+        static constexpr wpi::units::time::second_t m_launchReleaseTimeout{0.25};
     };
 }
