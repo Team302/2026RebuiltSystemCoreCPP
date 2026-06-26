@@ -66,11 +66,29 @@ void LauncherContainer::ConfigureBindings()
 
     m_launcher->SetDefaultCommand(m_launcher->GetOffCommand());
 
-    auto considerGamePadTransitions = wpi::cmd::RobotModeTriggers::Teleop();
+    auto considerGamepadTransitions = wpi::cmd::RobotModeTriggers::Teleop();
+    Launcher *launcher = m_launcher;
 
     // Consider Gamepad Transitions (Telop)
 
     // Sensor Transitions (Auton + Telop)
+    wpi::cmd::Trigger off([launcher]()
+                          { return launcher->IsLauncherInProtectedMode(); });
 
-    Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, std::string("LauncherContainer"), std::string("Configured"), std::string("Launcher"));
+    off.WhileTrue(m_launcher->GetOffCommand());
+
+    wpi::cmd::Trigger initialize([launcher]()
+                                 { bool a = !launcher->IsLauncherInProtectedMode();
+                                    bool b = launcher->GetCurrentState() == launcher->STATE_OFF;
+                     return (a && b) ; });
+
+    initialize.WhileTrue(m_launcher->GetInitializeCommand());
+
+    wpi::cmd::Trigger idle([launcher]()
+                           { return (launcher->IsLauncherInitialized() && launcher->GetCurrentState() == launcher->STATE_INITIALIZE); });
+
+    idle.WhileTrue(m_launcher->GetIdleCommand());
+
+    Logger::GetLogger()
+        ->LogData(LOGGER_LEVEL::PRINT, std::string("LauncherContainer"), std::string("Configured"), std::string("Launcher"));
 }

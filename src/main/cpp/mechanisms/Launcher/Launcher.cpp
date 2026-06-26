@@ -856,6 +856,8 @@ void Launcher::CalculateTargets()
 	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "Target Hood", m_targetHoodAngle.value());
 	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "Target Launcher Velocity", m_targetLauncherAngularVelocity.value());
 	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "turret Target", m_targetTurretAngle.value());
+	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "m_launcherInitialized", m_launcherInitialized);
+	Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "m_launcherProtectedMode", m_launcherProtectedMode);
 }
 
 void Launcher::UpdateLauncherTargets()
