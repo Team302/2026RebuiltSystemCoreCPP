@@ -59,5 +59,5 @@ void LauncherInitializeCommand::End(bool interrupted)
 
 bool LauncherInitializeCommand::IsFinished()
 {
-    return false; // Default continuous execution
+    return m_mechanism->IsLauncherInitialized(); // Default continuous execution
 }
