@@ -90,6 +90,10 @@ model {
         wpilibUserProgramTest(GoogleTestTestSuiteSpec) {
             testing $.components.wpilibUserProgram
 
+            binaries.all {
+                cppCompiler.define "RUNNING_FRC_TESTS"
+            }
+
             sources.cpp {
                 source {
                     srcDir 'src/test/cpp'
