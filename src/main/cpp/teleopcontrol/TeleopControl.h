@@ -22,7 +22,7 @@
 #include <vector>
 
 // FRC includes
-#include "wpi/commands2/button/CommandNiDsXboxController.hpp"
+#include "wpi/commands2/button/CommandGamepad.hpp"
 #include "wpi/framework/RobotBase.hpp"
 
 // Team 302 includes
@@ -150,11 +150,11 @@ void SetAxisProfile(
 );
 */
 
-    std::pair<wpi::cmd::CommandNiDsXboxController *, TeleopControlMappingEnums::AXIS_IDENTIFIER> GetAxisInfo(
+    std::pair<wpi::cmd::CommandGamepad *, TeleopControlMappingEnums::AXIS_IDENTIFIER> GetAxisInfo(
         TeleopControlFunctions::FUNCTION function // <I> - controller with this function
     );
 
-    std::pair<wpi::cmd::CommandNiDsXboxController *, TeleopControlMappingEnums::BUTTON_IDENTIFIER> GetButtonInfo(
+    std::pair<wpi::cmd::CommandGamepad *, TeleopControlMappingEnums::BUTTON_IDENTIFIER> GetButtonInfo(
         TeleopControlFunctions::FUNCTION function // <I> - controller with this function
     );
 
@@ -163,7 +163,7 @@ void SetAxisProfile(
     //----------------------------------------------------------------------------------
     static TeleopControl *m_instance; // Singleton instance of this class
 
-    std::vector<wpi::cmd::CommandNiDsXboxController *> m_controller;
+    std::vector<wpi::cmd::CommandGamepad *> m_controller;
 
     int m_numControllers;
 };

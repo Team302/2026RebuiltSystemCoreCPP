@@ -20,7 +20,7 @@
 #include <utility>
 
 // FRC includes
-#include "wpi/commands2/button/CommandNiDsXboxController.hpp"
+#include "wpi/commands2/button/CommandGamepad.hpp"
 #include "wpi/framework/RobotBase.hpp"
 
 // Team 302 includes
@@ -98,7 +98,8 @@ void TeleopControl::InitializeController(int port)
 	// until a device appears. Because InitializeControllers() iterates the ports in order,
 	// the controller for port N is stored at m_controller[N], which lines up with the
 	// TeleopControlMappingEnums::CONTROLLER values (DRIVER = 0, CO_PILOT = 1, ...).
-	m_controller.emplace_back(new wpi::cmd::CommandNiDsXboxController(port));
+
+	m_controller.emplace_back(new wpi::cmd::CommandGamepad(port));
 	m_numControllers = m_controller.size();
 }
 
@@ -132,11 +133,11 @@ vector<TeleopControlFunctions::FUNCTION> TeleopControl::GetButtonFunctionsOnCont
 	return functions;
 }
 
-pair<wpi::cmd::CommandNiDsXboxController *, TeleopControlMappingEnums::AXIS_IDENTIFIER> TeleopControl::GetAxisInfo(
+pair<wpi::cmd::CommandGamepad *, TeleopControlMappingEnums::AXIS_IDENTIFIER> TeleopControl::GetAxisInfo(
 	TeleopControlFunctions::FUNCTION function // <I> - controller with this function
 )
 {
-	wpi::cmd::CommandNiDsXboxController *controller = nullptr;
+	wpi::cmd::CommandGamepad *controller = nullptr;
 	TeleopControlMappingEnums::AXIS_IDENTIFIER axis = TeleopControlMappingEnums::AXIS_IDENTIFIER::UNDEFINED_AXIS;
 
 	if (!IsInitialized())
@@ -157,11 +158,11 @@ pair<wpi::cmd::CommandNiDsXboxController *, TeleopControlMappingEnums::AXIS_IDEN
 	return make_pair(controller, axis);
 }
 
-pair<wpi::cmd::CommandNiDsXboxController *, TeleopControlMappingEnums::BUTTON_IDENTIFIER> TeleopControl::GetButtonInfo(
+pair<wpi::cmd::CommandGamepad *, TeleopControlMappingEnums::BUTTON_IDENTIFIER> TeleopControl::GetButtonInfo(
 	TeleopControlFunctions::FUNCTION function // <I> - controller with this function
 )
 {
-	wpi::cmd::CommandNiDsXboxController *controller = nullptr;
+	wpi::cmd::CommandGamepad *controller = nullptr;
 	TeleopControlMappingEnums::BUTTON_IDENTIFIER btn = TeleopControlMappingEnums::UNDEFINED_BUTTON;
 
 	if (!IsInitialized())
@@ -269,7 +270,7 @@ void TeleopControl::SetRumble(
 	bool rightRumble						   // <I> - rumble right
 )
 {
-	wpi::cmd::CommandNiDsXboxController *controller = nullptr;
+	wpi::cmd::CommandGamepad *controller = nullptr;
 	std::tie(controller, std::ignore) = GetButtonInfo(function);
 
 	if (controller != nullptr)
@@ -295,7 +296,7 @@ void TeleopControl::SetRumble(
 	}
 	else
 	{
-		wpi::cmd::CommandNiDsXboxController *controller2 = nullptr;
+		wpi::cmd::CommandGamepad *controller2 = nullptr;
 		std::tie(controller2, std::ignore) = GetAxisInfo(function);
 		if (controller2 != nullptr)
 		{
@@ -384,7 +385,7 @@ wpi::cmd::Trigger TeleopControl::GetCommandTrigger(TeleopControlFunctions::FUNCT
 								 { return false; });
 	}
 	auto info = GetButtonInfo(function);
-	wpi::cmd::CommandNiDsXboxController *controller = info.first;
+	wpi::cmd::CommandGamepad *controller = info.first;
 
 	auto buttonInfo = itr->second;
 	if (info.first != nullptr && info.second != TeleopControlMappingEnums::UNDEFINED_BUTTON)
@@ -394,13 +395,13 @@ wpi::cmd::Trigger TeleopControl::GetCommandTrigger(TeleopControlFunctions::FUNCT
 		switch (buttonInfo.buttonId)
 		{
 		case TeleopControlMappingEnums::A_BUTTON:
-			return controller->A();
+			return controller->SouthFace();
 		case TeleopControlMappingEnums::B_BUTTON:
-			return controller->B();
+			return controller->EastFace();
 		case TeleopControlMappingEnums::X_BUTTON:
-			return controller->X();
+			return controller->WestFace();
 		case TeleopControlMappingEnums::Y_BUTTON:
-			return controller->Y();
+			return controller->NorthFace();
 		case TeleopControlMappingEnums::LEFT_BUMPER:
 			return controller->LeftBumper();
 		case TeleopControlMappingEnums::RIGHT_BUMPER:
