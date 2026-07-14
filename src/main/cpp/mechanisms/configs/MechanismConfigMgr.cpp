@@ -41,6 +41,16 @@ MechanismConfigMgr::MechanismConfigMgr() : m_config(nullptr)
 
 void MechanismConfigMgr::InitRobot(RobotIdentifier id)
 {
+	// Guard against being called more than once. Each MechanismConfig constructs the mechanisms
+	// (Launcher, Intake, ...) which register themselves with the CommandScheduler. Building a second
+	// config would leave two copies of every mechanism registered, both running Periodic() each loop
+	// and fighting over the same NetworkTables keys. Only the first initialization wins.
+	if (m_config != nullptr)
+	{
+		Logger::GetLogger()->LogData(LOGGER_LEVEL::WARNING_ONCE, string("MechanismConfigMgr"), string("InitRobot"), string("Already initialized - ignoring duplicate call"));
+		return;
+	}
+
 	switch (id)
 	{
 	case RobotIdentifier::COMP_BOT_302:

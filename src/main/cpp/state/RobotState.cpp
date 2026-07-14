@@ -179,13 +179,13 @@ void RobotState::PublishGameStateChanges()
 }
 void RobotState::PublishClimbMode(TeleopControl *controller)
 {
-    if (controller->IsButtonPressed(TeleopControlFunctions::CLIMB_MODE))
-    {
-        if (m_climbButtonReleased)
-        {
-            m_climbModeStatus = !m_climbModeStatus;
-            PublishStateChange(RobotStateChanges::ClimbModeStatus_Bool, m_climbModeStatus);
-        }
-    }
-    m_climbButtonReleased = !controller->IsButtonPressed(TeleopControlFunctions::CLIMB_MODE);
+    // if (controller->IsButtonPressed(TeleopControlFunctions::CLIMB_MODE))
+    // {
+    //     if (m_climbButtonReleased)
+    //     {
+    //         m_climbModeStatus = !m_climbModeStatus;
+    //         PublishStateChange(RobotStateChanges::ClimbModeStatus_Bool, m_climbModeStatus);
+    //     }
+    // }
+    // m_climbButtonReleased = !controller->IsButtonPressed(TeleopControlFunctions::CLIMB_MODE);
 }

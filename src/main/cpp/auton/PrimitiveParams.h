@@ -29,8 +29,6 @@
 #include "auton/ZoneParams.h"
 #include "mechanisms/Intake/Intake.h"
 #include "mechanisms/Launcher/Launcher.h"
-#include "mechanisms/Climber/Climber.h"
-
 // Third Party Includes
 
 class PrimitiveParams
@@ -51,10 +49,8 @@ public:
                     ChassisOptionEnums::DriveStateType pathUpdateOption,
                     bool launcherStateChanged,
                     bool intakeStateChanged,
-                    bool climberStateChanged,
                     Launcher::STATE_NAMES launcherState,
-                    Intake::STATE_NAMES intakeState,
-                    Climber::STATE_NAMES climberState);
+                    Intake::STATE_NAMES intakeState);
 
     PrimitiveParams() = delete;
     virtual ~PrimitiveParams() = default; // Destructor
@@ -74,10 +70,8 @@ public:
 
     bool IsLauncherStateChanging() const { return m_isLauncherStateChanged; }
     bool IsIntakeStateChanging() const { return m_isIntakeStateChanged; }
-    bool IsClimberStateChanging() const { return m_isClimberStateChanged; }
     Launcher::STATE_NAMES GetLauncherState() const { return m_launcherState; }
     Intake::STATE_NAMES GetIntakeState() const { return m_intakeState; }
-    Climber::STATE_NAMES GetClimberState() const { return m_climberState; }
 
 private:
     // Primitive Parameters
@@ -95,10 +89,8 @@ private:
 
     bool m_isLauncherStateChanged;
     bool m_isIntakeStateChanged;
-    bool m_isClimberStateChanged;
     Launcher::STATE_NAMES m_launcherState;
     Intake::STATE_NAMES m_intakeState;
-    Climber::STATE_NAMES m_climberState;
 };
 
 typedef std::vector<PrimitiveParams *> PrimitiveParamsVector;

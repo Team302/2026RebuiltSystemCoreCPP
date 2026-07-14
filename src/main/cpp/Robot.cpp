@@ -195,7 +195,7 @@ void Robot::AutonomousPeriodic()
 void Robot::TeleopInit()
 {
     PeriodicLooper::GetInstance()->TeleopRunCurrentState();
-    wpi::cmd::CommandScheduler::GetInstance().CancelAll();
+    // wpi::cmd::CommandScheduler::GetInstance().CancelAll();
 
     if (m_isFMSAttached && !m_rewindLatch)
     {
@@ -236,9 +236,6 @@ void Robot::InitializeRobot()
     chassisConfig->CreateDrivetrain();
 
     new RobotContainer(); // instantiate RobotContainer to setup commands and subsystems
-
-    int32_t teamNumber = wpi::RobotController::GetTeamNumber();
-    MechanismConfigMgr::GetInstance()->InitRobot((RobotIdentifier)teamNumber);
 
     m_robotState = RobotState::GetInstance();
     m_robotState->Init();
