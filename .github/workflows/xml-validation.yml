@@ -1,5 +1,5 @@
-# workflow for validating auton xml
-# this only validates that all of the json and dtd are ok with each other
+# Workflow for validating auton XML
+# This validates that XML files are well-formed and DTD-valid (when a DTD is available)
 
 name: xml validation
 
