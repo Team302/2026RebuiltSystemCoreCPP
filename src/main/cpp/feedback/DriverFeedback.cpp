@@ -29,9 +29,9 @@
 #include "wpi/framework/RobotBase.hpp"
 
 // Season Specific Includes
-#include "mechanisms/Intake/Intake.h"
-#include "mechanisms/Launcher/Launcher.h"
 #include "mechanisms/configs/MechanismConfigMgr.h"
+#include "mechanisms/intake/Intake.h"
+#include "mechanisms/launcher/Launcher.h"
 
 using wpi::DriverStation;
 
