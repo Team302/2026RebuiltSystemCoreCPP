@@ -91,6 +91,7 @@
 #include "utils/DragonField.h"
 #include "utils/PeriodicLooper.h"
 #include "utils/logging/debug/Logger.h"
+#include "utils/logging/timing/DragonTimedClass.h"
 #include "vision/DragonVision.h"
 #include "wpi/driverstation/DriverStation.hpp"
 #include "wpi/framework/RobotBase.hpp"
@@ -105,6 +106,7 @@
 Robot::Robot()
 {
     Logger::GetLogger()->PutLoggingSelectionsOnDashboard();
+    DragonTimedClass::PutTimingSelectionOnDashboard();
 
     InitializeRobot();
     InitializeAutonOptions();
@@ -126,6 +128,8 @@ void Robot::RobotPeriodic()
     m_isFMSAttached = false; // SystemCore TO DO: Find FMSAttached for systemcore
     if (!m_isFMSAttached)
     {
+
+        DragonTimedClass::UpdateTimingSelection();
         Logger::GetLogger()->PeriodicLog();
     }
 

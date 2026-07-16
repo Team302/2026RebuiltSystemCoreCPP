@@ -42,6 +42,7 @@ using ctre::phoenix6::configs::TalonFXSConfiguration;
 using std::string;
 
 Launcher::Launcher(RobotIdentifier id) : BaseMechSubsystem(MechanismTypes::MECHANISM_TYPE::LAUNCHER, std::string("Launcher")),
+										 DragonTimedClass("Launcher"),
 										 m_activeRobotId(id),
 										 m_stateMap(),
 										 m_autonCommand(wpi::cmd::None()),
@@ -691,6 +692,8 @@ void Launcher::Periodic()
 	// scheduled command's execute(). It performs the per-loop housekeeping that used to live
 	// in StateMgr::RunCommonTasks(): refresh cached sensor data, apply manual control, and
 	// push the active control requests to the motors.
+	DragonTimedClass::ScopedTimer timer(*this, "Periodic");
+
 	RefreshCachedData();
 	UpdateCachedLoggingValues();
 

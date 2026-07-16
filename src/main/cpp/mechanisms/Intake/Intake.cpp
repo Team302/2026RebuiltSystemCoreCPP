@@ -42,6 +42,7 @@ using ctre::phoenix6::configs::TalonFXSConfiguration;
 using std::string;
 
 Intake::Intake(RobotIdentifier id) : BaseMechSubsystem(MechanismTypes::MECHANISM_TYPE::INTAKE, std::string("Intake")),
+									 DragonTimedClass("Intake"),
 									 m_activeRobotId(id),
 									 m_stateMap(),
 									 m_autonCommand(wpi::cmd::None())
@@ -278,6 +279,8 @@ void Intake::Periodic()
 	// scheduled command's execute(). It performs the per-loop housekeeping that used to live
 	// in StateMgr::RunCommonTasks(): refresh cached sensor data, apply manual control, and
 	// push the active control requests to the motors.
+	DragonTimedClass::ScopedTimer timer(*this, "Periodic");
+
 	RefreshCachedData();
 	Update();
 

@@ -29,6 +29,7 @@
 #include "mechanisms/controllers/ControlData.h"
 #include "state/IRobotStateChangeSubscriber.h"
 #include "state/RobotStateChanges.h"
+#include "utils/logging/timing/DragonTimedClass.h"
 
 // Hardware Includes
 #include "ctre/phoenix6/CANdi.hpp"
@@ -43,7 +44,7 @@
 #include "mechanisms/intake/commands/IntakeLoadHopperCommand.h"
 #include "mechanisms/intake/commands/IntakeOffCommand.h"
 
-class Intake : public BaseMechSubsystem, public IRobotStateChangeSubscriber
+class Intake : public BaseMechSubsystem, public IRobotStateChangeSubscriber, public DragonTimedClass
 {
 public:
 	enum STATE_NAMES
