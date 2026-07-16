@@ -26,13 +26,13 @@ static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_transf
 static constexpr double m_indexerTarget{0.0};
 static constexpr double m_spindexerTarget{0.0};
 
-LauncherPrepareToLaunchCommand::LauncherPrepareToLaunchCommand(Launcher *mechanism) : m_mechanism(mechanism)
+LauncherPrepareToLaunchCommand::LauncherPrepareToLaunchCommand(Launcher *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, LauncherPrepareToLaunchCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("LauncherPrepareToLaunch");
 }
 
-void LauncherPrepareToLaunchCommand::Initialize()
+void LauncherPrepareToLaunchCommand::Init()
 {
     m_mechanism->SetCurrentState(Launcher::STATE_PREPARE_TO_LAUNCH);
 
@@ -44,7 +44,7 @@ void LauncherPrepareToLaunchCommand::Initialize()
     m_mechanism->PublishLaunchMode(true);
 }
 
-void LauncherPrepareToLaunchCommand::Execute()
+void LauncherPrepareToLaunchCommand::Run()
 {
 }
 

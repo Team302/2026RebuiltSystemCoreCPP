@@ -17,21 +17,20 @@
 
 #pragma once
 
-#include "wpi/commands2/Command.hpp"
-#include "wpi/commands2/CommandHelper.hpp"
+#include "mechanisms/base/DragonTimedCommand.h"
 
 class Intake;
 
 namespace IntakeCommands
 {
-    class IntakeLaunchCommand : public wpi::cmd::CommandHelper<wpi::cmd::Command, IntakeLaunchCommand>
+    class IntakeLaunchCommand : public wpi::cmd::CommandHelper<DragonTimedCommand, IntakeLaunchCommand>
     {
     public:
         IntakeLaunchCommand() = delete;
         explicit IntakeLaunchCommand(Intake *mechanism);
 
-        void Initialize() override;
-        void Execute() override;
+        void Init() override;
+        void Run() override;
         void End(bool interrupted) override;
         bool IsFinished() override;
 

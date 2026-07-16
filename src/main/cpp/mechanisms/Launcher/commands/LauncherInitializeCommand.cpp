@@ -29,13 +29,13 @@ static constexpr double m_indexerTarget{0.0};
 static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_spindexerTarget{0.0};
 static constexpr double m_turretTarget{-0.075};
 
-LauncherInitializeCommand::LauncherInitializeCommand(Launcher *mechanism) : m_mechanism(mechanism)
+LauncherInitializeCommand::LauncherInitializeCommand(Launcher *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, LauncherInitializeCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("LauncherInitialize");
 }
 
-void LauncherInitializeCommand::Initialize()
+void LauncherInitializeCommand::Init()
 {
     m_mechanism->SetCurrentState(Launcher::STATE_INITIALIZE);
 
@@ -48,7 +48,7 @@ void LauncherInitializeCommand::Initialize()
     m_mechanism->UpdateTargetTurretPercentOut(m_turretTarget);
 }
 
-void LauncherInitializeCommand::Execute()
+void LauncherInitializeCommand::Run()
 {
     m_mechanism->InitializeLauncher();
 }

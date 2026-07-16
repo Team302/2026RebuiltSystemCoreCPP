@@ -31,13 +31,13 @@ static constexpr double m_indexerTarget{0.0};
 static constexpr double m_spindexerTarget{0.0};
 static constexpr double m_turretTarget{0.0};
 
-LauncherLauncherTuningCommand::LauncherLauncherTuningCommand(Launcher *mechanism) : m_mechanism(mechanism)
+LauncherLauncherTuningCommand::LauncherLauncherTuningCommand(Launcher *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, LauncherLauncherTuningCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("LauncherLauncherTuning");
 }
 
-void LauncherLauncherTuningCommand::Initialize()
+void LauncherLauncherTuningCommand::Init()
 {
     m_mechanism->SetCurrentState(Launcher::STATE_LAUNCHER_TUNING);
 
@@ -48,7 +48,7 @@ void LauncherLauncherTuningCommand::Initialize()
     m_mechanism->UpdateTargetSpindexerPercentOut(m_spindexerTarget);
 }
 
-void LauncherLauncherTuningCommand::Execute()
+void LauncherLauncherTuningCommand::Run()
 {
     double manualHoodPercentOut = TeleopControl::GetInstance()->GetAxisValue(TeleopControlFunctions::UPDATE_DEPOT_PASSING_TARGET_X);
     if (abs(manualHoodPercentOut) < 0.075)

@@ -29,13 +29,13 @@ static constexpr double m_spindexerTarget{0.0};
 static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_scoringLauncherTarget{2000};
 static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_passingLauncherTarget{4000};
 
-LauncherIdleCommand::LauncherIdleCommand(Launcher *mechanism) : m_mechanism(mechanism)
+LauncherIdleCommand::LauncherIdleCommand(Launcher *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, LauncherIdleCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("LauncherIdle");
 }
 
-void LauncherIdleCommand::Initialize()
+void LauncherIdleCommand::Init()
 {
     m_mechanism->SetCurrentState(Launcher::STATE_IDLE);
 
@@ -49,7 +49,7 @@ void LauncherIdleCommand::Initialize()
     m_mechanism->InitializeSpindexerTargets();
 }
 
-void LauncherIdleCommand::Execute()
+void LauncherIdleCommand::Run()
 {
     if (m_mechanism->GetDistanceToTarget() > 30_ft)
     {

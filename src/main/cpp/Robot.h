@@ -17,6 +17,7 @@
 
 #include <optional>
 
+#include "utils/logging/timing/DragonTimedClass.h"
 #include "wpi/commands2/CommandPtr.hpp"
 #include "wpi/nt/NetworkTable.hpp"
 #include <wpi/framework/TimedRobot.hpp>
@@ -38,7 +39,7 @@ namespace subsystems
     class CommandSwerveDrivetrain;
 }
 
-class Robot : public wpi::TimedRobot
+class Robot : public wpi::TimedRobot, public DragonTimedClass
 {
 public:
     Robot();

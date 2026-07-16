@@ -25,13 +25,13 @@ using namespace IntakeCommands;
 static constexpr double m_intakeTarget{-1.0};
 static constexpr wpi::units::angle::turn_t m_extenderTarget{-0.5};
 
-IntakeExpelCommand::IntakeExpelCommand(Intake *mechanism) : m_mechanism(mechanism)
+IntakeExpelCommand::IntakeExpelCommand(Intake *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, IntakeExpelCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("IntakeExpel");
 }
 
-void IntakeExpelCommand::Initialize()
+void IntakeExpelCommand::Init()
 {
     m_mechanism->SetCurrentState(Intake::STATE_EXPEL);
 
@@ -42,7 +42,7 @@ void IntakeExpelCommand::Initialize()
     m_mechanism->PublishIntakeMode(false);
 }
 
-void IntakeExpelCommand::Execute()
+void IntakeExpelCommand::Run()
 {
 }
 

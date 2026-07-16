@@ -24,13 +24,13 @@ using namespace IntakeCommands;
 static constexpr double m_intakeTarget{1.0};
 static constexpr wpi::units::angle::turn_t m_extenderTarget{-10.0};
 
-IntakeLoadHopperCommand::IntakeLoadHopperCommand(Intake *mechanism) : m_mechanism(mechanism)
+IntakeLoadHopperCommand::IntakeLoadHopperCommand(Intake *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, IntakeLoadHopperCommand>(mechanism), m_mechanism(mechanism)
 {
 	AddRequirements(m_mechanism);
 	SetName("IntakeLoadHopper");
 }
 
-void IntakeLoadHopperCommand::Initialize()
+void IntakeLoadHopperCommand::Init()
 {
 	m_mechanism->SetCurrentState(Intake::STATE_LOAD_HOPPER);
 
@@ -41,7 +41,7 @@ void IntakeLoadHopperCommand::Initialize()
 	m_mechanism->PublishIntakeMode(true);
 }
 
-void IntakeLoadHopperCommand::Execute()
+void IntakeLoadHopperCommand::Run()
 {
 }
 

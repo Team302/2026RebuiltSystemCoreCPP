@@ -21,13 +21,13 @@
 using namespace IntakeCommands;
 static constexpr double m_intakeTarget{0.0};
 
-IntakeOffCommand::IntakeOffCommand(Intake *mechanism) : m_mechanism(mechanism)
+IntakeOffCommand::IntakeOffCommand(Intake *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, IntakeOffCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("IntakeOff");
 }
 
-void IntakeOffCommand::Initialize()
+void IntakeOffCommand::Init()
 {
     m_mechanism->SetCurrentState(Intake::STATE_OFF);
 
@@ -37,7 +37,7 @@ void IntakeOffCommand::Initialize()
     m_mechanism->PublishIntakeMode(false);
 }
 
-void IntakeOffCommand::Execute()
+void IntakeOffCommand::Run()
 {
     // First time the robot is enabled, zero/reset the extender (was OffState::Run()).
     if (wpi::RobotBase::IsEnabled() && !m_mechanism->HasBeenEnabled())
