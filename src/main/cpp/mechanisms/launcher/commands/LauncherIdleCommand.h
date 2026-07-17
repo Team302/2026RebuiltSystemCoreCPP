@@ -28,6 +28,7 @@ namespace LauncherCommands
         LauncherIdleCommand() = delete;
         explicit LauncherIdleCommand(Launcher *mechanism);
 
+    protected:
         void Init() override;
         void Run() override;
         void End(bool interrupted) override;

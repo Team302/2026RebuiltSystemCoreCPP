@@ -28,6 +28,7 @@ namespace LauncherCommands
         LauncherInitializeCommand() = delete;
         explicit LauncherInitializeCommand(Launcher *mechanism);
 
+    protected:
         void Init() override;
         void Run() override;
         void End(bool interrupted) override;

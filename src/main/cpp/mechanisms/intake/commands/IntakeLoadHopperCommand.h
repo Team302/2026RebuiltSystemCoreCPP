@@ -28,6 +28,7 @@ namespace IntakeCommands
         IntakeLoadHopperCommand() = delete;
         explicit IntakeLoadHopperCommand(Intake *mechanism);
 
+    protected:
         void Init() override;
         void Run() override;
         void End(bool interrupted) override;

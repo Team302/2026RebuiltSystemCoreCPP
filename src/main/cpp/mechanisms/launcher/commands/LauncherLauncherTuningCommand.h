@@ -28,6 +28,7 @@ namespace LauncherCommands
         LauncherLauncherTuningCommand() = delete;
         explicit LauncherLauncherTuningCommand(Launcher *mechanism);
 
+    protected:
         void Init() override;
         void Run() override;
         void End(bool interrupted) override;

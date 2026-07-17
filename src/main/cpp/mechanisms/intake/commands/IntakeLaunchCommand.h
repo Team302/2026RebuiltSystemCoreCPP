@@ -29,6 +29,7 @@ namespace IntakeCommands
         IntakeLaunchCommand() = delete;
         explicit IntakeLaunchCommand(Intake *mechanism);
 
+    protected:
         void Init() override;
         void Run() override;
         void End(bool interrupted) override;
