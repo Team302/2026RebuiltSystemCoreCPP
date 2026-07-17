@@ -161,11 +161,14 @@ public:
         m_spindexerPositionTurnSpindexer.Position = position;
         m_spindexerActiveTarget = &m_spindexerPositionTurnSpindexer.WithSlot(0);
     }
-    void UpdateTargetTurretPositionDegreesTurret(wpi::units::angle::turn_t value)
+    void UpdateTargetTurretPositionDegreesTurret(wpi::units::angle::degree_t value)
     {
-        m_turretPositionDegreesTurret.Position = value;
+        wpi::units::angle::turn_t positionTurn = wpi::units::angle::turn_t(value.value()); // Turns = Degrees from sensor to mech ratio, but physical units are degrees, but motor controller is in turns, so convert to turns for clamping and motor controller output, but keep target in degrees for target calculator and logging
+        positionTurn = std::clamp(positionTurn, m_minTurretAngle, m_maxTurretAngle);
+        m_turretPositionDegreesTurret.Position = positionTurn;
         m_turretActiveTarget = &m_turretPositionDegreesTurret.WithSlot(0);
     }
+
     void UpdateTargetTransferVelocityTransfer(wpi::units::angular_velocity::revolutions_per_minute_t value)
     {
         m_transferVelocityTransfer.Velocity = value;

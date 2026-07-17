@@ -200,7 +200,7 @@ void Intake::InitializeTalonFXSExtenderCompBot302()
 	configs.HardwareLimitSwitch.ReverseLimitSource = ctre::phoenix6::signals::ReverseLimitSourceValue::RemoteCANdiS1;
 	configs.HardwareLimitSwitch.ReverseLimitType = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
 
-	configs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
+	configs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
 	configs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
 	configs.MotorOutput.PeakForwardDutyCycle = 1.0;
 	configs.MotorOutput.PeakReverseDutyCycle = -1.0;

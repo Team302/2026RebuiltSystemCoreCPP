@@ -560,9 +560,9 @@ void Launcher::InitializeCANdiHoodCompBot302()
 {
 	CANdiConfiguration CANdiConfig{};
 
-	CANdiConfig.DigitalInputs.S1CloseState = ctre::phoenix6::signals::S1CloseStateValue::CloseWhenNotFloating;
-	CANdiConfig.DigitalInputs.S1FloatState = ctre::phoenix6::signals::S1FloatStateValue::BusKeeper;
-	CANdiConfig.DigitalInputs.S2CloseState = ctre::phoenix6::signals::S2CloseStateValue::CloseWhenNotLow;
+	CANdiConfig.DigitalInputs.S1CloseState = signals::S1CloseStateValue::CloseWhenFloating;
+	CANdiConfig.DigitalInputs.S1FloatState = signals::S1FloatStateValue::FloatDetect;
+	CANdiConfig.DigitalInputs.S2CloseState = ctre::phoenix6::signals::S2CloseStateValue::CloseWhenFloating;
 	CANdiConfig.DigitalInputs.S2FloatState = ctre::phoenix6::signals::S2FloatStateValue::FloatDetect;
 
 	ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
@@ -624,6 +624,12 @@ void Launcher::InitializeTalonFXSTurretCompBot302()
 	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ReverseLimitSource = ctre::phoenix6::signals::ReverseLimitSourceValue::RemoteCANdiS1;
 	configs.HardwareLimitSwitch.ReverseLimitType = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
+
+	configs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+	configs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = m_maxTurretSoftLimit;
+
+	configs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+	configs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = m_minTurretSoftLimit;
 
 	configs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
 	configs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
