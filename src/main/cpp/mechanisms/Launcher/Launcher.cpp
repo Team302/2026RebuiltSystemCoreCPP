@@ -58,7 +58,6 @@ Launcher::Launcher(RobotIdentifier id) : BaseMechSubsystem(MechanismTypes::MECHA
 	m_deadZoneManager = DeadZoneManager::GetInstance();
 
 	m_launcherVelocityLauncher.EnableFOC = true;
-	m_spindexerVelocityLauncher.EnableFOC = true;
 	m_indexerVelocityIndexer.EnableFOC = true;
 	m_transferVelocityTransfer.EnableFOC = true;
 	m_hoodPositionDegreesHood.EnableFOC = true;
@@ -1007,7 +1006,6 @@ void Launcher::UpdateCachedLoggingValues()
 
 void Launcher::AgitateSpindexer()
 {
-
 	auto currentSpindexerPosition = m_spindexerMotor->GetPosition().GetValue();
 
 	UpdateTargetSpindexerPositionTurnSpindexer(m_minReached ? m_maxSpindexerTarget : m_minSpindexerTarget);

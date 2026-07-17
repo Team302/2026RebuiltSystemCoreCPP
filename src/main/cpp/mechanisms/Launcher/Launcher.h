@@ -141,11 +141,6 @@ public:
         m_turretPercentOut.Output = percentOut;
         m_turretActiveTarget = &m_turretPercentOut;
     }
-    void UpdateTargetSpindexerVelocityLauncher(wpi::units::angular_velocity::revolutions_per_minute_t value)
-    {
-        m_spindexerVelocityLauncher.Velocity = value;
-        m_spindexerActiveTarget = &m_spindexerVelocityLauncher.WithSlot(0);
-    }
     void UpdateTargetLauncherVelocityLauncher(wpi::units::angular_velocity::revolutions_per_minute_t value)
     {
         m_launcherVelocityLauncher.Velocity = value;
@@ -308,7 +303,6 @@ private:
     ctre::phoenix6::controls::DutyCycleOut m_indexerPercentOut{0.0};
     ctre::phoenix6::controls::DutyCycleOut m_spindexerPercentOut{0.0};
     ctre::phoenix6::controls::DutyCycleOut m_turretPercentOut{0.0};
-    ctre::phoenix6::controls::VelocityVoltage m_spindexerVelocityLauncher{0.0_rpm};
     ctre::phoenix6::controls::VelocityVoltage m_launcherVelocityLauncher{0.0_rpm};
     ctre::phoenix6::controls::MotionMagicVoltage m_hoodPositionDegreesHood{0.0_tr};
     ctre::phoenix6::controls::PositionVoltage m_spindexerPositionTurnSpindexer{0.0_tr};

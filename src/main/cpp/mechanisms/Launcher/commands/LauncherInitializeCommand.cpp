@@ -44,7 +44,7 @@ void LauncherInitializeCommand::Initialize()
     m_mechanism->UpdateTargetHoodPercentOut(m_hoodTarget);
     m_mechanism->UpdateTargetTransferPercentOut(m_transferTarget);
     m_mechanism->UpdateTargetIndexerPercentOut(m_indexerTarget);
-    m_mechanism->UpdateTargetSpindexerVelocityLauncher(m_spindexerTarget);
+    m_mechanism->UpdateTargetSpindexerVelocitySpindexer(m_spindexerTarget);
     m_mechanism->UpdateTargetTurretPercentOut(m_turretTarget);
 }
 

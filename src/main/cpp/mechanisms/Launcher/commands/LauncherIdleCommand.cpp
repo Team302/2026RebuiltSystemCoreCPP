@@ -51,16 +51,23 @@ void LauncherIdleCommand::Initialize()
 
 void LauncherIdleCommand::Execute()
 {
-    if (m_mechanism->GetDistanceToTarget() > 30_ft)
-    {
-        m_mechanism->UpdateTargetLauncherVelocityLauncher(m_passingLauncherTarget);
-    }
-    else
-    {
-        m_mechanism->UpdateTargetLauncherVelocityLauncher(m_scoringLauncherTarget);
-    }
+    // Commented out for now, verify passing targets are correct before enabling
+    //  if (m_mechanism->GetDistanceToTarget() > 30_ft)
+    //  {
+    //      m_mechanism->UpdateTargetLauncherVelocityLauncher(m_passingLauncherTarget);
+    //  }
+    //  else
+    //  {
+    //      m_mechanism->UpdateTargetLauncherVelocityLauncher(m_scoringLauncherTarget);
+    //  }
+
     if (m_mechanism->IsIntakingMode())
         m_mechanism->AgitateSpindexer();
+    else
+    {
+        m_mechanism->InitializeSpindexerTargets();
+        m_mechanism->UpdateTargetSpindexerPercentOut(m_spindexerTarget);
+    }
 }
 
 void LauncherIdleCommand::End(bool interrupted)
