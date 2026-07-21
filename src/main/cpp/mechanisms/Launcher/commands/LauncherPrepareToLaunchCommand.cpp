@@ -22,7 +22,7 @@
 
 using namespace LauncherCommands;
 
-static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_transferTarget{80.0};
+static constexpr wpi::units::angular_velocity::turns_per_second_t m_transferTarget{80.0};
 static constexpr double m_indexerTarget{0.0};
 static constexpr double m_spindexerTarget{0.0};
 

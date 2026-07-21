@@ -200,7 +200,7 @@ void Intake::InitializeTalonFXSExtenderCompBot302()
 	configs.HardwareLimitSwitch.ReverseLimitSource = ctre::phoenix6::signals::ReverseLimitSourceValue::RemoteCANdiS1;
 	configs.HardwareLimitSwitch.ReverseLimitType = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
 
-	configs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
+	configs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 	configs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
 	configs.MotorOutput.PeakForwardDutyCycle = 1.0;
 	configs.MotorOutput.PeakReverseDutyCycle = -1.0;
@@ -238,7 +238,7 @@ void Intake::InitializeCANdiExtenderCompBot302()
 {
 	CANdiConfiguration CANdiConfig{};
 
-	CANdiConfig.DigitalInputs.S1CloseState = ctre::phoenix6::signals::S1CloseStateValue::CloseWhenHigh;
+	CANdiConfig.DigitalInputs.S1CloseState = ctre::phoenix6::signals::S1CloseStateValue::CloseWhenNotHigh;
 	CANdiConfig.DigitalInputs.S1FloatState = ctre::phoenix6::signals::S1FloatStateValue::PullHigh;
 	CANdiConfig.DigitalInputs.S2CloseState = ctre::phoenix6::signals::S2CloseStateValue::CloseWhenFloating;
 	CANdiConfig.DigitalInputs.S2FloatState = ctre::phoenix6::signals::S2FloatStateValue::FloatDetect;
@@ -336,6 +336,7 @@ void Intake::ManualControl()
 	if (controller != nullptr && wpi::RobotBase::IsTeleop())
 	{
 		double manualExtenderPercent = m_percentModifier * (TeleopControl::GetInstance()->GetAxisValue(TeleopControlFunctions::MANUAL_INTAKE_IN) - TeleopControl::GetInstance()->GetAxisValue(TeleopControlFunctions::MANUAL_INTAKE_OUT));
+		Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "Manual Percent", manualExtenderPercent);
 		if (std::abs(manualExtenderPercent) > 0.05)
 		{
 			if ((m_cachedExtenderPositionDeg > m_protectExtenderPositionDegUp) && manualExtenderPercent > 0.0)

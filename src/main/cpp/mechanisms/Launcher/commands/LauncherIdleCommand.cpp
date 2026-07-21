@@ -28,6 +28,7 @@ static constexpr double m_spindexerTarget{0.0};
 
 static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_scoringLauncherTarget{2000};
 static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_passingLauncherTarget{4000};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_launcherTarget{2000};
 
 LauncherIdleCommand::LauncherIdleCommand(Launcher *mechanism) : m_mechanism(mechanism)
 {
@@ -43,6 +44,7 @@ void LauncherIdleCommand::Initialize()
     m_mechanism->UpdateTargetTransferPercentOut(m_transferTarget);
     m_mechanism->UpdateTargetIndexerPercentOut(m_indexerTarget);
     m_mechanism->UpdateTargetSpindexerPercentOut(m_spindexerTarget);
+    m_mechanism->UpdateTargetLauncherVelocityLauncher(m_launcherTarget);
 
     m_mechanism->PublishLaunchMode(false);
     m_mechanism->ResetLaunchCurrentTimer();

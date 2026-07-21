@@ -26,8 +26,8 @@ static constexpr double m_launcherTarget{0.0};
 static constexpr double m_hoodTarget{-0.15};
 static constexpr double m_transferTarget{0.0};
 static constexpr double m_indexerTarget{0.0};
-static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_spindexerTarget{0.0};
-static constexpr double m_turretTarget{-0.075};
+static constexpr wpi::units::angular_velocity::turns_per_second_t m_spindexerTarget{0.0};
+static constexpr double m_turretTarget{-0.08};
 
 LauncherInitializeCommand::LauncherInitializeCommand(Launcher *mechanism) : m_mechanism(mechanism)
 {
