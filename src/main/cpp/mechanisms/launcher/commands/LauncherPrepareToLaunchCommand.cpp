@@ -41,7 +41,7 @@ void LauncherPrepareToLaunchCommand::Initialize()
     m_mechanism->UpdateTargetIndexerPercentOut(m_indexerTarget);
     m_mechanism->UpdateTargetSpindexerPercentOut(m_spindexerTarget);
 
-    m_mechanism->PublishLaunchMode(true);
+    m_mechanism->PublishLaunchMode(false);
 }
 
 void LauncherPrepareToLaunchCommand::Execute()
