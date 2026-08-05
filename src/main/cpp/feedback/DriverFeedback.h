@@ -20,7 +20,7 @@
 
 #include "chassis/ChassisOptionEnums.h"
 #include "feedback/DragonCANdle.h"
-#include "mechanisms/Launcher/Launcher.h"
+#include "mechanisms/launcher/Launcher.h"
 #include "state/IRobotStateChangeSubscriber.h"
 #include "state/RobotStateChanges.h"
 #include "teleopcontrol/TeleopControl.h"

@@ -24,11 +24,11 @@
 
 // Team 302 includes
 #include "auton/PrimitiveEnums.h"
-#include "chassis/ChassisOptionEnums.h"
-#include "vision/DragonVision.h"
 #include "auton/ZoneParams.h"
-#include "mechanisms/Intake/Intake.h"
-#include "mechanisms/Launcher/Launcher.h"
+#include "chassis/ChassisOptionEnums.h"
+#include "mechanisms/intake/Intake.h"
+#include "mechanisms/launcher/Launcher.h"
+#include "vision/DragonVision.h"
 // Third Party Includes
 
 class PrimitiveParams

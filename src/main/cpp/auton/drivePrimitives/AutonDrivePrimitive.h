@@ -18,9 +18,9 @@
 #include "auton/ZoneParams.h"
 #include "auton/drivePrimitives/IPrimitive.h"
 #include "chassis/generated/CommandSwerveDrivetrain.h"
-#include "wpi/system/Timer.hpp"
+#include "mechanisms/launcher/Launcher.h"
 #include "wpi/commands2/Command.hpp"
-#include "mechanisms/Launcher/Launcher.h"
+#include "wpi/system/Timer.hpp"
 #include <wpi/commands2/CommandScheduler.hpp>
 class AutonDrivePrimitive : public IPrimitive
 {
