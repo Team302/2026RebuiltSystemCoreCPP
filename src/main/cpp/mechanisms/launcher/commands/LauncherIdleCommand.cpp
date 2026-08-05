@@ -28,6 +28,7 @@ static constexpr double m_spindexerTarget{0.0};
 
 static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_scoringLauncherTarget{2000};
 static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_passingLauncherTarget{4000};
+static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_launcherTarget{2000};
 
 LauncherIdleCommand::LauncherIdleCommand(Launcher *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, LauncherIdleCommand>(mechanism), m_mechanism(mechanism)
 {
@@ -43,6 +44,7 @@ void LauncherIdleCommand::Init()
     m_mechanism->UpdateTargetTransferPercentOut(m_transferTarget);
     m_mechanism->UpdateTargetIndexerPercentOut(m_indexerTarget);
     m_mechanism->UpdateTargetSpindexerPercentOut(m_spindexerTarget);
+    m_mechanism->UpdateTargetLauncherVelocityLauncher(m_launcherTarget);
 
     m_mechanism->PublishLaunchMode(false);
     m_mechanism->ResetLaunchCurrentTimer();
@@ -51,16 +53,23 @@ void LauncherIdleCommand::Init()
 
 void LauncherIdleCommand::Run()
 {
-    if (m_mechanism->GetDistanceToTarget() > 30_ft)
-    {
-        m_mechanism->UpdateTargetLauncherVelocityLauncher(m_passingLauncherTarget);
-    }
-    else
-    {
-        m_mechanism->UpdateTargetLauncherVelocityLauncher(m_scoringLauncherTarget);
-    }
+    // Commented out for now, verify passing targets are correct before enabling
+    //  if (m_mechanism->GetDistanceToTarget() > 30_ft)
+    //  {
+    //      m_mechanism->UpdateTargetLauncherVelocityLauncher(m_passingLauncherTarget);
+    //  }
+    //  else
+    //  {
+    //      m_mechanism->UpdateTargetLauncherVelocityLauncher(m_scoringLauncherTarget);
+    //  }
+
     if (m_mechanism->IsIntakingMode())
         m_mechanism->AgitateSpindexer();
+    else
+    {
+        m_mechanism->InitializeSpindexerTargets();
+        m_mechanism->UpdateTargetSpindexerPercentOut(m_spindexerTarget);
+    }
 }
 
 void LauncherIdleCommand::End(bool interrupted)

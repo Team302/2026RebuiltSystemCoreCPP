@@ -39,7 +39,6 @@ void IntakeLaunchCommand::Init()
 
     // Motor targets for Launch
     m_mechanism->UpdateTargetIntakePercentOut(m_intakeTarget);
-    m_mechanism->UpdateTargetExtenderPositionDeg(m_extenderTarget);
 
     m_bumpCounter = 0;
     m_currentExtenderBumpTarget = 0.0;
@@ -63,7 +62,7 @@ bool IntakeLaunchCommand::IsFinished()
 void IntakeLaunchCommand::BumpIntake()
 {
     // Periodically "bump" the extender during autonomous launching (moved from LaunchState).
-    if ((m_bumpCounter > m_counterMax) && wpi::RobotBase::IsAutonomous())
+    if ((m_bumpCounter > m_counterMax))
     {
         m_currentExtenderBumpTarget = (m_currentExtenderBumpTarget > 0) ? m_extenderTargetDown : m_extenderTargetUp;
         m_mechanism->UpdateTargetExtenderPercentOut(m_currentExtenderBumpTarget);

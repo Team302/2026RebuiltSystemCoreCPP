@@ -25,9 +25,9 @@
 
 using namespace LauncherCommands;
 
-static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_transferTarget{80.0};
-static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_indexerTarget{25.0};
-static constexpr wpi::units::angular_velocity::revolutions_per_minute_t m_spindexerTarget{22.0};
+static constexpr wpi::units::angular_velocity::turns_per_second_t m_transferTarget{80.0};
+static constexpr wpi::units::angular_velocity::turns_per_second_t m_indexerTarget{25.0};
+static constexpr wpi::units::angular_velocity::turns_per_second_t m_spindexerTarget{22.0};
 static constexpr wpi::units::angular_velocity::turns_per_second_t m_passingTransferTarget{160};
 static constexpr wpi::units::angular_velocity::turns_per_second_t m_passingIndexerTarget{50};
 

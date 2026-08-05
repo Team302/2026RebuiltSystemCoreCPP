@@ -59,7 +59,6 @@ Launcher::Launcher(RobotIdentifier id) : BaseMechSubsystem(MechanismTypes::MECHA
 	m_deadZoneManager = DeadZoneManager::GetInstance();
 
 	m_launcherVelocityLauncher.EnableFOC = true;
-	m_spindexerVelocityLauncher.EnableFOC = true;
 	m_indexerVelocityIndexer.EnableFOC = true;
 	m_transferVelocityTransfer.EnableFOC = true;
 	m_hoodPositionDegreesHood.EnableFOC = true;
@@ -468,7 +467,7 @@ void Launcher::InitializeTalonFXIndexerCompBot302()
 	configs.HardwareLimitSwitch.ReverseLimitSource = ctre::phoenix6::signals::ReverseLimitSourceValue::LimitSwitchPin;
 	configs.HardwareLimitSwitch.ReverseLimitType = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
 
-	configs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
+	configs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 	configs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
 	configs.MotorOutput.PeakForwardDutyCycle = 1.0;
 	configs.MotorOutput.PeakReverseDutyCycle = -1.0;
@@ -527,7 +526,7 @@ void Launcher::InitializeTalonFXSpindexerCompBot302()
 	configs.HardwareLimitSwitch.ReverseLimitSource = ctre::phoenix6::signals::ReverseLimitSourceValue::LimitSwitchPin;
 	configs.HardwareLimitSwitch.ReverseLimitType = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
 
-	configs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
+	configs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 	configs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Coast;
 	configs.MotorOutput.PeakForwardDutyCycle = 1.0;
 	configs.MotorOutput.PeakReverseDutyCycle = -1.0;
@@ -536,13 +535,21 @@ void Launcher::InitializeTalonFXSpindexerCompBot302()
 	configs.Feedback.FeedbackSensorSource = ctre::phoenix6::signals::FeedbackSensorSourceValue::RotorSensor;
 	configs.Feedback.SensorToMechanismRatio = 3.0;
 
-	configs.Slot0.kI = m_velocityLauncher->GetI();
-	configs.Slot0.kD = m_velocityLauncher->GetD();
-	configs.Slot0.kG = m_velocityLauncher->GetF();
-	configs.Slot0.kS = m_velocityLauncher->GetS();
-	configs.Slot0.kV = m_velocityLauncher->GetV();
-	configs.Slot0.kP = m_velocityLauncher->GetP();
-	configs.Slot0.kA = m_velocityLauncher->GetA();
+	configs.Slot0.kI = m_positionTurnSpindexer->GetI();
+	configs.Slot0.kD = m_positionTurnSpindexer->GetD();
+	configs.Slot0.kG = m_positionTurnSpindexer->GetF();
+	configs.Slot0.kS = m_positionTurnSpindexer->GetS();
+	configs.Slot0.kV = m_positionTurnSpindexer->GetV();
+	configs.Slot0.kP = m_positionTurnSpindexer->GetP();
+	configs.Slot0.kA = m_positionTurnSpindexer->GetA();
+
+	configs.Slot1.kI = m_velocitySpindexer->GetI();
+	configs.Slot1.kD = m_velocitySpindexer->GetD();
+	configs.Slot1.kG = m_velocitySpindexer->GetF();
+	configs.Slot1.kS = m_velocitySpindexer->GetS();
+	configs.Slot1.kV = m_velocitySpindexer->GetV();
+	configs.Slot1.kP = m_velocitySpindexer->GetP();
+	configs.Slot1.kA = m_velocitySpindexer->GetA();
 	configs.Slot0.GravityType = ctre::phoenix6::signals::GravityTypeValue::Elevator_Static;
 	configs.Slot0.StaticFeedforwardSign = ctre::phoenix6::signals::StaticFeedforwardSignValue::UseVelocitySign;
 
@@ -561,9 +568,9 @@ void Launcher::InitializeCANdiHoodCompBot302()
 {
 	CANdiConfiguration CANdiConfig{};
 
-	CANdiConfig.DigitalInputs.S1CloseState = ctre::phoenix6::signals::S1CloseStateValue::CloseWhenNotFloating;
-	CANdiConfig.DigitalInputs.S1FloatState = ctre::phoenix6::signals::S1FloatStateValue::BusKeeper;
-	CANdiConfig.DigitalInputs.S2CloseState = ctre::phoenix6::signals::S2CloseStateValue::CloseWhenNotLow;
+	CANdiConfig.DigitalInputs.S1CloseState = signals::S1CloseStateValue::CloseWhenFloating;
+	CANdiConfig.DigitalInputs.S1FloatState = signals::S1FloatStateValue::FloatDetect;
+	CANdiConfig.DigitalInputs.S2CloseState = ctre::phoenix6::signals::S2CloseStateValue::CloseWhenFloating;
 	CANdiConfig.DigitalInputs.S2FloatState = ctre::phoenix6::signals::S2FloatStateValue::FloatDetect;
 
 	ctre::phoenix::StatusCode status = ctre::phoenix::StatusCode::StatusCodeNotInitialized;
@@ -625,6 +632,12 @@ void Launcher::InitializeTalonFXSTurretCompBot302()
 	configs.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = wpi::units::angle::turn_t(0.0);
 	configs.HardwareLimitSwitch.ReverseLimitSource = ctre::phoenix6::signals::ReverseLimitSourceValue::RemoteCANdiS1;
 	configs.HardwareLimitSwitch.ReverseLimitType = ctre::phoenix6::signals::ReverseLimitTypeValue::NormallyOpen;
+
+	configs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+	configs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = m_maxTurretSoftLimit;
+
+	configs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+	configs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = m_minTurretSoftLimit;
 
 	configs.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
 	configs.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
@@ -1004,7 +1017,6 @@ void Launcher::UpdateCachedLoggingValues()
 
 void Launcher::AgitateSpindexer()
 {
-
 	auto currentSpindexerPosition = m_spindexerMotor->GetPosition().GetValue();
 
 	UpdateTargetSpindexerPositionTurnSpindexer(m_minReached ? m_maxSpindexerTarget : m_minSpindexerTarget);

@@ -57,7 +57,7 @@ BaseMech *MechanismConfigCompBot_302::GetMechanism(MechanismTypes::MECHANISM_TYP
 void MechanismConfigCompBot_302::DefineLEDs()
 {
 	auto candle = DragonCANdle::GetInstance();
-	candle->Initialize(m_ledCanID, m_ledStripSize, std::string("rio"), m_ledBrightness); // CAN ID 0, 45 LEDs external) Update with actual number of LEDs on the robot
+	candle->Initialize(m_ledCanID, m_ledStripSize, "0", m_ledBrightness); // CAN ID 0, 45 LEDs external) Update with actual number of LEDs on the robot
 }
 
 void MechanismConfigCompBot_302::DefineCompressor()
