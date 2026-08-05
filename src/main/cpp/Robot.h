@@ -32,6 +32,7 @@ class DragonVisionPoseEstimatorContainer;
 class DragonQuest;
 class DragonVision;
 class DriverFeedback;
+class DragonDataLoggerMgr;
 
 namespace subsystems
 {
@@ -62,7 +63,7 @@ private:
     DragonField *m_field;
     AutonPreviewer *m_previewer;
     RobotState *m_robotState;
-    // DragonDataLoggerMgr *m_datalogger; // SystemCore TO DO: Figure out how logging works in SystemCore
+    DragonDataLoggerMgr *m_datalogger;
     bool m_isFMSAttached = false;
     bool m_rewindLatch = false;
     DragonVisionPoseEstimatorContainer *m_dragonVisionPoseEstimator;

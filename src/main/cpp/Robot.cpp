@@ -82,6 +82,7 @@
 #include <chrono>
 #include <wpi/commands2/CommandScheduler.hpp>
 // #include "auton/drivePrimitives/AutonUtils.h"
+#include "auton/NeutralZoneManager.h"
 #include "chassis/ChassisConfigMgr.h"
 #include "feedback/DriverFeedback.h"
 #include "feedback/GameDataHelper.h"
@@ -91,13 +92,12 @@
 #include "utils/DragonField.h"
 #include "utils/PeriodicLooper.h"
 #include "utils/logging/debug/Logger.h"
+#include "utils/logging/signals/DragonDataLoggerMgr.h"
 #include "vision/DragonVision.h"
 #include "wpi/driverstation/DriverStation.hpp"
 #include "wpi/framework/RobotBase.hpp"
 #include "wpi/system/RobotController.hpp"
 #include "wpi/system/Threads.hpp"
-
-#include "auton/NeutralZoneManager.h"
 
 /// @brief Constructor for the Robot class.
 /// Initializes all core subsystems, auton options, and drive-team feedback in sequence.
@@ -110,11 +110,9 @@ Robot::Robot()
     InitializeAutonOptions();
     InitializeDriveteamFeedback();
 
-    /*SystemCore TO DO: Figure out how logging works in SystemCore
     m_datalogger = DragonDataLoggerMgr::GetInstance();
     m_datalogger->PeriodicDataLogInit(); // warm-load the data Logger to avoid first-run stalls during matches
     m_loggerTable = wpi::nt::NetworkTableInstance::GetDefault().GetTable("pi-logger");
-    */
 }
 /// @brief Called periodically while the robot is running, regardless of mode.
 /// Runs the CommandScheduler, manages logging (guarded by FMS attachment),
@@ -129,12 +127,10 @@ void Robot::RobotPeriodic()
         Logger::GetLogger()->PeriodicLog();
     }
 
-    /*SystemCore TO DO: Figure out how logging works in SystemCore
     if (m_datalogger != nullptr && (m_isFMSAttached || !wpi::RobotBase::IsDisabled()))
     {
         m_datalogger->PeriodicDataLog();
     }
-    */
 
     if (m_robotState != nullptr)
     {

@@ -145,7 +145,6 @@ void DragonQuest::GetEstimatedPose()
 // ──────────────────────────────────────────────────────────────────────────────
 // DataLog
 // ──────────────────────────────────────────────────────────────────────────────
-/* SystemCore TO DO: Figure out how logging works in SystemCore
 
 void DragonQuest::DataLog(uint64_t timestamp)
 {
@@ -172,7 +171,6 @@ void DragonQuest::DataLog(uint64_t timestamp)
         LogDoubleData(timestamp, m_questAppTimestampPath, appTime.value());
     }
 }
-    */
 
 // ──────────────────────────────────────────────────────────────────────────────
 // AttemptSetRobotPose – external entry point (from DragonVision::SetRobotPose)

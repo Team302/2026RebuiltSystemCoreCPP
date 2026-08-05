@@ -69,20 +69,18 @@ void Telemetry::Telemeterize(subsystems::CommandSwerveDrivetrain::SwerveDriveSta
     Logger->LogData(LOGGER_LEVEL::PRINT, std::string("SwerveTelemetry"), std::string("OdometryPeriod"), m_cachedOdometryPeriod.value());
 }
 
-/* SystemCore TO DO: Figure out how logging works in SystemCore
- void Telemetry::DataLog(uint64_t timestamp)
- {
+void Telemetry::DataLog(uint64_t timestamp)
+{
 
-LogPose2dData(timestamp, m_loggingPose2d, m_cachedPose);
+    LogPose2dData(timestamp, m_loggingPose2d, m_cachedPose);
 
-LogChassisVelocitiesData(timestamp, m_loggingChassisVelocities, m_cachedSpeeds);
+    LogChassisSpeedsData(timestamp, m_loggingChassisVelocities, m_cachedSpeeds);
 
-// Log module states
-LogSwerveModuleStateData(timestamp, m_loggingModuleActual, m_cachedModuleStates);
+    // Log module states
+    LogSwerveModuleStateData(timestamp, m_loggingModuleActual, m_cachedModuleStates);
 
-// Log module targets
-LogSwerveModuleStateData(timestamp, m_loggingModuleTarget, m_cachedModuleTargets);
-// OdometryPeriod logged as a double
-LogDoubleData(timestamp, m_loggingOdometryPeriod, m_cachedOdometryPeriod.value(), m_loggingSeconds);
+    // Log module targets
+    LogSwerveModuleStateData(timestamp, m_loggingModuleTarget, m_cachedModuleTargets);
+    // OdometryPeriod logged as a double
+    LogDoubleData(timestamp, m_loggingOdometryPeriod, m_cachedOdometryPeriod.value(), m_loggingSeconds);
 }
-*/

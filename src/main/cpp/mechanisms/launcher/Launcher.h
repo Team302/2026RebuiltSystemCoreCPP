@@ -31,6 +31,7 @@
 #include "state/IRobotStateChangeSubscriber.h"
 #include "state/RobotStateChanges.h"
 #include "utils/RebuiltTargetCalculator.h"
+#include "utils/logging/signals/DragonDataLogger.h"
 #include "wpi/nt/NetworkTable.hpp"
 
 // Hardware Includes
@@ -48,7 +49,7 @@
 #include "mechanisms/launcher/commands/LauncherOffCommand.h"
 #include "mechanisms/launcher/commands/LauncherPrepareToLaunchCommand.h"
 
-class Launcher : public BaseMechSubsystem, public IRobotStateChangeSubscriber
+class Launcher : public BaseMechSubsystem, public IRobotStateChangeSubscriber, public DragonDataLogger
 {
 public:
     enum STATE_NAMES
@@ -76,7 +77,7 @@ public:
     RobotIdentifier getActiveRobotId() { return m_activeRobotId; }
 
     void Periodic() override;
-    // void DataLog(uint64_t timestamp) override;
+    void DataLog(uint64_t timestamp) override;
 
     // Command Getters
     wpi::cmd::CommandPtr GetLauncherOffCommand() { return LauncherCommands::LauncherOffCommand(this).ToPtr(); }

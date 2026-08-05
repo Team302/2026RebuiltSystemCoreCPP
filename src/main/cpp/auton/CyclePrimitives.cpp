@@ -247,11 +247,10 @@ bool CyclePrimitives::SetMechanismStatesFromZone(std::pair<ZoneParams *, bool> *
     return false; // Return false if no mechanism states were changed
 }
 
-/* SystemCore TO DO: Figure out how logging works in SystemCore
 void CyclePrimitives::DataLog(uint64_t timestamp)
 {
     if (m_autonSelector != nullptr)
     {
         LogStringData(timestamp, "/Auton/PathName", m_autonSelector->GetSelectedAutoFile());
     }
-}*/
+}
