@@ -11,10 +11,10 @@
 #include <wpi/smartdashboard/MechanismLigament2d.hpp>
 
 #include "chassis/generated/CommandSwerveDrivetrain.h"
-// #include "utils/logging/signals/DragonDataLoggerMgr.h" // SystemCore TO DO: Figure out how logging works in SystemCore
+#include "utils/logging/signals/DragonDataLoggerMgr.h"
 
 #include "chassis/ChassisConfigMgr.h"
-class Telemetry //: public DragonDataLogger // SystemCore TO DO: Figure out how logging works in SystemCore
+class Telemetry : public DragonDataLogger
 
 {
 private:
@@ -71,5 +71,5 @@ public:
     void Telemeterize(subsystems::CommandSwerveDrivetrain::SwerveDriveState const &state);
 
     /** Periodic data logging implementation */
-    // void DataLog(uint64_t timestamp) override; // SystemCore TO DO: Figure out how logging works in SystemCore
+    void DataLog(uint64_t timestamp) override;
 };

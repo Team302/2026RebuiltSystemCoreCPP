@@ -309,18 +309,18 @@ ControlData *Intake::GetControlData(string name)
 	return nullptr;
 }
 
-// void Intake::DataLog(uint64_t timestamp)
-// {
-// 	// Mechanism State
-// 	LogStringData(timestamp, m_intakeStatePath, GetCurrentStateName());
+void Intake::DataLog(uint64_t timestamp)
+{
+	// Mechanism State
+	LogStringData(timestamp, m_intakeStatePath, GetCurrentStateName());
 
-// 	// Control Requests/Targets
-// 	LogDoubleData(timestamp, m_loggingIntakeTargetPath, m_intakePercentOut.Output.value());
-// 	LogStringData(timestamp, m_loggingIntakeControlRequest, std::string(m_intakeActiveTarget->GetName()));
-// 	LogDoubleData(timestamp, m_loggingExtenderTargetPath, m_extenderPositionDeg.Position.value());
-// 	LogDoubleData(timestamp, m_loggingExtenderPositionPath, m_cachedExtenderPositionDeg.value());
-// 	LogStringData(timestamp, m_loggingExtenderControlRequest, std::string(m_extenderActiveTarget->GetName()));
-// }
+	// Control Requests/Targets
+	LogDoubleData(timestamp, m_loggingIntakeTargetPath, m_intakePercentOut.Output.value());
+	LogStringData(timestamp, m_loggingIntakeControlRequest, std::string(m_intakeActiveTarget->GetName()));
+	LogDoubleData(timestamp, m_loggingExtenderTargetPath, m_extenderPositionDeg.Position.value());
+	LogDoubleData(timestamp, m_loggingExtenderPositionPath, m_cachedExtenderPositionDeg.value());
+	LogStringData(timestamp, m_loggingExtenderControlRequest, std::string(m_extenderActiveTarget->GetName()));
+}
 
 void Intake::NotifyStateUpdate(RobotStateChanges::StateChange change, bool value)
 {

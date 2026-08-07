@@ -16,9 +16,7 @@
 
 #include "chassis/ChassisConfigMgr.h"
 #include "chassis/generated/CommandSwerveDrivetrain.h"
-// #include "utils/logging/signals/DragonDataLogger.h"
-//  SystemCore TO DO: Figure out how logging works in SystemCore
-
+#include "utils/logging/signals/DragonDataLogger.h"
 #include "wpi/math/geometry/Pose2d.hpp"
 #include <wpi/math/geometry/Translation2d.hpp>
 #include <wpi/math/kinematics/ChassisVelocities.hpp>
@@ -37,7 +35,7 @@
  * Subclasses should override GetTargetPosition() to define their specific target locations
  * and provide season-specific target selection logic.
  */
-class TargetCalculator //: public DragonDataLogger // SystemCore TO DO: Figure out how logging works in SystemCore
+class TargetCalculator : public DragonDataLogger
 {
 public:
     /**
@@ -133,7 +131,7 @@ public:
 
     void ForceUpdateChassisPose() { UpdateChassisPose(true); }
 
-    // void DataLog(uint64_t timestamp) override; // SystemCore TO DO: Figure out how logging works in SystemCore
+    void DataLog(uint64_t timestamp) override;
 
 protected:
     TargetCalculator();

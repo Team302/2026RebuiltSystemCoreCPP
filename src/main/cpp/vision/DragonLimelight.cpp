@@ -523,12 +523,9 @@ void DragonLimelight::SetRobotPoseWithMegaTag1()
     }
 }
 
-/* SystemCore TO DO: Figure out how logging works in SystemCore
-
 void DragonLimelight::DataLog(uint64_t timestamp)
 {
     LogIntData(timestamp, std::string(m_loggingLimelightPath + m_networkTableName + m_loggingPipelineKey), static_cast<int>(m_pipeline));
     LogPose3dData(timestamp, std::string(m_loggingLimelightPath + m_networkTableName + m_loggingCameraPoseKey), m_megatag2Pos.estimatedPose);
     LogIntData(timestamp, std::string(m_loggingLimelightPath + m_networkTableName + m_loggingTagIDKey), static_cast<int>(LimelightHelpers::getRawFiducials(m_networkTableName).size()));
 }
-*/
