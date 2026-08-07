@@ -16,21 +16,21 @@
 
 #pragma once
 
-#include "wpi/commands2/Command.hpp"
-#include "wpi/commands2/CommandHelper.hpp"
+#include "mechanisms/base/DragonTimedCommand.h"
 
 class Launcher;
 
 namespace LauncherCommands
 {
-    class LauncherIdleCommand : public wpi::cmd::CommandHelper<wpi::cmd::Command, LauncherIdleCommand>
+    class LauncherIdleCommand : public wpi::cmd::CommandHelper<DragonTimedCommand, LauncherIdleCommand>
     {
     public:
         LauncherIdleCommand() = delete;
         explicit LauncherIdleCommand(Launcher *mechanism);
 
-        void Initialize() override;
-        void Execute() override;
+    protected:
+        void Init() override;
+        void Run() override;
         void End(bool interrupted) override;
         bool IsFinished() override;
 

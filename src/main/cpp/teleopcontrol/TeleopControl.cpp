@@ -419,13 +419,13 @@ wpi::cmd::Trigger TeleopControl::GetCommandTrigger(TeleopControlFunctions::FUNCT
 		case TeleopControlMappingEnums::RIGHT_TRIGGER_PRESSED:
 			return controller->RightTrigger();
 		case TeleopControlMappingEnums::POV_0:
-			return controller->POVUp();
+			return controller->DpadUp();
 		case TeleopControlMappingEnums::POV_90:
-			return controller->POVRight();
+			return controller->DpadRight();
 		case TeleopControlMappingEnums::POV_180:
-			return controller->POVDown();
+			return controller->DpadDown();
 		case TeleopControlMappingEnums::POV_270:
-			return controller->POVLeft();
+			return controller->DpadLeft();
 
 		default:
 			Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, string("TeleopControl-Command"), std::to_string(function), "Couldn't map the TeleopControlMapEnum");

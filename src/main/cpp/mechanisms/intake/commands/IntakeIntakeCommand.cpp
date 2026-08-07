@@ -25,13 +25,13 @@ using namespace IntakeCommands;
 static constexpr double m_intakeTarget{1.0};
 static constexpr double m_extenderTarget{-0.5};
 
-IntakeIntakeCommand::IntakeIntakeCommand(Intake *mechanism) : m_mechanism(mechanism)
+IntakeIntakeCommand::IntakeIntakeCommand(Intake *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, IntakeIntakeCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("IntakeIntake");
 }
 
-void IntakeIntakeCommand::Initialize()
+void IntakeIntakeCommand::Init()
 {
     m_mechanism->SetCurrentState(Intake::STATE_INTAKE);
 
@@ -42,7 +42,7 @@ void IntakeIntakeCommand::Initialize()
     m_mechanism->PublishIntakeMode(true);
 }
 
-void IntakeIntakeCommand::Execute()
+void IntakeIntakeCommand::Run()
 {
 }
 

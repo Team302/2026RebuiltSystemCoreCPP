@@ -27,13 +27,13 @@ using namespace IntakeCommands;
 static constexpr double m_intakeTarget{1.0};
 static constexpr wpi::units::angle::turn_t m_extenderTarget{20.0};
 
-IntakeLaunchCommand::IntakeLaunchCommand(Intake *mechanism) : m_mechanism(mechanism)
+IntakeLaunchCommand::IntakeLaunchCommand(Intake *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, IntakeLaunchCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("IntakeLaunch");
 }
 
-void IntakeLaunchCommand::Initialize()
+void IntakeLaunchCommand::Init()
 {
     m_mechanism->SetCurrentState(Intake::STATE_LAUNCH);
 
@@ -45,7 +45,7 @@ void IntakeLaunchCommand::Initialize()
     m_mechanism->PublishIntakeMode(false);
 }
 
-void IntakeLaunchCommand::Execute()
+void IntakeLaunchCommand::Run()
 {
     BumpIntake();
 }

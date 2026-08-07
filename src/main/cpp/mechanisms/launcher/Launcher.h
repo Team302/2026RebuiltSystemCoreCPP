@@ -32,6 +32,7 @@
 #include "state/RobotStateChanges.h"
 #include "utils/RebuiltTargetCalculator.h"
 #include "utils/logging/signals/DragonDataLogger.h"
+#include "utils/logging/timing/DragonTimedClass.h"
 #include "wpi/nt/NetworkTable.hpp"
 
 // Hardware Includes
@@ -49,7 +50,7 @@
 #include "mechanisms/launcher/commands/LauncherOffCommand.h"
 #include "mechanisms/launcher/commands/LauncherPrepareToLaunchCommand.h"
 
-class Launcher : public BaseMechSubsystem, public IRobotStateChangeSubscriber, public DragonDataLogger
+class Launcher : public BaseMechSubsystem, public IRobotStateChangeSubscriber, public DragonDataLogger, public DragonTimedClass
 {
 public:
     enum STATE_NAMES

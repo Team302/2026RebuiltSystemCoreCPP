@@ -30,13 +30,13 @@ static constexpr wpi::units::angular_velocity::turns_per_second_t m_indexerTarge
 static constexpr wpi::units::angular_velocity::turns_per_second_t m_spindexerTarget{22.0};
 static constexpr double m_turretTarget{0.0};
 
-LauncherManualLaunchCommand::LauncherManualLaunchCommand(Launcher *mechanism) : m_mechanism(mechanism)
+LauncherManualLaunchCommand::LauncherManualLaunchCommand(Launcher *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, LauncherManualLaunchCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("LauncherManualLaunch");
 }
 
-void LauncherManualLaunchCommand::Initialize()
+void LauncherManualLaunchCommand::Init()
 {
     m_mechanism->SetCurrentState(Launcher::STATE_MANUAL_LAUNCH);
 
@@ -51,7 +51,7 @@ void LauncherManualLaunchCommand::Initialize()
     m_mechanism->PublishLaunchMode(true);
 }
 
-void LauncherManualLaunchCommand::Execute()
+void LauncherManualLaunchCommand::Run()
 {
 }
 

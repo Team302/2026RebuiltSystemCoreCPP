@@ -31,13 +31,13 @@ static constexpr wpi::units::angular_velocity::turns_per_second_t m_spindexerTar
 static constexpr wpi::units::angular_velocity::turns_per_second_t m_passingTransferTarget{160};
 static constexpr wpi::units::angular_velocity::turns_per_second_t m_passingIndexerTarget{50};
 
-LauncherLaunchCommand::LauncherLaunchCommand(Launcher *mechanism) : m_mechanism(mechanism)
+LauncherLaunchCommand::LauncherLaunchCommand(Launcher *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, LauncherLaunchCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("LauncherLaunch");
 }
 
-void LauncherLaunchCommand::Initialize()
+void LauncherLaunchCommand::Init()
 {
     m_mechanism->SetCurrentState(Launcher::STATE_LAUNCH);
 
@@ -62,7 +62,7 @@ void LauncherLaunchCommand::Initialize()
     m_launchReleaseTimer.Reset();
 }
 
-void LauncherLaunchCommand::Execute()
+void LauncherLaunchCommand::Run()
 {
     if (!TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::LAUNCH) &&
         !TeleopControl::GetInstance()->IsButtonPressed(TeleopControlFunctions::LAUNCH_OVERRIDE) &&

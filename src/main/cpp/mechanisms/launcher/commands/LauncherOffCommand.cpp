@@ -28,13 +28,13 @@ static constexpr double m_spindexerTarget{0.0};
 static constexpr double m_turretTarget{0.0};
 static constexpr double m_manualControlModifier{0.25};
 
-LauncherOffCommand::LauncherOffCommand(Launcher *mechanism) : m_mechanism(mechanism)
+LauncherOffCommand::LauncherOffCommand(Launcher *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, LauncherOffCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("LauncherOff");
 }
 
-void LauncherOffCommand::Initialize()
+void LauncherOffCommand::Init()
 {
     m_mechanism->SetCurrentState(Launcher::STATE_OFF);
 
@@ -50,7 +50,7 @@ void LauncherOffCommand::Initialize()
     m_mechanism->PublishLaunchMode(false);
 }
 
-void LauncherOffCommand::Execute()
+void LauncherOffCommand::Run()
 {
     double manualHoodPercentOut = TeleopControl::GetInstance()->GetAxisValue(TeleopControlFunctions::UPDATE_DEPOT_PASSING_TARGET_X);
     if (abs(manualHoodPercentOut) < 0.075)
