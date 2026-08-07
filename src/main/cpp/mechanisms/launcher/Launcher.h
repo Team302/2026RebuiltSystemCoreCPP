@@ -31,6 +31,7 @@
 #include "state/IRobotStateChangeSubscriber.h"
 #include "state/RobotStateChanges.h"
 #include "utils/RebuiltTargetCalculator.h"
+#include "utils/logging/signals/DragonDataLogger.h"
 #include "wpi/nt/NetworkTable.hpp"
 
 // Hardware Includes
@@ -48,7 +49,7 @@
 #include "mechanisms/launcher/commands/LauncherOffCommand.h"
 #include "mechanisms/launcher/commands/LauncherPrepareToLaunchCommand.h"
 
-class Launcher : public BaseMechSubsystem, public IRobotStateChangeSubscriber
+class Launcher : public BaseMechSubsystem, public IRobotStateChangeSubscriber, public DragonDataLogger
 {
 public:
     enum STATE_NAMES
@@ -76,7 +77,7 @@ public:
     RobotIdentifier getActiveRobotId() { return m_activeRobotId; }
 
     void Periodic() override;
-    // void DataLog(uint64_t timestamp) override;
+    void DataLog(uint64_t timestamp) override;
 
     // Command Getters
     wpi::cmd::CommandPtr GetLauncherOffCommand() { return LauncherCommands::LauncherOffCommand(this).ToPtr(); }
@@ -318,14 +319,6 @@ private:
     ctre::phoenix6::controls::ControlRequest *m_spindexerActiveTarget = &m_spindexerPercentOut;
     ctre::phoenix6::controls::ControlRequest *m_turretActiveTarget = &m_turretPercentOut;
 
-    // Cached Sensor Values
-    wpi::units::angular_velocity::revolutions_per_minute_t m_cachedLauncherVelocityLauncher = wpi::units::angular_velocity::revolutions_per_minute_t(0.0);
-    wpi::units::angle::turn_t m_cachedHoodPositionDegreesHood = wpi::units::angle::turn_t(0.0);
-    wpi::units::angular_velocity::revolutions_per_minute_t m_cachedTransferVelocityTransfer = wpi::units::angular_velocity::revolutions_per_minute_t(0.0);
-    wpi::units::angular_velocity::revolutions_per_minute_t m_cachedIndexerVelocityIndexer = wpi::units::angular_velocity::revolutions_per_minute_t(0.0);
-    wpi::units::angular_velocity::revolutions_per_minute_t m_cachedSpindexerVelocityLauncher = wpi::units::angular_velocity::revolutions_per_minute_t(0.0);
-    wpi::units::angle::turn_t m_cachedTurretPositionDegreesTurret = wpi::units::angle::turn_t(0.0);
-
     void RefreshCachedData();
 
     // Logging Paths
@@ -337,13 +330,10 @@ private:
     static constexpr std::string_view m_loggingHoodPositionPath = "/Launcher/HoodPosition";
     static constexpr std::string_view m_loggingHoodControlRequest = "/Launcher/HoodControlRequest";
     static constexpr std::string_view m_loggingTransferTargetPath = "/Launcher/TransferMotorTarget";
-    static constexpr std::string_view m_loggingTransferVelocityPath = "/Launcher/TransferVelocity";
     static constexpr std::string_view m_loggingTransferControlRequest = "/Launcher/TransferControlRequest";
     static constexpr std::string_view m_loggingIndexerTargetPath = "/Launcher/IndexerMotorTarget";
-    static constexpr std::string_view m_loggingIndexerVelocityPath = "/Launcher/IndexerVelocity";
     static constexpr std::string_view m_loggingIndexerControlRequest = "/Launcher/IndexerControlRequest";
     static constexpr std::string_view m_loggingSpindexerTargetPath = "/Launcher/SpindexerMotorTarget";
-    static constexpr std::string_view m_loggingSpindexerVelocityPath = "/Launcher/SpindexerVelocity";
     static constexpr std::string_view m_loggingSpindexerControlRequest = "/Launcher/SpindexerControlRequest";
     static constexpr std::string_view m_loggingTurretTargetPath = "/Launcher/TurretMotorTarget";
     static constexpr std::string_view m_loggingTurretPositionPath = "/Launcher/TurretPosition";

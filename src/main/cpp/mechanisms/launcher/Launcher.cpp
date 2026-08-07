@@ -763,31 +763,28 @@ ControlData *Launcher::GetControlData(string name)
 	return nullptr;
 }
 
-// void Launcher::DataLog(uint64_t timestamp)
-// {
-// 	// Mechanism State
-// 	LogStringData(timestamp, m_launcherStatePath, GetCurrentStateName());
+void Launcher::DataLog(uint64_t timestamp)
+{
+	// Mechanism State
+	LogStringData(timestamp, m_launcherStatePath, GetCurrentStateName());
 
-// 	// Control Requests/Targets
-// 	LogDoubleData(timestamp, m_loggingLauncherTargetPath, m_launcherVelocityLauncher.Velocity.value());
-// 	LogDoubleData(timestamp, m_loggingLauncherVelocityPath, m_cachedLauncherVelocityLauncher.value());
-// 	LogStringData(timestamp, m_loggingLauncherControlRequest, std::string(m_launcherActiveTarget->GetName()));
-// 	LogDoubleData(timestamp, m_loggingHoodTargetPath, m_hoodPositionDegreesHood.Position.value());
-// 	LogDoubleData(timestamp, m_loggingHoodPositionPath, m_cachedHoodPositionDegreesHood.value());
-// 	LogStringData(timestamp, m_loggingHoodControlRequest, std::string(m_hoodActiveTarget->GetName()));
-// 	LogDoubleData(timestamp, m_loggingTransferTargetPath, m_transferVelocityTransfer.Velocity.value());
-// 	LogDoubleData(timestamp, m_loggingTransferVelocityPath, m_cachedTransferVelocityTransfer.value());
-// 	LogStringData(timestamp, m_loggingTransferControlRequest, std::string(m_transferActiveTarget->GetName()));
-// 	LogDoubleData(timestamp, m_loggingIndexerTargetPath, m_indexerVelocityIndexer.Velocity.value());
-// 	LogDoubleData(timestamp, m_loggingIndexerVelocityPath, m_cachedIndexerVelocityIndexer.value());
-// 	LogStringData(timestamp, m_loggingIndexerControlRequest, std::string(m_indexerActiveTarget->GetName()));
-// 	LogDoubleData(timestamp, m_loggingSpindexerTargetPath, m_spindexerVelocityLauncher.Velocity.value());
-// 	LogDoubleData(timestamp, m_loggingSpindexerVelocityPath, m_cachedSpindexerVelocityLauncher.value());
-// 	LogStringData(timestamp, m_loggingSpindexerControlRequest, std::string(m_spindexerActiveTarget->GetName()));
-// 	LogDoubleData(timestamp, m_loggingTurretTargetPath, m_turretPositionDegreesTurret.Position.value());
-// 	LogDoubleData(timestamp, m_loggingTurretPositionPath, m_cachedTurretPositionDegreesTurret.value());
-// 	LogStringData(timestamp, m_loggingTurretControlRequest, std::string(m_turretActiveTarget->GetName()));
-// }
+	// Control Requests/Targets
+	LogDoubleData(timestamp, m_loggingLauncherTargetPath, m_launcherVelocityLauncher.Velocity.value());
+	LogDoubleData(timestamp, m_loggingLauncherVelocityPath, m_cachedLauncherVelocity.value());
+	LogStringData(timestamp, m_loggingLauncherControlRequest, std::string(m_launcherActiveTarget->GetName()));
+	LogDoubleData(timestamp, m_loggingHoodTargetPath, m_hoodPositionDegreesHood.Position.value());
+	LogDoubleData(timestamp, m_loggingHoodPositionPath, m_cachedHoodPosition.value());
+	LogStringData(timestamp, m_loggingHoodControlRequest, std::string(m_hoodActiveTarget->GetName()));
+	LogDoubleData(timestamp, m_loggingTransferTargetPath, m_transferVelocityTransfer.Velocity.value());
+	LogStringData(timestamp, m_loggingTransferControlRequest, std::string(m_transferActiveTarget->GetName()));
+	LogDoubleData(timestamp, m_loggingIndexerTargetPath, m_indexerVelocityIndexer.Velocity.value());
+	LogStringData(timestamp, m_loggingIndexerControlRequest, std::string(m_indexerActiveTarget->GetName()));
+	LogDoubleData(timestamp, m_loggingSpindexerTargetPath, m_spindexerVelocitySpindexer.Velocity.value());
+	LogStringData(timestamp, m_loggingSpindexerControlRequest, std::string(m_spindexerActiveTarget->GetName()));
+	LogDoubleData(timestamp, m_loggingTurretTargetPath, m_turretPositionDegreesTurret.Position.value());
+	LogDoubleData(timestamp, m_loggingTurretPositionPath, m_cachedTurretPosition.value());
+	LogStringData(timestamp, m_loggingTurretControlRequest, std::string(m_turretActiveTarget->GetName()));
+}
 
 // --- Handwritten Methods ---
 
