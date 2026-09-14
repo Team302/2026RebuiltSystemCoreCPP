@@ -104,11 +104,11 @@ void LauncherLauncherTuningCommand::Run()
     Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, "LauncherTuningState", "Distance", distanceToTarget.value());
 }
 
-void LauncherLauncherTuningCommand::End(bool interrupted)
+void LauncherLauncherTuningCommand::Exit(bool interrupted)
 {
 }
 
-bool LauncherLauncherTuningCommand::IsFinished()
+bool LauncherLauncherTuningCommand::IsDone()
 {
     return false; // Default continuous execution
 }

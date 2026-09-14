@@ -55,11 +55,11 @@ void LauncherManualLaunchCommand::Run()
 {
 }
 
-void LauncherManualLaunchCommand::End(bool interrupted)
+void LauncherManualLaunchCommand::Exit(bool interrupted)
 {
 }
 
-bool LauncherManualLaunchCommand::IsFinished()
+bool LauncherManualLaunchCommand::IsDone()
 {
     return false; // Default continuous execution
 }

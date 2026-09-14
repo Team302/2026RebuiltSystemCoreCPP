@@ -72,11 +72,11 @@ void LauncherIdleCommand::Run()
     }
 }
 
-void LauncherIdleCommand::End(bool interrupted)
+void LauncherIdleCommand::Exit(bool interrupted)
 {
 }
 
-bool LauncherIdleCommand::IsFinished()
+bool LauncherIdleCommand::IsDone()
 {
     return false; // Default continuous execution
 }

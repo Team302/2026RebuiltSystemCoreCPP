@@ -46,11 +46,11 @@ void IntakeIntakeCommand::Run()
 {
 }
 
-void IntakeIntakeCommand::End(bool interrupted)
+void IntakeIntakeCommand::Exit(bool interrupted)
 {
 }
 
-bool IntakeIntakeCommand::IsFinished()
+bool IntakeIntakeCommand::IsDone()
 {
     return false; // Default continuous execution
 }

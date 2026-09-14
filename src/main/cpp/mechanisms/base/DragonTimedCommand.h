@@ -61,6 +61,14 @@ public:
     ///        @c Run(). Marked @c final so derived commands cannot bypass timing.
     void Execute() final;
 
+    /// @brief Scheduler entry point for command end. Times and forwards to @c Exit().
+    ///        Marked @c final so derived commands cannot bypass timing.
+    void End(bool interrupted) final;
+
+    /// @brief Scheduler entry point for command completion check. Times and forwards to @c IsDone().
+    ///        Marked @c final so derived commands cannot bypass timing.
+    bool IsFinished() final;
+
 protected:
     /// @brief Override this instead of @c Initialize(). Runs once when the command is scheduled;
     ///        timed automatically.
@@ -69,4 +77,12 @@ protected:
     /// @brief Override this instead of @c Execute(). Runs every loop while the command is active;
     ///        timed automatically.
     virtual void Run() {}
+
+    /// @brief Override this instead of @c End(). Runs when the command is ended;
+    ///        timed automatically.
+    virtual void Exit(bool interrupted) {}
+
+    /// @brief Override this to indicate when the command is finished. Runs every loop while the command is active.
+    ///        timed automatically.
+    virtual bool IsDone() { return false; }
 };

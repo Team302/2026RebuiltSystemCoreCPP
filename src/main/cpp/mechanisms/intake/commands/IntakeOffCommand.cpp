@@ -55,11 +55,11 @@ void IntakeOffCommand::Run()
     }
 }
 
-void IntakeOffCommand::End(bool interrupted)
+void IntakeOffCommand::Exit(bool interrupted)
 {
 }
 
-bool IntakeOffCommand::IsFinished()
+bool IntakeOffCommand::IsDone()
 {
     return false; // Default continuous execution
 }

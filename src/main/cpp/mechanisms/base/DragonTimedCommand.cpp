@@ -35,3 +35,15 @@ void DragonTimedCommand::Execute()
     DragonTimedClass::ScopedTimer timer(*this, GetName() + " Execute");
     Run();
 }
+
+void DragonTimedCommand::End(bool interrupted)
+{
+    DragonTimedClass::ScopedTimer timer(*this, GetName() + " End");
+    Exit(interrupted);
+}
+
+bool DragonTimedCommand::IsFinished()
+{
+    DragonTimedClass::ScopedTimer timer(*this, GetName() + " IsFinished");
+    return IsDone();
+}

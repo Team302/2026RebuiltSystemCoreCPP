@@ -46,11 +46,11 @@ void IntakeExpelCommand::Run()
 {
 }
 
-void IntakeExpelCommand::End(bool interrupted)
+void IntakeExpelCommand::Exit(bool interrupted)
 {
 }
 
-bool IntakeExpelCommand::IsFinished()
+bool IntakeExpelCommand::IsDone()
 {
     return false; // Default continuous execution
 }
