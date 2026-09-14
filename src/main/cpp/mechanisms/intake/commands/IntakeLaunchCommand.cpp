@@ -50,11 +50,11 @@ void IntakeLaunchCommand::Run()
     BumpIntake();
 }
 
-void IntakeLaunchCommand::End(bool interrupted)
+void IntakeLaunchCommand::Exit(bool interrupted)
 {
 }
 
-bool IntakeLaunchCommand::IsFinished()
+bool IntakeLaunchCommand::IsDone()
 {
     return false; // Default continuous execution
 }

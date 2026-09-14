@@ -67,11 +67,11 @@ void LauncherOffCommand::Run()
     m_mechanism->UpdateTurretEnabled();
 }
 
-void LauncherOffCommand::End(bool interrupted)
+void LauncherOffCommand::Exit(bool interrupted)
 {
 }
 
-bool LauncherOffCommand::IsFinished()
+bool LauncherOffCommand::IsDone()
 {
     return false; // Default continuous execution
 }

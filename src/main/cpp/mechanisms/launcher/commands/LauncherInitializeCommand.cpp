@@ -53,11 +53,11 @@ void LauncherInitializeCommand::Run()
     m_mechanism->InitializeLauncher();
 }
 
-void LauncherInitializeCommand::End(bool interrupted)
+void LauncherInitializeCommand::Exit(bool interrupted)
 {
 }
 
-bool LauncherInitializeCommand::IsFinished()
+bool LauncherInitializeCommand::IsDone()
 {
     return m_mechanism->IsLauncherInitialized(); // Default continuous execution
 }

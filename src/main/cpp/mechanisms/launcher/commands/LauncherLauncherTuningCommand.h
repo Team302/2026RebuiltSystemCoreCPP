@@ -31,8 +31,8 @@ namespace LauncherCommands
     protected:
         void Init() override;
         void Run() override;
-        void End(bool interrupted) override;
-        bool IsFinished() override;
+        void Exit(bool interrupted) override;
+        bool IsDone() override;
 
     private:
         Launcher *m_mechanism;
