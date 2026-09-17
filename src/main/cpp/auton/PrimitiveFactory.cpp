@@ -15,12 +15,12 @@
 //====================================================================================================================================================
 
 // Team 302 includes
+#include "auton/PrimitiveFactory.h"
+#include "auton/PrimitiveEnums.h"
+#include "auton/drivePrimitives/AutonDrivePrimitive.h"
 #include "auton/drivePrimitives/IPrimitive.h"
 #include "auton/drivePrimitives/ResetPositionTrajectory.h"
 #include "auton/drivePrimitives/VisionDrivePrimitive.h"
-#include "auton/PrimitiveEnums.h"
-#include "auton/PrimitiveFactory.h"
-#include "auton/drivePrimitives/AutonDrivePrimitive.h"
 
 PrimitiveFactory *PrimitiveFactory::m_instance = nullptr;
 
@@ -50,7 +50,6 @@ IPrimitive *PrimitiveFactory::GetIPrimitive(PrimitiveParams *primitivePasser)
     {
     case DO_NOTHING:
     case DO_NOTHING_MECHANISMS:
-    case HOLD_POSITION:
     case TRAJECTORY_DRIVE:
     case VISION_ALIGN:
         if (m_autonDrivePrimitive == nullptr)

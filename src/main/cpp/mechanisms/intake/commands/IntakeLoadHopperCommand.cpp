@@ -45,11 +45,11 @@ void IntakeLoadHopperCommand::Run()
 {
 }
 
-void IntakeLoadHopperCommand::End(bool interrupted)
+void IntakeLoadHopperCommand::Exit(bool interrupted)
 {
 }
 
-bool IntakeLoadHopperCommand::IsFinished()
+bool IntakeLoadHopperCommand::IsDone()
 {
 	return false; // Default continuous execution
 }

@@ -427,7 +427,6 @@ AutonPreviewer
 
 ```
 DO_NOTHING
-HOLD_POSITION
 TRAJECTORY_DRIVE       ← follows a Choreo path via TrajectoryDrive command
 RESET_POSITION
 VISION_ALIGN

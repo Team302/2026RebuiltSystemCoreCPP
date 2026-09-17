@@ -43,8 +43,7 @@ public:
 
     enum NoMovementOption
     {
-        STOP,
-        HOLD_POSITION
+        STOP
     };
 
     enum AutonControllerType

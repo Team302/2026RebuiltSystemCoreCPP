@@ -73,13 +73,13 @@ void LauncherLaunchCommand::Run()
     }
 }
 
-void LauncherLaunchCommand::End(bool interrupted)
+void LauncherLaunchCommand::Exit(bool interrupted)
 {
     m_launchReleaseTimer.Stop();
     m_launchReleaseTimer.Reset();
 }
 
-bool LauncherLaunchCommand::IsFinished()
+bool LauncherLaunchCommand::IsDone()
 {
     // Self-governed exit back to Idle (this command is bound with OnTrue, so the trigger never cancels
     // it). This replaces the old IdleState "launchingDone" timer logic.

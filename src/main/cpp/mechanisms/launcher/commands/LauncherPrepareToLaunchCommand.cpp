@@ -48,11 +48,11 @@ void LauncherPrepareToLaunchCommand::Run()
 {
 }
 
-void LauncherPrepareToLaunchCommand::End(bool interrupted)
+void LauncherPrepareToLaunchCommand::Exit(bool interrupted)
 {
 }
 
-bool LauncherPrepareToLaunchCommand::IsFinished()
+bool LauncherPrepareToLaunchCommand::IsDone()
 {
     return false; // Default continuous execution
 }
