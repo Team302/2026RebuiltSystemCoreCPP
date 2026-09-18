@@ -82,6 +82,7 @@
 #include <chrono>
 #include <wpi/commands2/CommandScheduler.hpp>
 // #include "auton/drivePrimitives/AutonUtils.h"
+#include "auton/NeutralZoneManager.h"
 #include "chassis/ChassisConfigMgr.h"
 #include "feedback/DriverFeedback.h"
 #include "feedback/GameDataHelper.h"
@@ -91,50 +92,51 @@
 #include "utils/DragonField.h"
 #include "utils/PeriodicLooper.h"
 #include "utils/logging/debug/Logger.h"
+#include "utils/logging/signals/DragonDataLoggerMgr.h"
+#include "utils/logging/timing/DragonTimedClass.h"
 #include "vision/DragonVision.h"
 #include "wpi/driverstation/DriverStation.hpp"
 #include "wpi/framework/RobotBase.hpp"
 #include "wpi/system/RobotController.hpp"
 #include "wpi/system/Threads.hpp"
 
-#include "auton/NeutralZoneManager.h"
-
 /// @brief Constructor for the Robot class.
 /// Initializes all core subsystems, auton options, and drive-team feedback in sequence.
 /// Also warm-loads the data Logger to avoid first-run delays.
-Robot::Robot()
+Robot::Robot() : DragonTimedClass("Robot")
 {
     Logger::GetLogger()->PutLoggingSelectionsOnDashboard();
+    DragonTimedClass::PutTimingSelectionOnDashboard();
 
     InitializeRobot();
     InitializeAutonOptions();
     InitializeDriveteamFeedback();
 
-    /*SystemCore TO DO: Figure out how logging works in SystemCore
     m_datalogger = DragonDataLoggerMgr::GetInstance();
     m_datalogger->PeriodicDataLogInit(); // warm-load the data Logger to avoid first-run stalls during matches
     m_loggerTable = wpi::nt::NetworkTableInstance::GetDefault().GetTable("pi-logger");
-    */
 }
 /// @brief Called periodically while the robot is running, regardless of mode.
 /// Runs the CommandScheduler, manages logging (guarded by FMS attachment),
 /// updates RobotState, and refreshes drive-team feedback (vision, field position, HUD).
 void Robot::RobotPeriodic()
 {
+    DragonTimedClass::ScopedTimer timer(*this, "Periodic");
+
     wpi::cmd::CommandScheduler::GetInstance().Run();
 
     m_isFMSAttached = false; // SystemCore TO DO: Find FMSAttached for systemcore
     if (!m_isFMSAttached)
     {
+
+        DragonTimedClass::UpdateTimingSelection();
         Logger::GetLogger()->PeriodicLog();
     }
 
-    /*SystemCore TO DO: Figure out how logging works in SystemCore
     if (m_datalogger != nullptr && (m_isFMSAttached || !wpi::RobotBase::IsDisabled()))
     {
         m_datalogger->PeriodicDataLog();
     }
-    */
 
     if (m_robotState != nullptr)
     {
@@ -183,6 +185,8 @@ void Robot::AutonomousInit()
 /// Executes the current cycle primitives routine and updates the PeriodicLooper's autonomous state.
 void Robot::AutonomousPeriodic()
 {
+    DragonTimedClass::ScopedTimer timer(*this, "Autonomous Periodic");
+
     if (m_cyclePrims != nullptr)
     {
         m_cyclePrims->Run();
@@ -210,7 +214,11 @@ void Robot::TeleopInit()
 
 /// @brief Called periodically while in teleop mode.
 /// Updates the PeriodicLooper's teleop state for mode-specific behavior.
-void Robot::TeleopPeriodic() { PeriodicLooper::GetInstance()->TeleopRunCurrentState(); }
+void Robot::TeleopPeriodic()
+{
+    DragonTimedClass::ScopedTimer timer(*this, "Teleop Periodic");
+    PeriodicLooper::GetInstance()->TeleopRunCurrentState();
+}
 
 void Robot::TeleopExit()
 {

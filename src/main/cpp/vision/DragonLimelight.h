@@ -36,7 +36,7 @@
 #include "chassis/ChassisConfigMgr.h"
 #include "chassis/generated/CommandSwerveDrivetrain.h"
 #include "fielddata/FieldAprilTagIDs.h"
-// #include "utils/logging/signals/DragonDataLogger.h" SystemCore TO DO: Figure out how logging works in SystemCore
+#include "utils/logging/signals/DragonDataLogger.h"
 #include "vision/DragonVisionEnums.h"
 #include "vision/DragonVisionStruct.h"
 #include "vision/VisionPose.h"
@@ -44,7 +44,7 @@
 // Third Party Includes
 
 // DragonLimelight derives from DragonDataLogger for vision data logging and Limelight control
-class DragonLimelight //: public DragonDataLogger SystemCore TO DO: Figure out how logging works in SystemCore
+class DragonLimelight : public DragonDataLogger
 {
 public:
     ///-----------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ public:
     ///-----------------------------------------------------------------------------------
     /// @brief Log relevant Limelight data to the data Logger.
     ///-----------------------------------------------------------------------------------
-    // void DataLog(uint64_t timestamp) override; // SystemCore TO DO: Figure out how logging works in SystemCore
+    void DataLog(uint64_t timestamp) override;
 
 private:
     ///-----------------------------------------------------------------------------------

@@ -29,6 +29,8 @@
 #include "mechanisms/controllers/ControlData.h"
 #include "state/IRobotStateChangeSubscriber.h"
 #include "state/RobotStateChanges.h"
+#include "utils/logging/signals/DragonDataLogger.h"
+#include "utils/logging/timing/DragonTimedClass.h"
 
 // Hardware Includes
 #include "ctre/phoenix6/CANdi.hpp"
@@ -43,7 +45,7 @@
 #include "mechanisms/intake/commands/IntakeLoadHopperCommand.h"
 #include "mechanisms/intake/commands/IntakeOffCommand.h"
 
-class Intake : public BaseMechSubsystem, public IRobotStateChangeSubscriber
+class Intake : public BaseMechSubsystem, public IRobotStateChangeSubscriber, public DragonDataLogger, public DragonTimedClass
 {
 public:
 	enum STATE_NAMES
@@ -69,7 +71,7 @@ public:
 	RobotIdentifier getActiveRobotId() { return m_activeRobotId; }
 
 	void Periodic() override;
-	// void DataLog(uint64_t timestamp) override;
+	void DataLog(uint64_t timestamp) override;
 
 	// Command Getters
 	wpi::cmd::CommandPtr GetIntakeOffCommand() { return IntakeCommands::IntakeOffCommand(this).ToPtr(); }
@@ -110,6 +112,7 @@ public:
 	}
 	void UpdateTargetExtenderPositionDeg(wpi::units::angle::turn_t position)
 	{
+		position = std::clamp(position, m_intakeExtendedPositionTarget, m_intakeRetractedPositionTarget);
 		m_extenderPositionDeg.Position = position;
 		m_extenderActiveTarget = &m_extenderPositionDeg.WithSlot(0);
 	}

@@ -31,6 +31,8 @@
 #include "state/IRobotStateChangeSubscriber.h"
 #include "state/RobotStateChanges.h"
 #include "utils/RebuiltTargetCalculator.h"
+#include "utils/logging/signals/DragonDataLogger.h"
+#include "utils/logging/timing/DragonTimedClass.h"
 #include "wpi/nt/NetworkTable.hpp"
 
 // Hardware Includes
@@ -48,7 +50,7 @@
 #include "mechanisms/launcher/commands/LauncherOffCommand.h"
 #include "mechanisms/launcher/commands/LauncherPrepareToLaunchCommand.h"
 
-class Launcher : public BaseMechSubsystem, public IRobotStateChangeSubscriber
+class Launcher : public BaseMechSubsystem, public IRobotStateChangeSubscriber, public DragonDataLogger, public DragonTimedClass
 {
 public:
     enum STATE_NAMES
@@ -76,7 +78,7 @@ public:
     RobotIdentifier getActiveRobotId() { return m_activeRobotId; }
 
     void Periodic() override;
-    // void DataLog(uint64_t timestamp) override;
+    void DataLog(uint64_t timestamp) override;
 
     // Command Getters
     wpi::cmd::CommandPtr GetLauncherOffCommand() { return LauncherCommands::LauncherOffCommand(this).ToPtr(); }
@@ -139,12 +141,8 @@ public:
     void UpdateTargetTurretPercentOut(double percentOut)
     {
         m_turretPercentOut.Output = percentOut;
+        m_turretPercentOut.IgnoreSoftwareLimits = true;
         m_turretActiveTarget = &m_turretPercentOut;
-    }
-    void UpdateTargetSpindexerVelocityLauncher(wpi::units::angular_velocity::revolutions_per_minute_t value)
-    {
-        m_spindexerVelocityLauncher.Velocity = value;
-        m_spindexerActiveTarget = &m_spindexerVelocityLauncher.WithSlot(0);
     }
     void UpdateTargetLauncherVelocityLauncher(wpi::units::angular_velocity::revolutions_per_minute_t value)
     {
@@ -161,25 +159,28 @@ public:
         m_spindexerPositionTurnSpindexer.Position = position;
         m_spindexerActiveTarget = &m_spindexerPositionTurnSpindexer.WithSlot(0);
     }
-    void UpdateTargetTurretPositionDegreesTurret(wpi::units::angle::turn_t value)
+    void UpdateTargetTurretPositionDegreesTurret(wpi::units::angle::degree_t value)
     {
-        m_turretPositionDegreesTurret.Position = value;
+        wpi::units::angle::turn_t positionTurn = wpi::units::angle::turn_t(value.value()); // Turns = Degrees from sensor to mech ratio, but physical units are degrees, but motor controller is in turns, so convert to turns for clamping and motor controller output, but keep target in degrees for target calculator and logging
+        positionTurn = std::clamp(positionTurn, m_minTurretAngle, m_maxTurretAngle);
+        m_turretPositionDegreesTurret.Position = positionTurn;
         m_turretActiveTarget = &m_turretPositionDegreesTurret.WithSlot(0);
     }
-    void UpdateTargetTransferVelocityTransfer(wpi::units::angular_velocity::revolutions_per_minute_t value)
+
+    void UpdateTargetTransferVelocityTransfer(wpi::units::angular_velocity::turns_per_second_t value)
     {
         m_transferVelocityTransfer.Velocity = value;
         m_transferActiveTarget = &m_transferVelocityTransfer.WithSlot(0);
     }
-    void UpdateTargetIndexerVelocityIndexer(wpi::units::angular_velocity::revolutions_per_minute_t value)
+    void UpdateTargetIndexerVelocityIndexer(wpi::units::angular_velocity::turns_per_second_t value)
     {
         m_indexerVelocityIndexer.Velocity = value;
         m_indexerActiveTarget = &m_indexerVelocityIndexer.WithSlot(0);
     }
-    void UpdateTargetSpindexerVelocitySpindexer(wpi::units::angular_velocity::revolutions_per_minute_t value)
+    void UpdateTargetSpindexerVelocitySpindexer(wpi::units::angular_velocity::turns_per_second_t value)
     {
         m_spindexerVelocitySpindexer.Velocity = value;
-        m_spindexerActiveTarget = &m_spindexerVelocitySpindexer.WithSlot(0);
+        m_spindexerActiveTarget = &m_spindexerVelocitySpindexer.WithSlot(1);
     }
 
     // Hardware Getters
@@ -305,7 +306,6 @@ private:
     ctre::phoenix6::controls::DutyCycleOut m_indexerPercentOut{0.0};
     ctre::phoenix6::controls::DutyCycleOut m_spindexerPercentOut{0.0};
     ctre::phoenix6::controls::DutyCycleOut m_turretPercentOut{0.0};
-    ctre::phoenix6::controls::VelocityVoltage m_spindexerVelocityLauncher{0.0_rpm};
     ctre::phoenix6::controls::VelocityVoltage m_launcherVelocityLauncher{0.0_rpm};
     ctre::phoenix6::controls::MotionMagicVoltage m_hoodPositionDegreesHood{0.0_tr};
     ctre::phoenix6::controls::PositionVoltage m_spindexerPositionTurnSpindexer{0.0_tr};
@@ -320,14 +320,6 @@ private:
     ctre::phoenix6::controls::ControlRequest *m_spindexerActiveTarget = &m_spindexerPercentOut;
     ctre::phoenix6::controls::ControlRequest *m_turretActiveTarget = &m_turretPercentOut;
 
-    // Cached Sensor Values
-    wpi::units::angular_velocity::revolutions_per_minute_t m_cachedLauncherVelocityLauncher = wpi::units::angular_velocity::revolutions_per_minute_t(0.0);
-    wpi::units::angle::turn_t m_cachedHoodPositionDegreesHood = wpi::units::angle::turn_t(0.0);
-    wpi::units::angular_velocity::revolutions_per_minute_t m_cachedTransferVelocityTransfer = wpi::units::angular_velocity::revolutions_per_minute_t(0.0);
-    wpi::units::angular_velocity::revolutions_per_minute_t m_cachedIndexerVelocityIndexer = wpi::units::angular_velocity::revolutions_per_minute_t(0.0);
-    wpi::units::angular_velocity::revolutions_per_minute_t m_cachedSpindexerVelocityLauncher = wpi::units::angular_velocity::revolutions_per_minute_t(0.0);
-    wpi::units::angle::turn_t m_cachedTurretPositionDegreesTurret = wpi::units::angle::turn_t(0.0);
-
     void RefreshCachedData();
 
     // Logging Paths
@@ -339,13 +331,10 @@ private:
     static constexpr std::string_view m_loggingHoodPositionPath = "/Launcher/HoodPosition";
     static constexpr std::string_view m_loggingHoodControlRequest = "/Launcher/HoodControlRequest";
     static constexpr std::string_view m_loggingTransferTargetPath = "/Launcher/TransferMotorTarget";
-    static constexpr std::string_view m_loggingTransferVelocityPath = "/Launcher/TransferVelocity";
     static constexpr std::string_view m_loggingTransferControlRequest = "/Launcher/TransferControlRequest";
     static constexpr std::string_view m_loggingIndexerTargetPath = "/Launcher/IndexerMotorTarget";
-    static constexpr std::string_view m_loggingIndexerVelocityPath = "/Launcher/IndexerVelocity";
     static constexpr std::string_view m_loggingIndexerControlRequest = "/Launcher/IndexerControlRequest";
     static constexpr std::string_view m_loggingSpindexerTargetPath = "/Launcher/SpindexerMotorTarget";
-    static constexpr std::string_view m_loggingSpindexerVelocityPath = "/Launcher/SpindexerVelocity";
     static constexpr std::string_view m_loggingSpindexerControlRequest = "/Launcher/SpindexerControlRequest";
     static constexpr std::string_view m_loggingTurretTargetPath = "/Launcher/TurretMotorTarget";
     static constexpr std::string_view m_loggingTurretPositionPath = "/Launcher/TurretPosition";

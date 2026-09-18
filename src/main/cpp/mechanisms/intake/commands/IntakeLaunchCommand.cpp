@@ -27,35 +27,34 @@ using namespace IntakeCommands;
 static constexpr double m_intakeTarget{1.0};
 static constexpr wpi::units::angle::turn_t m_extenderTarget{20.0};
 
-IntakeLaunchCommand::IntakeLaunchCommand(Intake *mechanism) : m_mechanism(mechanism)
+IntakeLaunchCommand::IntakeLaunchCommand(Intake *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, IntakeLaunchCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("IntakeLaunch");
 }
 
-void IntakeLaunchCommand::Initialize()
+void IntakeLaunchCommand::Init()
 {
     m_mechanism->SetCurrentState(Intake::STATE_LAUNCH);
 
     // Motor targets for Launch
     m_mechanism->UpdateTargetIntakePercentOut(m_intakeTarget);
-    m_mechanism->UpdateTargetExtenderPositionDeg(m_extenderTarget);
 
     m_bumpCounter = 0;
     m_currentExtenderBumpTarget = 0.0;
     m_mechanism->PublishIntakeMode(false);
 }
 
-void IntakeLaunchCommand::Execute()
+void IntakeLaunchCommand::Run()
 {
     BumpIntake();
 }
 
-void IntakeLaunchCommand::End(bool interrupted)
+void IntakeLaunchCommand::Exit(bool interrupted)
 {
 }
 
-bool IntakeLaunchCommand::IsFinished()
+bool IntakeLaunchCommand::IsDone()
 {
     return false; // Default continuous execution
 }
@@ -63,7 +62,7 @@ bool IntakeLaunchCommand::IsFinished()
 void IntakeLaunchCommand::BumpIntake()
 {
     // Periodically "bump" the extender during autonomous launching (moved from LaunchState).
-    if ((m_bumpCounter > m_counterMax) && wpi::RobotBase::IsAutonomous())
+    if ((m_bumpCounter > m_counterMax))
     {
         m_currentExtenderBumpTarget = (m_currentExtenderBumpTarget > 0) ? m_extenderTargetDown : m_extenderTargetUp;
         m_mechanism->UpdateTargetExtenderPercentOut(m_currentExtenderBumpTarget);

@@ -127,7 +127,7 @@ wpi::cmd::Trigger LauncherContainer::GetInitializeTrigger()
 {
     // --- Initialize -------------------------------------------------------------------------------
     // Run the homing routine from boot until the launcher reports initialized. The command self-finishes
-    // (LauncherInitializeCommand::IsFinished() == IsLauncherInitialized()), so when initialization
+    // (LauncherInitializeCommand::IsDone() == IsLauncherInitialized()), so when initialization
     // completes the command ends and the default Idle command takes over. The holding condition stays
     // true the whole time it should run so WhileTrue and IsFinished() agree.
     Launcher *launcher = m_launcher;
@@ -168,7 +168,7 @@ wpi::cmd::Trigger LauncherContainer::GetLaunchTrigger()
     //   2. Override: LAUNCH_OVERRIDE && !EXTENDER_MODIFIER -> the path out of LauncherTuning, also forces
     //      a launch from PrepareToLaunch regardless of at-target.
     // Bound with OnTrue (NOT WhileTrue): once scheduled, Launch is NOT cancelled when this condition goes
-    // false. It is self-governing - it runs until LauncherLaunchCommand::IsFinished() returns true (launch
+    // false. It is self-governing - it runs until LauncherLaunchCommand::IsDone() returns true (launch
     // buttons released for the debounce window, or auton launch detector) or until another command
     // (Prepare when we fall off target while still holding LAUNCH, or Off) interrupts by requiring the
     // subsystem. This is what prevents bouncing straight back to Idle the instant the condition drops.

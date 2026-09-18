@@ -17,6 +17,7 @@
 
 #include <optional>
 
+#include "utils/logging/timing/DragonTimedClass.h"
 #include "wpi/commands2/CommandPtr.hpp"
 #include "wpi/nt/NetworkTable.hpp"
 #include <wpi/framework/TimedRobot.hpp>
@@ -32,13 +33,14 @@ class DragonVisionPoseEstimatorContainer;
 class DragonQuest;
 class DragonVision;
 class DriverFeedback;
+class DragonDataLoggerMgr;
 
 namespace subsystems
 {
     class CommandSwerveDrivetrain;
 }
 
-class Robot : public wpi::TimedRobot
+class Robot : public wpi::TimedRobot, public DragonTimedClass
 {
 public:
     Robot();
@@ -62,7 +64,7 @@ private:
     DragonField *m_field;
     AutonPreviewer *m_previewer;
     RobotState *m_robotState;
-    // DragonDataLoggerMgr *m_datalogger; // SystemCore TO DO: Figure out how logging works in SystemCore
+    DragonDataLoggerMgr *m_datalogger;
     bool m_isFMSAttached = false;
     bool m_rewindLatch = false;
     DragonVisionPoseEstimatorContainer *m_dragonVisionPoseEstimator;

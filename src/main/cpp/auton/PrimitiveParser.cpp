@@ -27,10 +27,10 @@
 
 #include <pugixml/pugixml.hpp>
 
-#include "mechanisms/Intake/Intake.h"
-#include "mechanisms/Launcher/Launcher.h"
 #include "mechanisms/MechanismTypes.h"
 #include "mechanisms/configs/MechanismConfigMgr.h"
+#include "mechanisms/intake/Intake.h"
+#include "mechanisms/launcher/Launcher.h"
 
 using namespace std;
 using namespace pugi;
@@ -44,7 +44,6 @@ PrimitiveParamsVector PrimitiveParser::ParseXML(string fulldirfile)
     // initialize the xml string to enum maps (static so they are built only once)
     static const map<string, PRIMITIVE_IDENTIFIER> primStringToEnumMap{
         {"DO_NOTHING", DO_NOTHING},
-        {"HOLD_POSITION", HOLD_POSITION},
         {"TRAJECTORY_DRIVE", TRAJECTORY_DRIVE},
         {"RESET_POSITION", RESET_POSITION},
         {"VISION_ALIGN", VISION_ALIGN},

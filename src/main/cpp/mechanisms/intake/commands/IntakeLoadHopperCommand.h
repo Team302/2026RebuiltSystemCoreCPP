@@ -16,23 +16,23 @@
 
 #pragma once
 
-#include "wpi/commands2/Command.hpp"
-#include "wpi/commands2/CommandHelper.hpp"
+#include "mechanisms/base/DragonTimedCommand.h"
 
 class Intake;
 
 namespace IntakeCommands
 {
-    class IntakeLoadHopperCommand : public wpi::cmd::CommandHelper<wpi::cmd::Command, IntakeLoadHopperCommand>
+    class IntakeLoadHopperCommand : public wpi::cmd::CommandHelper<DragonTimedCommand, IntakeLoadHopperCommand>
     {
     public:
         IntakeLoadHopperCommand() = delete;
         explicit IntakeLoadHopperCommand(Intake *mechanism);
 
-        void Initialize() override;
-        void Execute() override;
-        void End(bool interrupted) override;
-        bool IsFinished() override;
+    protected:
+        void Init() override;
+        void Run() override;
+        void Exit(bool interrupted) override;
+        bool IsDone() override;
 
     private:
         Intake *m_mechanism;

@@ -70,7 +70,6 @@ void AutonDrivePrimitive::Init(PrimitiveParams *params)
         break;
     }
 
-    case PRIMITIVE_IDENTIFIER::HOLD_POSITION:
     case PRIMITIVE_IDENTIFIER::DO_NOTHING:
     case PRIMITIVE_IDENTIFIER::DO_NOTHING_MECHANISMS:
     {
@@ -121,7 +120,6 @@ bool AutonDrivePrimitive::IsDone()
             return timeout || launcherIdle;
         }
 
-    case PRIMITIVE_IDENTIFIER::HOLD_POSITION:
     case PRIMITIVE_IDENTIFIER::DO_NOTHING:
 
     default:

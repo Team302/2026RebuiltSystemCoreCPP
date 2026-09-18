@@ -42,6 +42,7 @@ using ctre::phoenix6::configs::TalonFXSConfiguration;
 using std::string;
 
 Intake::Intake(RobotIdentifier id) : BaseMechSubsystem(MechanismTypes::MECHANISM_TYPE::INTAKE, std::string("Intake")),
+									 DragonTimedClass("Intake"),
 									 m_activeRobotId(id),
 									 m_stateMap(),
 									 m_autonCommand(wpi::cmd::None())
@@ -238,7 +239,7 @@ void Intake::InitializeCANdiExtenderCompBot302()
 {
 	CANdiConfiguration CANdiConfig{};
 
-	CANdiConfig.DigitalInputs.S1CloseState = ctre::phoenix6::signals::S1CloseStateValue::CloseWhenHigh;
+	CANdiConfig.DigitalInputs.S1CloseState = ctre::phoenix6::signals::S1CloseStateValue::CloseWhenNotHigh;
 	CANdiConfig.DigitalInputs.S1FloatState = ctre::phoenix6::signals::S1FloatStateValue::PullHigh;
 	CANdiConfig.DigitalInputs.S2CloseState = ctre::phoenix6::signals::S2CloseStateValue::CloseWhenFloating;
 	CANdiConfig.DigitalInputs.S2FloatState = ctre::phoenix6::signals::S2FloatStateValue::FloatDetect;
@@ -278,6 +279,8 @@ void Intake::Periodic()
 	// scheduled command's execute(). It performs the per-loop housekeeping that used to live
 	// in StateMgr::RunCommonTasks(): refresh cached sensor data, apply manual control, and
 	// push the active control requests to the motors.
+	DragonTimedClass::ScopedTimer timer(*this, "Periodic");
+
 	RefreshCachedData();
 	Update();
 
@@ -306,18 +309,18 @@ ControlData *Intake::GetControlData(string name)
 	return nullptr;
 }
 
-// void Intake::DataLog(uint64_t timestamp)
-// {
-// 	// Mechanism State
-// 	LogStringData(timestamp, m_intakeStatePath, GetCurrentStateName());
+void Intake::DataLog(uint64_t timestamp)
+{
+	// Mechanism State
+	LogStringData(timestamp, m_intakeStatePath, GetCurrentStateName());
 
-// 	// Control Requests/Targets
-// 	LogDoubleData(timestamp, m_loggingIntakeTargetPath, m_intakePercentOut.Output.value());
-// 	LogStringData(timestamp, m_loggingIntakeControlRequest, std::string(m_intakeActiveTarget->GetName()));
-// 	LogDoubleData(timestamp, m_loggingExtenderTargetPath, m_extenderPositionDeg.Position.value());
-// 	LogDoubleData(timestamp, m_loggingExtenderPositionPath, m_cachedExtenderPositionDeg.value());
-// 	LogStringData(timestamp, m_loggingExtenderControlRequest, std::string(m_extenderActiveTarget->GetName()));
-// }
+	// Control Requests/Targets
+	LogDoubleData(timestamp, m_loggingIntakeTargetPath, m_intakePercentOut.Output.value());
+	LogStringData(timestamp, m_loggingIntakeControlRequest, std::string(m_intakeActiveTarget->GetName()));
+	LogDoubleData(timestamp, m_loggingExtenderTargetPath, m_extenderPositionDeg.Position.value());
+	LogDoubleData(timestamp, m_loggingExtenderPositionPath, m_cachedExtenderPositionDeg.value());
+	LogStringData(timestamp, m_loggingExtenderControlRequest, std::string(m_extenderActiveTarget->GetName()));
+}
 
 void Intake::NotifyStateUpdate(RobotStateChanges::StateChange change, bool value)
 {
@@ -336,6 +339,7 @@ void Intake::ManualControl()
 	if (controller != nullptr && wpi::RobotBase::IsTeleop())
 	{
 		double manualExtenderPercent = m_percentModifier * (TeleopControl::GetInstance()->GetAxisValue(TeleopControlFunctions::MANUAL_INTAKE_IN) - TeleopControl::GetInstance()->GetAxisValue(TeleopControlFunctions::MANUAL_INTAKE_OUT));
+		Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, m_ntName, "Manual Percent", manualExtenderPercent);
 		if (std::abs(manualExtenderPercent) > 0.05)
 		{
 			if ((m_cachedExtenderPositionDeg > m_protectExtenderPositionDegUp) && manualExtenderPercent > 0.0)

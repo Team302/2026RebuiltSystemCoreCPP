@@ -20,7 +20,7 @@
 
 #include "state/IRobotStateChangeSubscriber.h"
 #include "utils/DragonField.h"
-// #include "utils/logging/signals/DragonDataLogger.h" SystemCore TO DO: Figure out how logging works in SystemCore
+#include "utils/logging/signals/DragonDataLogger.h"
 #include "vision/DragonVisionPoseEstimatorStruct.h"
 #include "vision/Questnavlib/QuestNav.h"
 #include "wpi/math/geometry/Pose2d.hpp"
@@ -30,7 +30,7 @@
 #include "wpi/smartdashboard/SendableChooser.hpp"
 #include "wpi/smartdashboard/SmartDashboard.hpp"
 
-class DragonQuest : public IRobotStateChangeSubscriber //, public DragonDataLogger SystemCore TO DO: Figure out how logging works in SystemCore
+class DragonQuest : public IRobotStateChangeSubscriber, public DragonDataLogger
 {
 public:
     DragonQuest(
@@ -41,7 +41,7 @@ public:
         wpi::units::angle::degree_t mountingYaw,    /// <I> - Yaw of Quest
         wpi::units::angle::degree_t mountingRoll    /// <I> - Roll of Quest
     );
-    // void DataLog(uint64_t timestamp) override; // SystemCore TO DO: Figure out how logging works in SystemCore
+    void DataLog(uint64_t timestamp) override;
 
     bool HealthCheck() { return m_questNav.IsConnected(); };
 

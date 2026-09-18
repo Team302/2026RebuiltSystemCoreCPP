@@ -23,34 +23,34 @@
 using namespace IntakeCommands;
 
 static constexpr double m_intakeTarget{1.0};
-static constexpr wpi::units::angle::turn_t m_extenderTarget{-0.5};
+static constexpr double m_extenderTarget{-0.5};
 
-IntakeIntakeCommand::IntakeIntakeCommand(Intake *mechanism) : m_mechanism(mechanism)
+IntakeIntakeCommand::IntakeIntakeCommand(Intake *mechanism) : wpi::cmd::CommandHelper<DragonTimedCommand, IntakeIntakeCommand>(mechanism), m_mechanism(mechanism)
 {
     AddRequirements(m_mechanism);
     SetName("IntakeIntake");
 }
 
-void IntakeIntakeCommand::Initialize()
+void IntakeIntakeCommand::Init()
 {
     m_mechanism->SetCurrentState(Intake::STATE_INTAKE);
 
     // Motor targets for Intake
     m_mechanism->UpdateTargetIntakePercentOut(m_intakeTarget);
-    m_mechanism->UpdateTargetExtenderPositionDeg(m_extenderTarget);
+    m_mechanism->UpdateTargetExtenderPercentOut(m_extenderTarget);
 
     m_mechanism->PublishIntakeMode(true);
 }
 
-void IntakeIntakeCommand::Execute()
+void IntakeIntakeCommand::Run()
 {
 }
 
-void IntakeIntakeCommand::End(bool interrupted)
+void IntakeIntakeCommand::Exit(bool interrupted)
 {
 }
 
-bool IntakeIntakeCommand::IsFinished()
+bool IntakeIntakeCommand::IsDone()
 {
     return false; // Default continuous execution
 }

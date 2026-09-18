@@ -1,4 +1,3 @@
-
 //====================================================================================================================================================
 // Copyright 2026 Lake Orion Robotics FIRST Team 302
 //
@@ -19,15 +18,15 @@
 
 #include "mechanisms/base/DragonTimedCommand.h"
 
-class Intake;
+class Launcher;
 
-namespace IntakeCommands
+namespace LauncherCommands
 {
-    class IntakeLaunchCommand : public wpi::cmd::CommandHelper<DragonTimedCommand, IntakeLaunchCommand>
+    class LauncherIdleCommand : public wpi::cmd::CommandHelper<DragonTimedCommand, LauncherIdleCommand>
     {
     public:
-        IntakeLaunchCommand() = delete;
-        explicit IntakeLaunchCommand(Intake *mechanism);
+        LauncherIdleCommand() = delete;
+        explicit LauncherIdleCommand(Launcher *mechanism);
 
     protected:
         void Init() override;
@@ -36,14 +35,6 @@ namespace IntakeCommands
         bool IsDone() override;
 
     private:
-        Intake *m_mechanism;
-        void BumpIntake();
-
-        // Launch "bump" behavior (moved out of the old LaunchState).
-        int m_bumpCounter = 0;
-        int m_counterMax = 30;
-        double m_currentExtenderBumpTarget = 0.0;
-        static constexpr double m_extenderTargetUp = 0.4;
-        static constexpr double m_extenderTargetDown = -0.4;
+        Launcher *m_mechanism;
     };
 }
