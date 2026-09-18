@@ -15,7 +15,7 @@ namespace
   constexpr double kLoopPeriodSeconds = 0.020;
 } // namespace
 
-Autopilot::Autopilot(const APProfile &profile) : profile_(profile), dt_(kLoopPeriodSeconds) {}
+Autopilot::Autopilot(const APProfile &profile) : m_profile(profile), m_dt(kLoopPeriodSeconds) {}
 
 Autopilot::APResult Autopilot::Calculate(const wpi::math::Pose2d &current,
                                          const wpi::math::ChassisVelocities &robotRelativeSpeeds,
@@ -40,11 +40,11 @@ Autopilot::APResult Autopilot::Calculate(const wpi::math::Pose2d &current,
   double disp = offset.Norm().value();
 
   if (!target.GetEntryAngle().has_value() ||
-      disp < profile_.GetBeelineRadius().value())
+      disp < m_profile.GetBeelineRadius().value())
   {
     wpi::math::Translation2d towardsTarget = offset / disp;
     wpi::math::Translation2d goal = towardsTarget *
-                                    (profile_.GetConstraints().CalculateMaxVelocity(disp) + target.GetVelocity()).value();
+                                    (m_profile.GetConstraints().CalculateMaxVelocity(disp) + target.GetVelocity()).value();
     wpi::math::Translation2d out = Correct(initial, goal);
     wpi::math::Translation2d velo = ToGlobalCoordinateFrame(out, target);
     wpi::math::Rotation2d rot = GetRotationTarget(current.Rotation(), target, disp);
@@ -90,20 +90,20 @@ wpi::math::Translation2d Autopilot::Correct(const wpi::math::Translation2d &init
   double initialI = adjustedInitial.X().value();
   double goalI = adjustedGoal.X().value();
 
-  if (goalI > profile_.GetConstraints().GetVelocity().value())
+  if (goalI > m_profile.GetConstraints().GetVelocity().value())
   {
-    goalI = profile_.GetConstraints().GetVelocity().value();
+    goalI = m_profile.GetConstraints().GetVelocity().value();
   }
 
   double adjustedI = std::min(
-      goalI, Push(initialI, goalI, profile_.GetConstraints().GetAcceleration().value()));
+      goalI, Push(initialI, goalI, m_profile.GetConstraints().GetAcceleration().value()));
   return wpi::math::Translation2d(wpi::units::length::meter_t{adjustedI}, wpi::units::length::meter_t{kZero})
       .RotateBy(angleOffset);
 }
 
 double Autopilot::Push(double start, double end, double accel) const
 {
-  double maxChange = accel * dt_;
+  double maxChange = accel * m_dt;
   if (std::abs(start - end) < maxChange)
   {
     return end;
@@ -129,7 +129,7 @@ wpi::math::Translation2d Autopilot::CalculateSwirlyVelocity(
   wpi::math::Translation2d velocityVector(wpi::units::length::meter_t{vx}, wpi::units::length::meter_t{vy});
   velocityVector = velocityVector / std::hypot(vx, vy);
   return velocityVector *
-         (profile_.GetConstraints().CalculateMaxVelocity(dist) + target.GetVelocity()).value();
+         (m_profile.GetConstraints().CalculateMaxVelocity(dist) + target.GetVelocity()).value();
 }
 
 double Autopilot::CalculateSwirlyLength(double theta, double radius) const
@@ -168,9 +168,9 @@ bool Autopilot::AtTarget(const wpi::math::Pose2d &current, const APTarget &targe
   wpi::math::Pose2d goal = target.GetReference();
   bool okXY = std::hypot((current.X() - goal.X()).value(),
                          (current.Y() - goal.Y()).value()) <=
-              profile_.GetErrorXY().value();
+              m_profile.GetErrorXY().value();
   bool okTheta =
       std::abs((current.Rotation() - goal.Rotation()).Radians().value()) <=
-      profile_.GetErrorTheta().value();
+      m_profile.GetErrorTheta().value();
   return okXY && okTheta;
 }

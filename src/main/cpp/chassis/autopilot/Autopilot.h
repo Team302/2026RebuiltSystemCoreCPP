@@ -48,6 +48,6 @@ private:
                                           const APTarget &target,
                                           double dist) const;
 
-  APProfile profile_;
-  double dt_;
+  APProfile m_profile;
+  double m_dt;
 };

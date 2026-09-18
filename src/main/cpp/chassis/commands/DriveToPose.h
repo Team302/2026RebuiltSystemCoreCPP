@@ -14,11 +14,15 @@
 //====================================================================================================================================================
 #pragma once
 
+#include "chassis/autopilot/APConstraints.h"
+#include "chassis/autopilot/APProfile.h"
+#include "chassis/autopilot/APTarget.h"
+#include "chassis/autopilot/Autopilot.h"
 #include "chassis/generated/CommandSwerveDrivetrain.h"
 #include "wpi/commands2/Command.hpp"
 #include "wpi/commands2/CommandHelper.hpp"
+#include "wpi/math/controller/ProfiledPIDController.hpp"
 #include "wpi/math/geometry/Pose2d.hpp"
-#include <wpi/math/controller/ProfiledPIDController.hpp>
 
 struct DriveToPoses
 {
@@ -276,6 +280,8 @@ private:
     wpi::units::acceleration::meters_per_second_squared_t kMaxAcceleration;
     static constexpr wpi::units::acceleration::meters_per_second_squared_t kMaxAccelerationDefault = 3_mps_sq;
 
+    double m_maxJerk = 2.0; // Maximum jerk for motion profile (m/s^3)
+
     //------------------------------------------------------------------
     // NetworkTables Keys (Legacy)
     //------------------------------------------------------------------
@@ -343,4 +349,9 @@ private:
     wpi::math::ProfiledPIDController<wpi::units::length::meters> m_translationPIDX{m_translationKP, m_translationKI, m_translationKD, m_translationConstraints, 20_ms};
     /// @brief Profiled PID controller for Y-axis translation with trapezoidal velocity profiles
     wpi::math::ProfiledPIDController<wpi::units::length::meters> m_translationPIDY{m_translationKP, m_translationKI, m_translationKD, m_translationConstraints, 20_ms};
+
+    APConstraints m_autopilotConstraints{kMaxVelocityDefault, kMaxAccelerationDefault, m_maxJerk};
+    APProfile m_autopilotProfile{m_autopilotConstraints};
+    Autopilot m_autopilot{m_autopilotProfile};
+    APTarget m_autopilotTarget{wpi::math::Pose2d{}};
 };

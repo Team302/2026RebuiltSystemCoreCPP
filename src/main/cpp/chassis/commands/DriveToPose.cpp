@@ -28,12 +28,24 @@
 //====================================================================================================================================================
 
 #include "chassis/commands/DriveToPose.h"
+#include "chassis/autopilot/APConstraints.h"
+#include "chassis/autopilot/APProfile.h"
 #include "state/RobotState.h"
 #include "utils/AngleUtils.h"
 #include "utils/PoseUtils.h"
 #include "utils/logging/debug/Logger.h"
 #include "wpi/math/geometry/Rotation2d.hpp"
 #include "wpi/math/geometry/Translation2d.hpp"
+
+using wpi::units::acceleration::meters_per_second_squared_t;
+using wpi::units::angle::degree_t;
+using wpi::units::angle::radian_t;
+using wpi::units::length::meter_t;
+using wpi::units::velocity::meters_per_second_t;
+
+static constexpr meter_t m_autopilotXYError{0.02};
+static constexpr degree_t m_autopilotThetaError{0.5};
+static constexpr meter_t m_autopilotBeelineRadius{0.08};
 
 //------------------------------------------------------------------
 /// @brief      Constructor for DriveToPose command
@@ -62,6 +74,11 @@
 DriveToPose::DriveToPose(subsystems::CommandSwerveDrivetrain *chassis) : m_chassis(chassis)
 {
     AddRequirements(m_chassis);
+
+    m_autopilotProfile.WithErrorXY(m_autopilotXYError)
+        .WithErrorTheta(m_autopilotThetaError)
+        .WithConstraints(m_autopilotConstraints)
+        .WithBeelineRadius(m_autopilotBeelineRadius);
 
     // Store initial pose for movement detection
     m_prevPose = m_chassis != nullptr ? m_chassis->GetPose() : wpi::math::Pose2d();
@@ -97,17 +114,21 @@ void DriveToPose::Initialize()
     // does not work during base-class construction — derived overrides (e.g. DriveOverBump)
     kMaxVelocity = GetMaxVelocity();
     kMaxAcceleration = GetMaxAcceleration();
-    m_translationConstraints = wpi::math::TrapezoidProfile<wpi::units::length::meters>::Constraints(kMaxVelocity, kMaxAcceleration);
-    m_translationPIDX = wpi::math::ProfiledPIDController<wpi::units::length::meters>(m_translationKP, m_translationKI, m_translationKD, m_translationConstraints, 20_ms);
-    m_translationPIDY = wpi::math::ProfiledPIDController<wpi::units::length::meters>(m_translationKP, m_translationKI, m_translationKD, m_translationConstraints, 20_ms);
+    // m_translationConstraints = wpi::math::TrapezoidProfile<wpi::units::length::meters>::Constraints(kMaxVelocity, kMaxAcceleration);
+    // m_translationPIDX = wpi::math::ProfiledPIDController<wpi::units::length::meters>(m_translationKP, m_translationKI, m_translationKD, m_translationConstraints, 20_ms);
+    // m_translationPIDY = wpi::math::ProfiledPIDController<wpi::units::length::meters>(m_translationKP, m_translationKI, m_translationKD, m_translationConstraints, 20_ms);
+
+    m_autopilotConstraints.WithAcceleration(kMaxAcceleration)
+        .WithVelocity(kMaxVelocity)
+        .WithJerkMetersPerSecondCubed(m_maxJerk);
 
     // Configure integral zones to prevent windup when far from target
     // Must be applied after controller reconstruction above so the setting is not overwritten
-    m_translationPIDX.SetIZone(0.5);
-    m_translationPIDY.SetIZone(0.5);
+    // m_translationPIDX.SetIZone(0.5);
+    // m_translationPIDY.SetIZone(0.5);
 
     // Calculate the range over which feedforward velocity is ramped
-    m_feedForwardRange = m_ffMaxRadius - m_ffMinRadius;
+    // m_feedForwardRange = m_ffMaxRadius - m_ffMinRadius;
 
     // Get the target pose (may be overridden by derived classes)
     auto poses = GetDriveToPoses();
@@ -136,7 +157,9 @@ void DriveToPose::Initialize()
     m_currentTargetSpeed = m_beforeMidPose ? m_midPointSpeed : m_endPointSpeed;
 
     // Configure controllers with the target pose
-    SetTargetPose(m_beforeMidPose ? m_midPose : m_endPose);
+    // SetTargetPose(m_beforeMidPose ? m_midPose : m_endPose);
+    m_autopilotTarget.WithReference(m_beforeMidPose ? m_midPose : m_endPose)
+        .WithVelocity(m_currentTargetSpeed);
 
     // Notify robot state that navigation has started
     RobotState::GetInstance()->PublishStateChange(RobotStateChanges::DriveToFieldElement_Bool, true);
@@ -171,16 +194,18 @@ void DriveToPose::SetTargetPose(const wpi::math::Pose2d &pose)
     {
 
         // Get current robot velocities for smooth controller reset
-        auto speeds = m_chassis->GetState().Velocity;
+        // auto speeds = m_chassis->GetState().Velocity;
 
         // Reset PID controllers with current state to prevent discontinuities
-        m_translationPIDX.Reset(m_currentPose.X(), speeds.vx);
-        m_translationPIDY.Reset(m_currentPose.Y(), speeds.vy);
+        // m_translationPIDX.Reset(m_currentPose.X(), speeds.vx);
+        // m_translationPIDY.Reset(m_currentPose.Y(), speeds.vy);
 
         // Update current pose and set new controller goals
         m_currentPose = m_chassis->GetPose();
-        m_translationPIDX.SetGoal(m_targetPose.X());
-        m_translationPIDY.SetGoal(m_targetPose.Y());
+        // m_translationPIDX.SetGoal(m_targetPose.X());
+        // m_translationPIDY.SetGoal(m_targetPose.Y());
+        m_autopilotTarget.WithReference(m_targetPose)
+            .WithVelocity(m_currentTargetSpeed);
     }
 }
 

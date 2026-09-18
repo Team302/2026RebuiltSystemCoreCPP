@@ -9,56 +9,56 @@ namespace
 } // namespace
 
 APProfile::APProfile(const APConstraints &constraints)
-    : constraints_(constraints),
-      errorXY_(kZero),
-      errorTheta_(kZero),
-      beelineRadius_(kZero) {}
+    : m_constraints(constraints),
+      m_errorXY(kZero),
+      m_errorTheta(kZero),
+      m_beelineRadius(kZero) {}
 
 APProfile &APProfile::WithErrorXY(meter_t errorXY)
 {
-  errorXY_ = errorXY;
+  m_errorXY = errorXY;
   return *this;
 }
 
 APProfile &APProfile::WithErrorTheta(radian_t errorTheta)
 {
-  errorTheta_ = errorTheta;
+  m_errorTheta = errorTheta;
   return *this;
 }
 
 APProfile &APProfile::WithConstraints(const APConstraints &constraints)
 {
-  constraints_ = constraints;
+  m_constraints = constraints;
   return *this;
 }
 
 APProfile &APProfile::WithBeelineRadius(meter_t beelineRadius)
 {
-  beelineRadius_ = beelineRadius;
+  m_beelineRadius = beelineRadius;
   return *this;
 }
 
 meter_t APProfile::GetErrorXY() const
 {
-  return errorXY_;
+  return m_errorXY;
 }
 
 radian_t APProfile::GetErrorTheta() const
 {
-  return errorTheta_;
+  return m_errorTheta;
 }
 
 const APConstraints &APProfile::GetConstraints() const
 {
-  return constraints_;
+  return m_constraints;
 }
 
 APConstraints &APProfile::GetConstraints()
 {
-  return constraints_;
+  return m_constraints;
 }
 
 meter_t APProfile::GetBeelineRadius() const
 {
-  return beelineRadius_;
+  return m_beelineRadius;
 }
