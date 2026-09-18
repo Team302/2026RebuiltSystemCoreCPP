@@ -28,8 +28,8 @@ public:
   APTarget WithoutEntryAngle() const;
 
 private:
-  wpi::math::Pose2d reference_;
-  std::optional<wpi::math::Rotation2d> entryAngle_;
-  wpi::units::velocity::meters_per_second_t velocity_;
-  std::optional<wpi::units::length::meter_t> rotationRadius_;
+  wpi::math::Pose2d m_reference;
+  std::optional<wpi::math::Rotation2d> m_entryAngle;
+  wpi::units::velocity::meters_per_second_t m_velocity;
+  std::optional<wpi::units::length::meter_t> m_rotationRadius;
 };

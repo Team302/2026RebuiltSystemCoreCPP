@@ -22,8 +22,8 @@ public:
   wpi::units::length::meter_t GetBeelineRadius() const;
 
 private:
-  APConstraints constraints_;
-  wpi::units::length::meter_t errorXY_;
-  wpi::units::angle::radian_t errorTheta_;
-  wpi::units::length::meter_t beelineRadius_;
+  APConstraints m_constraints;
+  wpi::units::length::meter_t m_errorXY;
+  wpi::units::angle::radian_t m_errorTheta;
+  wpi::units::length::meter_t m_beelineRadius;
 };
