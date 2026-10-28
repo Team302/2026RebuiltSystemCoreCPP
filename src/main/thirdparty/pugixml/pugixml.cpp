@@ -27,8 +27,8 @@
 #endif
 
 #ifndef PUGIXML_NO_XPATH
-#include <math.h>
 #include <float.h>
+#include <math.h>
 #endif
 
 #ifndef PUGIXML_NO_STL
@@ -10001,7 +10001,7 @@ enum ast_type_t
 	ast_func_string_0,			// string()
 	ast_func_string_1,			// string(left)
 	ast_func_concat,			// concat(left, right, siblings)
-	ast_func_starts_with,		// starts_with(left, right)
+	ast_func_starts_with,		// wpi::util::starts_with(left, right)
 	ast_func_contains,			// contains(left, right)
 	ast_func_substring_before,	// substring-before(left, right)
 	ast_func_substring_after,	// substring-after(left, right)

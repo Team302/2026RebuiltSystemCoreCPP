@@ -23,7 +23,7 @@
 #include "wpi/math/geometry/Pose2d.hpp"
 
 // FRC Includes
-#include "wpi/apriltag/AprilTagFieldLayout.hpp"
+#include "wpi/fields/fields.hpp"
 
 // Team 302 Includes
 #include "vision/DragonLimelight.h"
@@ -115,9 +115,9 @@ public:
     /// @return Pointer to the DragonVision singleton instance.
     static DragonVision *GetDragonVision();
 
-    /// @brief Get the AprilTag field layout used by vision code.
-    /// @return Cached wpi::apriltag::AprilTagFieldLayout for the configured field (loads on first use).
-    static wpi::apriltag::AprilTagFieldLayout GetAprilTagLayout();
+    /// @brief Get the field metadata used by vision code.
+    /// @return Cached wpi::fields::Field for the configured field.
+    static wpi::fields::Field GetAprilTagLayout();
 
     /// @brief Initialize all cameras registered with the vision system.
     /// @note This function sets up the cameras for operation, ensuring they are ready for use.
@@ -139,7 +139,7 @@ public:
     /// @param quest Unique pointer to the DragonQuest instance (ownership IS transferred).
     void AddQuest(std::unique_ptr<DragonQuest> quest);
 
-    static wpi::apriltag::AprilTagFieldLayout m_aprilTagLayout;
+    static wpi::fields::Field m_aprilTagLayout;
 
     /// @brief Aggregate AprilTag detections across cameras and select according to option.
     /// @param option Selection option (e.g., CLOSEST_VALID_TARGET).

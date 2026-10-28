@@ -30,7 +30,7 @@
 class ISignalLogger
 {
 public:
-    // Shared unit string constants for all logger implementations
+    // Shared unit string constants for all Logger implementations
     static constexpr std::string_view kUnitsPose2d = "X_m;Y_m;Rot_rad";
     static constexpr std::string_view kUnitsPose3d = "X_m;Y_m;Z_m;QW;QX;QY;QZ";
     static constexpr std::string_view kUnitsChassisSpeeds = "Vx_mps;Vy_mps;Omega_radps";

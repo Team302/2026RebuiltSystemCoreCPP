@@ -29,8 +29,11 @@
 #include "wpi/math/geometry/Transform3d.hpp"
 #include "wpi/math/geometry/Translation3d.hpp"
 #include "wpi/nt/NetworkTableInstance.hpp"
+#include "wpi/tunables/Tunables.hpp"
 #include "wpi/units/length.hpp"
 #include "wpi/units/time.hpp"
+
+using wpi::tunables::Selectable;
 
 // Static strings to avoid repeated heap allocations in logging
 static const std::string kQuestNavDebug = "questnavdebug";
@@ -75,16 +78,14 @@ DragonQuest::DragonQuest(
         wpi::math::Rotation3d{m_mountingRoll, m_mountingPitch, m_mountingYaw}};
 
     // Dashboard choosers
-    m_questEnabledChooser.AddOption("ON", true);
-    m_questEnabledChooser.AddOption("OFF", false);
-    m_questEnabledChooser.SetDefaultOption("ON", true);
+    m_questEnabledChooser.AddDefault("ON", true);
+    m_questEnabledChooser.Add("OFF", false);
 
-    m_questEndgameEnabledChooser.AddOption("ENDGAME ONLY", true);
-    m_questEndgameEnabledChooser.AddOption("FULL MATCH", false);
-    m_questEndgameEnabledChooser.SetDefaultOption("FULL MATCH", false);
+    m_questEndgameEnabledChooser.AddDefault("FULL MATCH", false);
+    m_questEndgameEnabledChooser.Add("ENDGAME ONLY", true);
 
-    wpi::SmartDashboard::PutData("Quest ON/OFF", &m_questEnabledChooser);
-    wpi::SmartDashboard::PutData("Quest Endgame ONLY", &m_questEndgameEnabledChooser);
+    wpi::tunables::Publish("Quest ON/OFF", m_questEnabledChooser);
+    wpi::tunables::Publish("Quest Endgame ONLY", m_questEndgameEnabledChooser);
 
     m_debugData = wpi::nt::NetworkTableInstance::GetDefault().GetTable("QuestNavDebug");
 
@@ -145,6 +146,7 @@ void DragonQuest::GetEstimatedPose()
 // ──────────────────────────────────────────────────────────────────────────────
 // DataLog
 // ──────────────────────────────────────────────────────────────────────────────
+/* SystemCore TO DO: Figure out how logging works in SystemCore
 
 void DragonQuest::DataLog(uint64_t timestamp)
 {
@@ -171,6 +173,7 @@ void DragonQuest::DataLog(uint64_t timestamp)
         LogDoubleData(timestamp, m_questAppTimestampPath, appTime.value());
     }
 }
+    */
 
 // ──────────────────────────────────────────────────────────────────────────────
 // AttemptSetRobotPose – external entry point (from DragonVision::SetRobotPose)

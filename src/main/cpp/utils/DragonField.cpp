@@ -14,14 +14,15 @@
 //====================================================================================================================================================
 
 /// @file DragonField.cpp
-/// @brief Implementation of the DragonField class for managing field visualization in SmartDashboard.
+/// @brief Implementation of the DragonField class for managing field visualization in dashboard.
 /// @details This class provides a singleton interface for displaying robot position, field objects,
-///          and trajectories on the FRC SmartDashboard Field2d widget.
+///          and trajectories on the FRC dashboard Field2d widget.
 
 #include <string>
 
 // FRC Includes
-#include "wpi/smartdashboard/SmartDashboard.hpp"
+#include "wpi/tunables/Selectable.hpp"
+#include "wpi/tunables/Tunables.hpp"
 
 // Team 302 Includes
 #include "utils/DragonField.h"
@@ -42,12 +43,13 @@ DragonField *DragonField::GetInstance()
 }
 
 /// @brief Constructor for DragonField.
-/// @details Initializes the Field2d object and registers it with SmartDashboard.
+/// @details Initializes the Field2d object and registers it with dashboard.
 DragonField::DragonField() : m_field(),
                              m_objects(),
-                             m_objectNameEnabled()
+                             m_objectNameEnabled(),
+                             m_objectEnabledTunables()
 {
-    wpi::SmartDashboard::PutData(&m_field);
+    wpi::tunables::Publish("Field", m_field);
 }
 
 /// @brief Update the robot's position on the field display.
@@ -68,15 +70,6 @@ void DragonField::AddObject(const std::string &name, wpi::math::Pose2d pose, boo
 
     m_field.GetObject(name)->SetPose(pose);
     AddSelector(name, defaultSelectorValue);
-}
-
-/// @brief Add a wpi::math::Trajectory to be displayed on the field.
-/// @param name The name identifier for the wpi::math::Trajectory.
-/// @param trajectory The wpi::math::Trajectory to display.
-void DragonField::AddTrajectory(const std::string &name, wpi::math::Trajectory trajectory)
-{
-    m_objects.emplace_back(m_field.GetObject(name));
-    m_field.GetObject(name)->SetTrajectory(trajectory);
 }
 
 /// @brief Reset all field objects by clearing their poses.
@@ -105,24 +98,30 @@ void DragonField::UpdateObject(const std::string &name, wpi::math::Pose2d object
     }
 }
 
-/// @brief Update the enabled/disabled state of all field objects based on SmartDashboard values.
-/// @details Reads boolean values from SmartDashboard for each registered object to determine
+/// @brief Update the enabled/disabled state of all field objects based on dashboard values.
+/// @details Reads boolean values from dashboard for each registered object to determine
 ///          whether they should be visible on the field display.
 void DragonField::UpdateEnabledStates()
 {
     for (auto &objectPair : m_objectNameEnabled)
     {
-        bool enabled = wpi::SmartDashboard::GetBoolean(objectPair.first + " Enabled On Field", objectPair.second);
-        objectPair.second = enabled;
+        auto tunableIt = std::find_if(m_objectEnabledTunables.begin(), m_objectEnabledTunables.end(),
+                                      [&objectPair](const std::pair<std::string, wpi::tunables::TunableBool> &pair)
+                                      { return pair.first == objectPair.first; });
+        if (tunableIt != m_objectEnabledTunables.end())
+        {
+            objectPair.second = static_cast<bool>(tunableIt->second);
+        }
     }
 }
 
-/// @brief Add a boolean selector to SmartDashboard for enabling/disabling a field object.
+/// @brief Add a boolean selector to dashboard for enabling/disabling a field object.
 /// @param name The name identifier for the object.
 /// @param defaultValue The default enabled state for the selector.
 void DragonField::AddSelector(const std::string &name, bool defaultValue)
 {
-    wpi::SmartDashboard::PutBoolean(name + " Enabled On Field", defaultValue);
+    auto selector = wpi::tunables::Add<bool>(name + " Enabled On Field", defaultValue);
+    m_objectEnabledTunables.emplace_back(name, std::move(selector));
     m_objectNameEnabled.emplace_back(name, defaultValue);
 }
 

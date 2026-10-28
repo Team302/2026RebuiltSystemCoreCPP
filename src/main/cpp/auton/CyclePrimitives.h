@@ -28,7 +28,7 @@
 #include "chassis/ChassisOptionEnums.h"
 #include "chassis/generated/CommandSwerveDrivetrain.h"
 #include "state/State.h"
-#include "utils/logging/signals/DragonDataLoggerMgr.h"
+// #include "utils/logging/signals/DragonDataLoggerMgr.h" // SystemCore TO DO: Figure out how logging works in SystemCore
 
 // Third Party Includes
 
@@ -41,7 +41,7 @@ class Launcher;
 class Intake;
 class Climber;
 
-class CyclePrimitives : public State, DragonDataLogger
+class CyclePrimitives : public State //, DragonDataLogger
 {
 public:
     CyclePrimitives();
@@ -54,7 +54,7 @@ public:
 
     AutonSelector *GetAutonSelector() const { return m_autonSelector; };
 
-    void DataLog(uint64_t timestamp) override;
+    // void DataLog(uint64_t timestamp) override; // SystemCore TO DO: Figure out how logging works in SystemCore
 
 protected:
     void GetNextPrim();

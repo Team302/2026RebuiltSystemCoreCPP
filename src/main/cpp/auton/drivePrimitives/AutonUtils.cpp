@@ -18,7 +18,7 @@
 #include "utils/FMSData.h"
 
 using std::string;
-using wpi::DriverStation;
+// using wpi::DriverStation;
 
 // SystemCoreTO DO: uncomment when choreo is added back as a dependency
 //  std::optional<choreo::Trajectory<choreo::SwerveSample>> AutonUtils::GetTrajectoryFromPathFile(string pathName)

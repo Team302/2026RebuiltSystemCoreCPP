@@ -33,7 +33,7 @@
   - Robot::AutonomousInit() : raise thread priority, initialize cycle primitives, start auton PeriodicLooper state.
   - Robot::AutonomousPeriodic(): run cycle primitives and auton PeriodicLooper.
   - Robot::TeleopInit()/TeleopPeriodic(): start/run teleop PeriodicLooper state.
-  - Robot::TestInit()      : cancel commands at test startup.
+  - Robot::UtilityInit()      : cancel commands at test startup.
 
   Initialization order (high level)
   1. Logger selections -> dashboard
@@ -95,7 +95,10 @@
 #include "utils/logging/signals/DragonDataLoggerMgr.h"
 #include "utils/logging/timing/DragonTimedClass.h"
 #include "vision/DragonVision.h"
-#include "wpi/driverstation/DriverStation.hpp"
+#include "wpi/driverstation/Alliance.hpp"
+#include "wpi/driverstation/MatchState.hpp"
+#include "wpi/driverstation/MatchType.hpp"
+#include "wpi/driverstation/RobotState.hpp"
 #include "wpi/framework/RobotBase.hpp"
 #include "wpi/system/RobotController.hpp"
 #include "wpi/system/Threads.hpp"
@@ -112,9 +115,11 @@ Robot::Robot() : DragonTimedClass("Robot")
     InitializeAutonOptions();
     InitializeDriveteamFeedback();
 
+    /*SystemCore TO DO: Figure out how logging works in SystemCore
     m_datalogger = DragonDataLoggerMgr::GetInstance();
     m_datalogger->PeriodicDataLogInit(); // warm-load the data Logger to avoid first-run stalls during matches
     m_loggerTable = wpi::nt::NetworkTableInstance::GetDefault().GetTable("pi-logger");
+    */
 }
 /// @brief Called periodically while the robot is running, regardless of mode.
 /// Runs the CommandScheduler, manages logging (guarded by FMS attachment),
@@ -133,10 +138,12 @@ void Robot::RobotPeriodic()
         Logger::GetLogger()->PeriodicLog();
     }
 
+    /*SystemCore TO DO: Figure out how logging works in SystemCore
     if (m_datalogger != nullptr && (m_isFMSAttached || !wpi::RobotBase::IsDisabled()))
     {
         m_datalogger->PeriodicDataLog();
     }
+    */
 
     if (m_robotState != nullptr)
     {

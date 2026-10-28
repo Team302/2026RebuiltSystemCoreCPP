@@ -21,7 +21,10 @@
 #include "utils/logging/signals/DragonDataLoggerMgr.h"
 #include "utils/logging/signals/UDPSignalLogger.h"
 #include "utils/logging/signals/WPISignalLogger.h"
-#include "wpi/driverstation/DriverStation.hpp"
+#include "wpi/driverstation/MatchState.hpp"
+#include "wpi/driverstation/RobotState.hpp"
+#include "wpi/driverstation/Alliance.hpp"
+#include "wpi/driverstation/MatchType.hpp"
 #include "wpi/system/RobotController.hpp"
 
 using namespace std;

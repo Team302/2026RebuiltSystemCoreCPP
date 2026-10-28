@@ -93,7 +93,7 @@ wpi::units::degree_t TargetCalculator::CalculateAngleToTarget(wpi::units::time::
     auto targetPos = (lookaheadTime > 0_s) ? CalculateVirtualTarget(realTarget, lookaheadTime) : realTarget;
     wpi::math::Translation2d vectorToTarget = targetPos - m_chassisPose.Translation();
 
-    return vectorToTarget.Angle().Degrees();
+    return vectorToTarget.Angle().value().Degrees();
 }
 
 wpi::units::degree_t TargetCalculator::CalculateMechanismAngleToTarget(wpi::units::time::second_t lookaheadTime)
@@ -110,7 +110,7 @@ wpi::units::degree_t TargetCalculator::CalculateMechanismAngleToTarget(wpi::unit
 
     wpi::math::Translation2d vectorToTarget = targetPos - mechanismPos;
 
-    m_cachedMechanismAngleToTarget = vectorToTarget.Angle().Degrees();
+    m_cachedMechanismAngleToTarget = vectorToTarget.Angle().value().Degrees();
     return m_cachedMechanismAngleToTarget;
 }
 
@@ -153,7 +153,8 @@ void TargetCalculator::UpdateChassisVelocities()
     }
 }
 
+/* SystemCore TO DO: Figure out how logging works in SystemCore
 void TargetCalculator::DataLog(uint64_t timestamp)
 {
     LogDoubleData(timestamp, m_distanceToTargetPath, m_cachedMechanismDistanceToTarget.value(), "m");
-}
+}*/

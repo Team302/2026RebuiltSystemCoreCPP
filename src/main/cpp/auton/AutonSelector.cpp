@@ -28,8 +28,9 @@
 #endif
 
 #include "wpi/nt/NetworkTableInstance.hpp"
-#include <wpi/smartdashboard/SmartDashboard.hpp>
-#include <wpi/system/Filesystem.hpp>
+#include "wpi/system/Filesystem.hpp"
+#include "wpi/tunables/Selectable.hpp"
+#include "wpi/tunables/Tunables.hpp"
 
 // Team302 includes
 #include "auton/AutonSelector.h"
@@ -40,7 +41,7 @@
 #include <pugixml/pugixml.hpp>
 
 using namespace std;
-using wpi::DriverStation;
+using wpi::tunables::Selectable;
 
 //---------------------------------------------------------------------
 // Method: 		<<constructor>>
@@ -180,67 +181,67 @@ string AutonSelector::GetVariation()
 void AutonSelector::PutChoicesOnDashboard()
 {
 	// Starting Position
-	m_startposchooser.AddOption("Trench Depot Side", "TDep");
-	m_startposchooser.AddOption("Bump Depot Side", "BDep");
-	m_startposchooser.AddOption("Hub", "Hub");
-	m_startposchooser.AddOption("Bump Outpost Side", "BOut");
-	m_startposchooser.SetDefaultOption("Trench Outpost Side", "TOut");
-	wpi::SmartDashboard::PutData("StartPos", &m_startposchooser);
+	m_startposchooser.Add("Trench Depot Side", "TDep");
+	m_startposchooser.Add("Bump Depot Side", "BDep");
+	m_startposchooser.Add("Hub", "Hub");
+	m_startposchooser.Add("Bump Outpost Side", "BOut");
+	m_startposchooser.AddDefault("Trench Outpost Side", "TOut");
+	wpi::tunables::Publish("StartPos", m_startposchooser);
 
 	// Amount of times going into NZ
-	m_neutralZoneAmount.AddOption("0", "0");
-	m_neutralZoneAmount.AddOption("1", "1");
-	m_neutralZoneAmount.AddOption("2", "2");
-	m_neutralZoneAmount.AddOption("3", "3");
-	m_neutralZoneAmount.AddOption("4", "4");
-	m_neutralZoneAmount.AddOption("5", "5");
-	m_neutralZoneAmount.SetDefaultOption("3", "3");
-	wpi::SmartDashboard::PutData("Times in Neutral Zone", &m_neutralZoneAmount);
+	m_neutralZoneAmount.Add("0", "0");
+	m_neutralZoneAmount.Add("1", "1");
+	m_neutralZoneAmount.Add("2", "2");
+	m_neutralZoneAmount.Add("3", "3");
+	m_neutralZoneAmount.Add("4", "4");
+	m_neutralZoneAmount.Add("5", "5");
+	m_neutralZoneAmount.AddDefault("3", "3");
+	wpi::tunables::Publish("Times in Neutral Zone", m_neutralZoneAmount);
 
 	// Area in NZ
-	m_neutralZoneArea.AddOption("Half Field", "Half");
-	m_neutralZoneArea.AddOption("Full Field", "Full");
-	m_neutralZoneArea.AddOption("Both", "Combo");
-	m_neutralZoneArea.AddOption("No Variation", "");
-	m_neutralZoneArea.SetDefaultOption("No Variation", "");
-	wpi::SmartDashboard::PutData("Desired Neutral Zone Coverage", &m_neutralZoneArea);
+	m_neutralZoneArea.Add("Half Field", "Half");
+	m_neutralZoneArea.Add("Full Field", "Full");
+	m_neutralZoneArea.Add("Both", "Combo");
+	m_neutralZoneArea.Add("No Variation", "");
+	m_neutralZoneArea.AddDefault("No Variation", "");
+	wpi::tunables::Publish("Desired Neutral Zone Coverage", m_neutralZoneArea);
 
 	// Depot Option
-	m_targetDepot.AddOption("true", "Dep");
-	m_targetDepot.AddOption("false", "NDep");
-	m_targetDepot.SetDefaultOption("false", "NDep");
-	wpi::SmartDashboard::PutData("Has Depot?", &m_targetDepot);
+	m_targetDepot.Add("true", "Dep");
+	m_targetDepot.Add("false", "NDep");
+	m_targetDepot.AddDefault("false", "NDep");
+	wpi::tunables::Publish("Has Depot?", m_targetDepot);
 
 	// Outpost Option
-	m_targetOutpost.AddOption("true", "Out");
-	m_targetOutpost.AddOption("false", "NOut");
-	m_targetOutpost.SetDefaultOption("false", "NOut");
-	wpi::SmartDashboard::PutData("Has Outpost?", &m_targetOutpost);
+	m_targetOutpost.Add("true", "Out");
+	m_targetOutpost.Add("false", "NOut");
+	m_targetOutpost.AddDefault("false", "NOut");
+	wpi::tunables::Publish("Has Outpost?", m_targetOutpost);
 
 	// Climbing Option
-	m_climbing.AddOption("true", "Climb");
-	m_climbing.AddOption("false", "NCli");
-	m_climbing.SetDefaultOption("false", "NCli");
-	wpi::SmartDashboard::PutData("Climb?", &m_climbing);
+	m_climbing.Add("true", "Climb");
+	m_climbing.Add("false", "NCli");
+	m_climbing.AddDefault("false", "NCli");
+	wpi::tunables::Publish("Climb?", m_climbing);
 
 	// Preload Option
-	m_desiredPreload.AddOption("Launch", "Launch");
-	m_desiredPreload.AddOption("Drop", "Drop");
-	m_desiredPreload.AddOption("Keep", "Keep");
-	m_desiredPreload.SetDefaultOption("Keep", "Keep");
-	wpi::SmartDashboard::PutData("Desired Preload", &m_desiredPreload);
+	m_desiredPreload.Add("Launch", "Launch");
+	m_desiredPreload.Add("Drop", "Drop");
+	m_desiredPreload.Add("Keep", "Keep");
+	m_desiredPreload.AddDefault("Keep", "Keep");
+	wpi::tunables::Publish("Desired Preload", m_desiredPreload);
 
 	// Fuel Strategy Option
-	m_fuelStrategy.AddOption("Score", "Score");
-	m_fuelStrategy.AddOption("Pass", "Pass");
-	m_fuelStrategy.SetDefaultOption("Score", "Score");
-	wpi::SmartDashboard::PutData("Desired Strategy", &m_fuelStrategy);
+	m_fuelStrategy.Add("Score", "Score");
+	m_fuelStrategy.Add("Pass", "Pass");
+	m_fuelStrategy.AddDefault("Score", "Score");
+	wpi::tunables::Publish("Desired Strategy", m_fuelStrategy);
 
 	// Variation Option
-	m_variation.AddOption("Winning Auton Variation", "Win");
-	m_variation.AddOption("Losing Auton Variation", "Lose");
-	m_variation.AddOption("Inverted Variation", "Invert");
-	m_variation.AddOption("No Variation", "");
-	m_variation.SetDefaultOption("No Variation", "");
-	wpi::SmartDashboard::PutData("Variation", &m_variation);
+	m_variation.Add("Winning Auton Variation", "Win");
+	m_variation.Add("Losing Auton Variation", "Lose");
+	m_variation.Add("Inverted Variation", "Invert");
+	m_variation.Add("No Variation", "");
+	m_variation.AddDefault("No Variation", "");
+	wpi::tunables::Publish("Variation", m_variation);
 }

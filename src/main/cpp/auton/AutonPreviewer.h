@@ -18,7 +18,7 @@
 #include <string>
 
 // FRC Includes
-#include "wpi/math/trajectory/Trajectory.hpp"
+#include "wpi/math/trajectory/HolonomicTrajectory.hpp"
 
 // Team 302 Includes
 #include "auton/CyclePrimitives.h"
@@ -34,7 +34,7 @@ public:
 
     void PopulateField();
 
-    std::vector<wpi::math::Trajectory> GetTrajectories();
+    std::vector<wpi::math::HolonomicTrajectory> GetTrajectories();
 
 private:
     AutonSelector *m_selector;

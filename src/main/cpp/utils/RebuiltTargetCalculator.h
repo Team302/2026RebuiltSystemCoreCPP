@@ -19,9 +19,12 @@
 #include "utils/DragonField.h"
 #include "utils/TargetCalculator.h"
 
+#include "wpi/driverstation/Alliance.hpp"
+#include "wpi/driverstation/MatchState.hpp"
+#include "wpi/driverstation/MatchType.hpp"
+#include "wpi/driverstation/RobotState.hpp"
 #include <array>
 #include <string>
-#include <wpi/driverstation/DriverStation.hpp>
 #include <wpi/math/geometry/Translation2d.hpp>
 #include <wpi/units/length.hpp>
 #include <wpi/units/time.hpp>

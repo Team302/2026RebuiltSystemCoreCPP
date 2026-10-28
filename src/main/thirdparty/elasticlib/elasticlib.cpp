@@ -7,10 +7,10 @@
 
 #include <exception>
 #include <string>
+#include <cstdio>
 
 #include "wpi/nt/StringTopic.hpp"
 #include "wpi/util/json.hpp"
-#include <fmt/core.h>
 #include <wpi/nt/NetworkTableInstance.hpp>
 
 namespace elastic
@@ -57,11 +57,11 @@ namespace elastic
     }
     catch (const std::exception &e)
     {
-      fmt::println(stderr, "Error processing JSON: {}", e.what());
+      std::fprintf(stderr, "Error processing JSON: %s\n", e.what());
     }
     catch (...)
     {
-      fmt::println(stderr, "Unknown error occurred while processing JSON.");
+      std::fprintf(stderr, "Unknown error occurred while processing JSON.\n");
     }
   }
 
