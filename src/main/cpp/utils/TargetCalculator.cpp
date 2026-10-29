@@ -93,7 +93,7 @@ wpi::units::degree_t TargetCalculator::CalculateAngleToTarget(wpi::units::time::
     auto targetPos = (lookaheadTime > 0_s) ? CalculateVirtualTarget(realTarget, lookaheadTime) : realTarget;
     wpi::math::Translation2d vectorToTarget = targetPos - m_chassisPose.Translation();
 
-    return vectorToTarget.Angle().value().Degrees();
+    return vectorToTarget.Angle().value_or(wpi::math::Rotation2d{}).Degrees();
 }
 
 wpi::units::degree_t TargetCalculator::CalculateMechanismAngleToTarget(wpi::units::time::second_t lookaheadTime)
