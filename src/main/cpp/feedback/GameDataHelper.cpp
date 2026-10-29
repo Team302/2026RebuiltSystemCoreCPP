@@ -19,23 +19,27 @@
 #include "utils/PeriodicLooper.h"
 #include "wpi/framework/RobotBase.hpp"
 #include "wpi/internal/DriverStationModeThread.hpp"
-#include "wpi/smartdashboard/SmartDashboard.hpp"
+#include "wpi/tunables/Tunables.hpp"
 #include <algorithm>
 #include <array>
 
 GameDataHelper::GameDataHelper()
 {
     PeriodicLooper::GetInstance()->RegisterAll(this);
-    wpi::SmartDashboard::PutBoolean(m_hubActiveNT, false);
-    wpi::SmartDashboard::PutNumber(m_allianceShiftTime, 25.0);
-    wpi::SmartDashboard::PutString(m_firstActiveHubNT, m_firstActiveHub);
+    wpi::tunables::Publish(m_hubActiveNT, m_hubActiveTunable);
+    wpi::tunables::Publish(m_allianceShiftTime, m_allianceShiftTimeTunable);
+    wpi::tunables::Publish(m_firstActiveHubNT, m_firstActiveHubTunable);
+
+    m_hubActiveTunable = false;
+    m_allianceShiftTimeTunable = 25.0;
+    m_firstActiveHubTunable = m_firstActiveHub;
 }
 
 void GameDataHelper::PublishHubActive(bool value)
 {
     if (m_hubActive != value)
     {
-        wpi::SmartDashboard::PutBoolean(m_hubActiveNT, value);
+        m_hubActiveTunable = value;
         m_hubActive = value;
         RobotState::GetInstance()->PublishStateChange(RobotStateChanges::StateChange::HubActive_Bool, value);
     }
@@ -126,14 +130,14 @@ void GameDataHelper::RunCurrentState()
         if (gameData == "R" && m_firstActiveHub == "Undecided")
         {
             m_firstActiveHub = "Blue";
-            wpi::SmartDashboard::PutString(m_firstActiveHubNT, m_firstActiveHub);
+            m_firstActiveHubTunable = m_firstActiveHub;
         }
         else if (gameData == "B" && m_firstActiveHub == "Undecided")
         {
             m_firstActiveHub = "Red";
-            wpi::SmartDashboard::PutString(m_firstActiveHubNT, m_firstActiveHub);
+            m_firstActiveHubTunable = m_firstActiveHub;
         }
-        wpi::SmartDashboard::PutNumber(m_allianceShiftTime, timeToNextShift.value());
+        m_allianceShiftTimeTunable = timeToNextShift.value();
         PublishShiftChangeIn5seconds(timeToNextShift <= 5.0_s && timeToNextShift > 0_s);
         PublishStartLaunching(timeToNextShift <= 1.5_s && timeToNextShift > 0_s);
     }

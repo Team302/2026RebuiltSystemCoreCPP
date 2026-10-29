@@ -257,9 +257,9 @@ double TeleopControl::GetAxisValue(TeleopControlFunctions::FUNCTION function) //
 		else if (axisID == TeleopControlMappingEnums::AXIS_IDENTIFIER::RIGHT_JOYSTICK_Y)
 			value = -1 * controller->GetRightY();
 		else if (axisID == TeleopControlMappingEnums::AXIS_IDENTIFIER::LEFT_TRIGGER)
-			value = controller->GetLeftTriggerAxis();
+			value = controller->GetLeftTrigger();
 		else if (axisID == TeleopControlMappingEnums::AXIS_IDENTIFIER::RIGHT_TRIGGER)
-			value = controller->GetRightTriggerAxis();
+			value = controller->GetRightTrigger();
 	}
 	return value;
 }
@@ -270,56 +270,56 @@ void TeleopControl::SetRumble(
 	bool rightRumble						   // <I> - rumble right
 )
 {
-	wpi::cmd::CommandGamepad *controller = nullptr;
-	std::tie(controller, std::ignore) = GetButtonInfo(function);
+	// wpi::cmd::CommandGamepad *controller = nullptr;
+	// std::tie(controller, std::ignore) = GetButtonInfo(function);
 
-	if (controller != nullptr)
-	{
-		if (leftRumble && rightRumble)
-		{
-			controller->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 1);
-		}
-		else if (leftRumble)
-		{
-			controller->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 1);
-			controller->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, 0);
-		}
-		else if (rightRumble)
-		{
-			controller->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, 1);
-			controller->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 0);
-		}
-		else
-		{
-			controller->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 0);
-		}
-	}
-	else
-	{
-		wpi::cmd::CommandGamepad *controller2 = nullptr;
-		std::tie(controller2, std::ignore) = GetAxisInfo(function);
-		if (controller2 != nullptr)
-		{
-			if (leftRumble && rightRumble)
-			{
-				controller2->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 1);
-			}
-			else if (leftRumble)
-			{
-				controller2->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 1);
-				controller2->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, 0);
-			}
-			else if (rightRumble)
-			{
-				controller2->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, 1);
-				controller2->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 0);
-			}
-			else
-			{
-				controller2->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 0);
-			}
-		}
-	}
+	// if (controller != nullptr)
+	// {
+	// 	if (leftRumble && rightRumble)
+	// 	{
+	// 		controller->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 1);
+	// 	}
+	// 	else if (leftRumble)
+	// 	{
+	// 		controller->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 1);
+	// 		controller->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, 0);
+	// 	}
+	// 	else if (rightRumble)
+	// 	{
+	// 		controller->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, 1);
+	// 		controller->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 0);
+	// 	}
+	// 	else
+	// 	{
+	// 		controller->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 0);
+	// 	}
+	// }
+	// else
+	// {
+	// 	wpi::cmd::CommandGamepad *controller2 = nullptr;
+	// 	std::tie(controller2, std::ignore) = GetAxisInfo(function);
+	// 	if (controller2 != nullptr)
+	// 	{
+	// 		if (leftRumble && rightRumble)
+	// 		{
+	// 			controller2->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 1);
+	// 		}
+	// 		else if (leftRumble)
+	// 		{
+	// 			controller2->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 1);
+	// 			controller2->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, 0);
+	// 		}
+	// 		else if (rightRumble)
+	// 		{
+	// 			controller2->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, 1);
+	// 			controller2->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 0);
+	// 		}
+	// 		else
+	// 		{
+	// 			controller2->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 0);
+	// 		}
+	// 	}
+	// }
 }
 
 void TeleopControl::SetRumble(
@@ -328,27 +328,27 @@ void TeleopControl::SetRumble(
 	bool rightRumble // <I> - rumble right
 )
 {
-	if (m_controller[controller] != nullptr)
-	{
-		if (leftRumble && rightRumble)
-		{
-			m_controller[controller]->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 1);
-		}
-		else if (leftRumble)
-		{
-			m_controller[controller]->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 1);
-			m_controller[controller]->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, 0);
-		}
-		else if (rightRumble)
-		{
-			m_controller[controller]->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, 1);
-			m_controller[controller]->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 0);
-		}
-		else
-		{
-			m_controller[controller]->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 0);
-		}
-	}
+	// if (m_controller[controller] != nullptr)
+	// {
+	// 	if (leftRumble && rightRumble)
+	// 	{
+	// 		m_controller[controller]->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 1);
+	// 	}
+	// 	else if (leftRumble)
+	// 	{
+	// 		m_controller[controller]->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 1);
+	// 		m_controller[controller]->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, 0);
+	// 	}
+	// 	else if (rightRumble)
+	// 	{
+	// 		m_controller[controller]->SetRumble(wpi::GenericHID::RumbleType::RIGHT_RUMBLE, 1);
+	// 		m_controller[controller]->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 0);
+	// 	}
+	// 	else
+	// 	{
+	// 		m_controller[controller]->SetRumble(wpi::GenericHID::RumbleType::LEFT_RUMBLE, 0);
+	// 	}
+	// }
 }
 
 void TeleopControl::LogInformation()
@@ -395,13 +395,13 @@ wpi::cmd::Trigger TeleopControl::GetCommandTrigger(TeleopControlFunctions::FUNCT
 		switch (buttonInfo.buttonId)
 		{
 		case TeleopControlMappingEnums::A_BUTTON:
-			return controller->SouthFace();
+			return controller->FaceDown();
 		case TeleopControlMappingEnums::B_BUTTON:
-			return controller->EastFace();
+			return controller->FaceRight();
 		case TeleopControlMappingEnums::X_BUTTON:
-			return controller->WestFace();
+			return controller->FaceLeft();
 		case TeleopControlMappingEnums::Y_BUTTON:
-			return controller->NorthFace();
+			return controller->FaceUp();
 		case TeleopControlMappingEnums::LEFT_BUMPER:
 			return controller->LeftBumper();
 		case TeleopControlMappingEnums::RIGHT_BUMPER:

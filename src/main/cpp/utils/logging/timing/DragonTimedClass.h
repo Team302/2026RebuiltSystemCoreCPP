@@ -19,8 +19,8 @@
 #include <string>
 
 // FRC includes
-#include "wpi/smartdashboard/SendableChooser.hpp"
 #include "wpi/system/Timer.hpp"
+#include "wpi/tunables/Selectable.hpp"
 
 /// @class DragonTimedClass
 /// @brief Base class that instruments a derived class' periodic work so its execution time and the
@@ -32,7 +32,7 @@
 /// @c SetCurrentActivity() to record what the code is doing this loop (e.g. the active command or
 /// state name).
 ///
-/// The feature is turned on from the dashboard. A single global @c SendableChooser lets the driver
+/// The feature is turned on from the dashboard. A single global @c SelectableChooser lets the driver
 /// team pick where timing data goes:
 ///   - @c OFF           : no timing overhead is logged (default).
 ///   - @c NETWORK_TABLE : timing + activity are published over NetworkTables.
@@ -115,7 +115,7 @@ private:
     void LogTiming(double elapsedMs) const;
 
     /// @brief Hook for future on-robot data-file logging. Data logging is currently disabled, so
-    ///        this is intentionally a stub - implement it when the data logger is brought online.
+    ///        this is intentionally a stub - implement it when the data Logger is brought online.
     /// @param [in] elapsedMs measured duration in milliseconds.
     void LogTimingToDataFile(double elapsedMs) const;
 
@@ -125,7 +125,7 @@ private:
     wpi::Timer m_timer;            ///< Times the section.
     double m_lastElapsedMs;        ///< Most recent measured duration (ms).
 
-    static TimingLogOption s_option;                        ///< Shared selection for all timed classes.
-    static wpi::SendableChooser<TimingLogOption> s_chooser; ///< Dashboard chooser.
-    static int s_cyclingCounter;                            ///< Throttles dashboard reads.
+    static TimingLogOption s_option;                             ///< Shared selection for all timed classes.
+    static wpi::tunables::Selectable<TimingLogOption> s_chooser; ///< Dashboard chooser.
+    static int s_cyclingCounter;                                 ///< Throttles dashboard reads.
 };

@@ -17,7 +17,10 @@
 
 #include "utils/logging/signals/DragonDataLoggerMgr.h"
 #include "wpi/datalog/DataLog.hpp"
-#include "wpi/driverstation/DriverStation.hpp"
+#include "wpi/driverstation/MatchState.hpp"
+#include "wpi/driverstation/RobotState.hpp"
+#include "wpi/driverstation/Alliance.hpp"
+#include "wpi/driverstation/MatchType.hpp"
 #include "wpi/system/DataLogManager.hpp"
 #include "wpi/system/RobotController.hpp"
 #include <filesystem>

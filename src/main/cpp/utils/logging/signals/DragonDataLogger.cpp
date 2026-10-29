@@ -29,90 +29,90 @@ ISignalLogger *DragonDataLogger::GetLogger() const
 
 void DragonDataLogger::LogBoolData(uint64_t timestamp, const std::string_view &path, bool value)
 {
-    auto logger = GetLogger();
-    if (logger != nullptr)
+    auto Logger = GetLogger();
+    if (Logger != nullptr)
     {
-        logger->WriteBoolean(path, value, timestamp);
+        Logger->WriteBoolean(path, value, timestamp);
     }
 }
 
 void DragonDataLogger::LogIntData(uint64_t timestamp, const std::string_view &path, int value, std::string_view units)
 {
-    auto logger = GetLogger();
-    if (logger != nullptr)
+    auto Logger = GetLogger();
+    if (Logger != nullptr)
     {
-        logger->WriteInteger(path, value, units, timestamp);
+        Logger->WriteInteger(path, value, units, timestamp);
     }
 }
 
 void DragonDataLogger::LogDoubleData(uint64_t timestamp, const std::string_view &path, double value, std::string_view units)
 {
-    auto logger = GetLogger();
-    if (logger != nullptr)
+    auto Logger = GetLogger();
+    if (Logger != nullptr)
     {
-        logger->WriteDouble(path, value, units, timestamp);
+        Logger->WriteDouble(path, value, units, timestamp);
     }
 }
 
 void DragonDataLogger::LogStringData(uint64_t timestamp, const std::string_view &path, const std::string &value)
 {
-    auto logger = GetLogger();
-    if (logger != nullptr)
+    auto Logger = GetLogger();
+    if (Logger != nullptr)
     {
-        logger->WriteString(path, value, timestamp);
+        Logger->WriteString(path, value, timestamp);
     }
 }
 
 void DragonDataLogger::LogDoubleArrayData(uint64_t timestamp, const std::string_view &path, const std::vector<double> &value, std::string_view units)
 {
-    auto logger = GetLogger();
-    if (logger != nullptr)
+    auto Logger = GetLogger();
+    if (Logger != nullptr)
     {
-        logger->WriteDoubleArray(path, value, units, timestamp);
+        Logger->WriteDoubleArray(path, value, units, timestamp);
     }
 }
 
 void DragonDataLogger::LogSwerveModuleStateData(uint64_t timestamp, const std::string_view &path, const std::array<wpi::math::SwerveModuleVelocity, 4> &value)
 {
-    auto logger = GetLogger();
-    if (logger != nullptr)
+    auto Logger = GetLogger();
+    if (Logger != nullptr)
     {
-        logger->WriteSwerveModuleState(path, value, timestamp);
+        Logger->WriteSwerveModuleState(path, value, timestamp);
     }
 }
 
 void DragonDataLogger::LogChassisSpeedsData(uint64_t timestamp, const std::string_view &path, const wpi::math::ChassisVelocities &value)
 {
-    auto logger = GetLogger();
-    if (logger != nullptr)
+    auto Logger = GetLogger();
+    if (Logger != nullptr)
     {
-        logger->WriteChassisSpeeds(path, value, timestamp);
+        Logger->WriteChassisSpeeds(path, value, timestamp);
     }
 }
 
 void DragonDataLogger::LogGamePadData(uint64_t timestamp, const std::string_view &path, const std::array<double, 6> &axes, const std::array<bool, 10> &buttons, const std::array<int, 1> &povs)
 {
-    auto logger = GetLogger();
-    if (logger != nullptr)
+    auto Logger = GetLogger();
+    if (Logger != nullptr)
     {
-        logger->WriteGamePadState(path, axes, buttons, povs, timestamp);
+        Logger->WriteGamePadState(path, axes, buttons, povs, timestamp);
     }
 }
 
 void DragonDataLogger::LogPose2dData(uint64_t timestamp, const std::string_view &path, const wpi::math::Pose2d &value)
 {
-    auto logger = GetLogger();
-    if (logger != nullptr)
+    auto Logger = GetLogger();
+    if (Logger != nullptr)
     {
-        logger->WritePose2d(path, value, timestamp);
+        Logger->WritePose2d(path, value, timestamp);
     }
 }
 
 void DragonDataLogger::LogPose3dData(uint64_t timestamp, const std::string_view &path, const wpi::math::Pose3d &value)
 {
-    auto logger = GetLogger();
-    if (logger != nullptr)
+    auto Logger = GetLogger();
+    if (Logger != nullptr)
     {
-        logger->WritePose3d(path, value, timestamp);
+        Logger->WritePose3d(path, value, timestamp);
     }
 }

@@ -17,8 +17,7 @@
 
 #pragma once
 
-#include "wpi/units/time.hpp"
-#include <wpi/smartdashboard/SendableChooser.hpp>
+#include "wpi/tunables/Selectable.hpp"
 #include <string>
 #include <vector>
 
@@ -74,15 +73,15 @@ private:
 	bool FileValid(const std::string &name);
 
 	// Attributues
-	wpi::SendableChooser<std::string> m_startposchooser;
-	wpi::SendableChooser<std::string> m_neutralZoneAmount;
-	wpi::SendableChooser<std::string> m_targetDepot;
-	wpi::SendableChooser<std::string> m_targetOutpost;
-	wpi::SendableChooser<std::string> m_climbing;
-	wpi::SendableChooser<std::string> m_desiredPreload;
-	wpi::SendableChooser<std::string> m_fuelStrategy;
-	wpi::SendableChooser<std::string> m_neutralZoneArea;
-	wpi::SendableChooser<std::string> m_variation;
+	wpi::tunables::Selectable<std::string> m_startposchooser;
+	wpi::tunables::Selectable<std::string> m_neutralZoneAmount;
+	wpi::tunables::Selectable<std::string> m_targetDepot;
+	wpi::tunables::Selectable<std::string> m_targetOutpost;
+	wpi::tunables::Selectable<std::string> m_climbing;
+	wpi::tunables::Selectable<std::string> m_desiredPreload;
+	wpi::tunables::Selectable<std::string> m_fuelStrategy;
+	wpi::tunables::Selectable<std::string> m_neutralZoneArea;
+	wpi::tunables::Selectable<std::string> m_variation;
 
 	static AutonSelector *m_instance;
 };

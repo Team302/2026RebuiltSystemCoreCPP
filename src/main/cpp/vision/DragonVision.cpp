@@ -42,7 +42,6 @@
 #include <vector>
 
 // FRC
-#include "wpi/apriltag/AprilTagFieldLayout.hpp"
 #include "wpi/math/geometry/Pose2d.hpp"
 #include "wpi/system/RobotController.hpp"
 #include "wpi/system/Timer.hpp"
@@ -168,17 +167,12 @@ bool DragonVision::HealthCheckQuest()
 	return false;
 }
 
-wpi::apriltag::AprilTagFieldLayout DragonVision::m_aprilTagLayout = wpi::apriltag::AprilTagFieldLayout();
+wpi::fields::Field DragonVision::m_aprilTagLayout = wpi::fields::GetField(wpi::fields::FieldId::FRC_2026_REBUILT_WELDED);
 
-/// @brief Returns a cached AprilTag field layout, loading the 2025 field on first access.
-/// @return An instance of wpi::apriltag::AprilTagFieldLayout describing the field tag positions.
-/// @note Calling repeatedly returns the cached layout; expensive load is only done once.
-wpi::apriltag::AprilTagFieldLayout DragonVision::GetAprilTagLayout()
+/// @brief Returns a cached field description including tag positions.
+/// @return An instance of wpi::fields::Field describing the field tag positions.
+wpi::fields::Field DragonVision::GetAprilTagLayout()
 {
-	if (DragonVision::m_aprilTagLayout != wpi::apriltag::AprilTagFieldLayout::LoadField(wpi::apriltag::AprilTagField::k2026RebuiltWelded))
-	{
-		DragonVision::m_aprilTagLayout = wpi::apriltag::AprilTagFieldLayout::LoadField(wpi::apriltag::AprilTagField::k2026RebuiltWelded);
-	}
 	return DragonVision::m_aprilTagLayout;
 }
 

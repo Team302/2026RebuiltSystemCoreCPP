@@ -18,7 +18,10 @@
 
 #include "chassis/generated/CommandSwerveDrivetrain.h"
 #include "fielddata/FieldConstants.h"
-#include "wpi/driverstation/DriverStation.hpp"
+#include "wpi/driverstation/MatchState.hpp"
+#include "wpi/driverstation/RobotState.hpp"
+#include "wpi/driverstation/Alliance.hpp"
+#include "wpi/driverstation/MatchType.hpp"
 #include "wpi/math/geometry/Pose2d.hpp"
 
 //====================================================================================================================================================

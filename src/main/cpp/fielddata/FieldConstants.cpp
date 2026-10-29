@@ -133,7 +133,7 @@ void FieldConstants::ReadFieldCalibrationData()
 {
     if (std::filesystem::exists(m_fieldFilePath))
     {
-        m_aprilTagVector = wpi::apriltag::AprilTagFieldLayout(m_fieldFilePath).GetTags();
+        m_aprilTagVector = wpi::fields::Field(m_fieldFilePath).GetTags();
         for (auto tag : m_aprilTagVector)
         {
             m_aprilTagPoseMap[tag.ID] = tag.pose;

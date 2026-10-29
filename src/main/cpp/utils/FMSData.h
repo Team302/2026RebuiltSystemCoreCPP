@@ -17,7 +17,10 @@
 #include <optional>
 
 // FRC Includes
-#include <wpi/driverstation/DriverStation.hpp>
+#include "wpi/driverstation/MatchState.hpp"
+#include "wpi/driverstation/RobotState.hpp"
+#include "wpi/driverstation/Alliance.hpp"
+#include "wpi/driverstation/MatchType.hpp"
 
 class FMSData
 {

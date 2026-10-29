@@ -1,20 +1,18 @@
 #pragma once
 
+#include "chassis/ChassisConfigMgr.h"
+#include "chassis/generated/CommandSwerveDrivetrain.h"
 #include "ctre/phoenix6/SignalLogger.hpp"
 #include "wpi/nt/NetworkTableInstance.hpp"
+#include "wpi/smartdashboard/Mechanism2d.hpp"
+#include "wpi/smartdashboard/MechanismLigament2d.hpp"
 #include <wpi/nt/DoubleArrayTopic.hpp>
 #include <wpi/nt/DoubleTopic.hpp>
 #include <wpi/nt/StringTopic.hpp>
 #include <wpi/nt/StructArrayTopic.hpp>
 #include <wpi/nt/StructTopic.hpp>
-#include <wpi/smartdashboard/Mechanism2d.hpp>
-#include <wpi/smartdashboard/MechanismLigament2d.hpp>
 
-#include "chassis/generated/CommandSwerveDrivetrain.h"
-#include "utils/logging/signals/DragonDataLoggerMgr.h"
-
-#include "chassis/ChassisConfigMgr.h"
-class Telemetry : public DragonDataLogger
+class Telemetry //: public DragonDataLogger // SystemCore TO DO: Figure out how logging works in SystemCore
 
 {
 private:
@@ -36,10 +34,10 @@ private:
     };
     /* A direction changing and length constant ligament for module direction */
     std::array<wpi::MechanismLigament2d *, 4> m_moduleDirections{
-        m_moduleMechanisms[0].GetRoot("RootDirection", 0.5, 0.5)->Append<wpi::MechanismLigament2d>("Direction", 0.1, 0_deg, 0, wpi::util::Color::WHITE),
-        m_moduleMechanisms[1].GetRoot("RootDirection", 0.5, 0.5)->Append<wpi::MechanismLigament2d>("Direction", 0.1, 0_deg, 0, wpi::util::Color::WHITE),
-        m_moduleMechanisms[2].GetRoot("RootDirection", 0.5, 0.5)->Append<wpi::MechanismLigament2d>("Direction", 0.1, 0_deg, 0, wpi::util::Color::WHITE),
-        m_moduleMechanisms[3].GetRoot("RootDirection", 0.5, 0.5)->Append<wpi::MechanismLigament2d>("Direction", 0.1, 0_deg, 0, wpi::util::Color::WHITE),
+        m_moduleMechanisms[0].GetRoot("RootDirection", 0.5, 0.5)->Append<wpi::MechanismLigament2d>("Direction", 0.1, 0_deg, 0, wpi::util::Color8Bit{255, 255, 255}),
+        m_moduleMechanisms[1].GetRoot("RootDirection", 0.5, 0.5)->Append<wpi::MechanismLigament2d>("Direction", 0.1, 0_deg, 0, wpi::util::Color8Bit{255, 255, 255}),
+        m_moduleMechanisms[2].GetRoot("RootDirection", 0.5, 0.5)->Append<wpi::MechanismLigament2d>("Direction", 0.1, 0_deg, 0, wpi::util::Color8Bit{255, 255, 255}),
+        m_moduleMechanisms[3].GetRoot("RootDirection", 0.5, 0.5)->Append<wpi::MechanismLigament2d>("Direction", 0.1, 0_deg, 0, wpi::util::Color8Bit{255, 255, 255}),
     };
 
     /* Cached state data for periodic logging */
@@ -67,9 +65,9 @@ public:
      */
     Telemetry();
 
-    /** Accept the swerve drive state and telemeterize it to SmartDashboard and SignalLogger. */
+    /** Accept the swerve drive state and telemeterize it to board and SignalLogger. */
     void Telemeterize(subsystems::CommandSwerveDrivetrain::SwerveDriveState const &state);
 
     /** Periodic data logging implementation */
-    void DataLog(uint64_t timestamp) override;
+    // void DataLog(uint64_t timestamp) override; // SystemCore TO DO: Figure out how logging works in SystemCore
 };
