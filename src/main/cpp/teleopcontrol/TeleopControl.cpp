@@ -270,6 +270,7 @@ void TeleopControl::SetRumble(
 	bool rightRumble						   // <I> - rumble right
 )
 {
+	// SystemCore TO DO: Restore controller rumble feedback once the alpha7 gamepad rumble API is wired up.
 	// wpi::cmd::CommandGamepad *controller = nullptr;
 	// std::tie(controller, std::ignore) = GetButtonInfo(function);
 
@@ -328,6 +329,7 @@ void TeleopControl::SetRumble(
 	bool rightRumble // <I> - rumble right
 )
 {
+	// SystemCore TO DO: Restore controller rumble feedback once the alpha7 gamepad rumble API is wired up.
 	// if (m_controller[controller] != nullptr)
 	// {
 	// 	if (leftRumble && rightRumble)
