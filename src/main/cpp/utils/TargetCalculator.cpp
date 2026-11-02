@@ -110,7 +110,7 @@ wpi::units::degree_t TargetCalculator::CalculateMechanismAngleToTarget(wpi::unit
 
     wpi::math::Translation2d vectorToTarget = targetPos - mechanismPos;
 
-    m_cachedMechanismAngleToTarget = vectorToTarget.Angle().value().Degrees();
+    m_cachedMechanismAngleToTarget = vectorToTarget.Angle().value_or(wpi::math::Rotation2d{}).Degrees();
     return m_cachedMechanismAngleToTarget;
 }
 
