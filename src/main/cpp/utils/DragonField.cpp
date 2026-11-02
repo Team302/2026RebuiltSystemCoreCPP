@@ -18,6 +18,8 @@
 /// @details This class provides a singleton interface for displaying robot position, field objects,
 ///          and trajectories on the FRC dashboard Field2d widget.
 
+#include <algorithm>
+#include <span>
 #include <string>
 
 // FRC Includes
