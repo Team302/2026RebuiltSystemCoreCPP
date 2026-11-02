@@ -32,7 +32,7 @@
 /// @c SetCurrentActivity() to record what the code is doing this loop (e.g. the active command or
 /// state name).
 ///
-/// The feature is turned on from the dashboard. A single global @c SelectableChooser lets the driver
+/// The feature is turned on from the dashboard. A single global @c wpi::tunables::Selectable lets the driver
 /// team pick where timing data goes:
 ///   - @c OFF           : no timing overhead is logged (default).
 ///   - @c NETWORK_TABLE : timing + activity are published over NetworkTables.
