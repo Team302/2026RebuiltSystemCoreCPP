@@ -92,8 +92,8 @@ private:
     void SetLoggingOption(
         LOGGER_OPTION option // <I> - Logging option
     );
-    wpi::tunables::Selectable<bool> m_questEnabledChooser;
-    wpi::tunables::Selectable<bool> m_questEndgameEnabledChooser;
+
+    /// @brief set the level for messages that will be displayed
     /// @param [in] LOGGER_LEVEL:  logging level for which messages to display
     void SetLoggingLevel(
         LOGGER_LEVEL level // <I> - Logging level
