@@ -24,8 +24,6 @@ jobs:
           path: /tmp/wpilib-image.tar
           key: ${{ runner.os }}-wpilib-docker-2027-24.04
 
-      - name: Install SystemCore Toolchain
-        run: chmod +x gradlew && ./gradlew installSystemCoreToolchain
       - name: Load WPILib image from cache
         if: steps.docker-cache.outputs.cache-hit == 'true'
         run: docker load -i /tmp/wpilib-image.tar
@@ -56,6 +54,9 @@ jobs:
       # ── Build inside the WPILib container, mounting the Gradle cache ──────────
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew  
+
+      - name: Install SystemCore Toolchain
+        run: ./gradlew installSystemCoreToolchain
 
       - name: Compile and run tests on robot code
         run: |
