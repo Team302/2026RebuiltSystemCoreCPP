@@ -167,13 +167,13 @@ bool DragonVision::HealthCheckQuest()
 	return false;
 }
 
-wpi::fields::Field DragonVision::m_aprilTagLayout = wpi::fields::GetField(wpi::fields::FieldId::FRC_2026_REBUILT_WELDED);
+wpi::fields::Field DragonVision::m_field = wpi::fields::GetField(wpi::fields::FieldId::FRC_2026_REBUILT_WELDED);
 
 /// @brief Returns a cached field description including tag positions.
 /// @return An instance of wpi::fields::Field describing the field tag positions.
-wpi::fields::Field DragonVision::GetAprilTagLayout()
+wpi::fields::Field DragonVision::GetField()
 {
-	return DragonVision::m_aprilTagLayout;
+	return DragonVision::m_field;
 }
 
 /**

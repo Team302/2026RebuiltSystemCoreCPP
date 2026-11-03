@@ -117,7 +117,7 @@ public:
 
     /// @brief Get the field metadata used by vision code.
     /// @return Cached wpi::fields::Field for the configured field.
-    static wpi::fields::Field GetAprilTagLayout();
+    static wpi::fields::Field GetField();
 
     /// @brief Initialize all cameras registered with the vision system.
     /// @note This function sets up the cameras for operation, ensuring they are ready for use.
@@ -139,7 +139,7 @@ public:
     /// @param quest Unique pointer to the DragonQuest instance (ownership IS transferred).
     void AddQuest(std::unique_ptr<DragonQuest> quest);
 
-    static wpi::fields::Field m_aprilTagLayout;
+    static wpi::fields::Field m_field;
 
     /// @brief Aggregate AprilTag detections across cameras and select according to option.
     /// @param option Selection option (e.g., CLOSEST_VALID_TARGET).
