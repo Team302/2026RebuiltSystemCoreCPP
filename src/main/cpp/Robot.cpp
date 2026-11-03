@@ -33,7 +33,7 @@
   - Robot::AutonomousInit() : raise thread priority, initialize cycle primitives, start auton PeriodicLooper state.
   - Robot::AutonomousPeriodic(): run cycle primitives and auton PeriodicLooper.
   - Robot::TeleopInit()/TeleopPeriodic(): start/run teleop PeriodicLooper state.
-  - Robot::UtilityInit()      : cancel commands at test startup.
+  - (No Test/Utility mode handler is implemented in this port yet.)
 
   Initialization order (high level)
   1. Logger selections -> dashboard
