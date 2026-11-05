@@ -55,8 +55,18 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew  
 
-      - name: Install SystemCore Toolchain
-        run: ./gradlew installSystemCoreToolchain
+      - name: Install SystemCore Toolchain in the build container
+        run: |
+          # The toolchain must be installed in the same container that runs Gradle.
+          # Installing it on the host runner does not make it available to the
+          # containerized build environment.
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
+            -e GRADLE_USER_HOME=/workspace/.gradle-home \
+            wpilib/systemcore-cross-ubuntu:2027-24.04 \
+            ./gradlew installSystemCoreToolchain --no-daemon
 
       - name: Compile and run tests on robot code
         run: |
