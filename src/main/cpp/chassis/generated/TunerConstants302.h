@@ -1,7 +1,7 @@
 #pragma once
 
+#include "ctre/phoenix6/CANBus.hpp"
 #include "ctre/phoenix6/CANcoder.hpp"
-#include "ctre/phoenix6/Canbus.hpp"
 #include "ctre/phoenix6/TalonFX.hpp"
 #include "ctre/phoenix6/swerve/SwerveDrivetrain.hpp"
 
