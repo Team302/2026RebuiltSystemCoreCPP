@@ -20,7 +20,7 @@
 #include <string>
 
 // FRC includes
-#include <wpi/smartdashboard/SendableChooser.hpp>
+#include "wpi/tunables/Selectable.hpp"
 
 // Team 302 includes
 #include "utils/logging/debug/LoggerData.h"
@@ -103,8 +103,8 @@ private:
     LOGGER_LEVEL m_level;   // the level at which a message is important enough to send
     mutable std::set<std::string> m_alreadyDisplayed;
     int m_cyclingCounter; // count 20ms loops
-    wpi::SendableChooser<LOGGER_OPTION> m_optionChooser;
-    wpi::SendableChooser<LOGGER_LEVEL> m_levelChooser;
+    wpi::tunables::Selectable<LOGGER_OPTION> m_optionChooser;
+    wpi::tunables::Selectable<LOGGER_LEVEL> m_levelChooser;
 
     Logger();
     ~Logger() = default;

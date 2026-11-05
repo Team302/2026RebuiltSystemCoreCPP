@@ -282,10 +282,10 @@ void SwerveContainer::SetSysIDBinding(TeleopControl *controller)
     {
         // Run SysId routines when holding Select and A,X,Y,B.
         // Note that each routine should be run exactly once in a single log
-        (controller->GetCommandTrigger(TeleopControlFunctions::SYSID_MODIFER) && controller->GetCommandTrigger(TeleopControlFunctions::SYSID_QUASISTATICFORWARD)).WhileTrue(m_chassis->SysIdQuasistatic(wpi::cmd::sysid::Direction::kForward)); // A
-        (controller->GetCommandTrigger(TeleopControlFunctions::SYSID_MODIFER) && controller->GetCommandTrigger(TeleopControlFunctions::SYSID_QUASISTATICREVERSE)).WhileTrue(m_chassis->SysIdQuasistatic(wpi::cmd::sysid::Direction::kReverse)); // B
-        (controller->GetCommandTrigger(TeleopControlFunctions::SYSID_MODIFER) && controller->GetCommandTrigger(TeleopControlFunctions::SYSID_DYNAMICFORWARD)).WhileTrue(m_chassis->SysIdDynamic(wpi::cmd::sysid::Direction::kForward));         // Y
-        (controller->GetCommandTrigger(TeleopControlFunctions::SYSID_MODIFER) && controller->GetCommandTrigger(TeleopControlFunctions::SYSID_DYNAMICREVERSE)).WhileTrue(m_chassis->SysIdDynamic(wpi::cmd::sysid::Direction::kReverse));         // X
+        (controller->GetCommandTrigger(TeleopControlFunctions::SYSID_MODIFER) && controller->GetCommandTrigger(TeleopControlFunctions::SYSID_QUASISTATICFORWARD)).WhileTrue(m_chassis->SysIdQuasistatic(wpi::cmd::sysid::Direction::FORWARD)); // A
+        (controller->GetCommandTrigger(TeleopControlFunctions::SYSID_MODIFER) && controller->GetCommandTrigger(TeleopControlFunctions::SYSID_QUASISTATICREVERSE)).WhileTrue(m_chassis->SysIdQuasistatic(wpi::cmd::sysid::Direction::REVERSE)); // B
+        (controller->GetCommandTrigger(TeleopControlFunctions::SYSID_MODIFER) && controller->GetCommandTrigger(TeleopControlFunctions::SYSID_DYNAMICFORWARD)).WhileTrue(m_chassis->SysIdDynamic(wpi::cmd::sysid::Direction::FORWARD));         // Y
+        (controller->GetCommandTrigger(TeleopControlFunctions::SYSID_MODIFER) && controller->GetCommandTrigger(TeleopControlFunctions::SYSID_DYNAMICREVERSE)).WhileTrue(m_chassis->SysIdDynamic(wpi::cmd::sysid::Direction::REVERSE));         // X
     }
 }
 

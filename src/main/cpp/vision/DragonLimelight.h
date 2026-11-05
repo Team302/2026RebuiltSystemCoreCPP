@@ -23,7 +23,10 @@
 
 // FRC includes
 #include "fielddata/FieldConstants.h"
-#include "wpi/driverstation/DriverStation.hpp"
+#include "wpi/driverstation/Alliance.hpp"
+#include "wpi/driverstation/MatchState.hpp"
+#include "wpi/driverstation/MatchType.hpp"
+#include "wpi/driverstation/RobotState.hpp"
 #include "wpi/math/geometry/Pose2d.hpp"
 #include "wpi/math/geometry/Pose3d.hpp"
 #include "wpi/nt/NetworkTable.hpp"
@@ -36,7 +39,7 @@
 #include "chassis/ChassisConfigMgr.h"
 #include "chassis/generated/CommandSwerveDrivetrain.h"
 #include "fielddata/FieldAprilTagIDs.h"
-#include "utils/logging/signals/DragonDataLogger.h"
+// #include "utils/logging/signals/DragonDataLogger.h" SystemCore TO DO: Figure out how logging works in SystemCore
 #include "vision/DragonVisionEnums.h"
 #include "vision/DragonVisionStruct.h"
 #include "vision/VisionPose.h"
@@ -44,7 +47,7 @@
 // Third Party Includes
 
 // DragonLimelight derives from DragonDataLogger for vision data logging and Limelight control
-class DragonLimelight : public DragonDataLogger
+class DragonLimelight //: public DragonDataLogger SystemCore TO DO: Figure out how logging works in SystemCore
 {
 public:
     ///-----------------------------------------------------------------------------------
@@ -177,7 +180,7 @@ public:
     ///-----------------------------------------------------------------------------------
     /// @brief Log relevant Limelight data to the data Logger.
     ///-----------------------------------------------------------------------------------
-    void DataLog(uint64_t timestamp) override;
+    // void DataLog(uint64_t timestamp) override; // SystemCore TO DO: Figure out how logging works in SystemCore
 
 private:
     ///-----------------------------------------------------------------------------------

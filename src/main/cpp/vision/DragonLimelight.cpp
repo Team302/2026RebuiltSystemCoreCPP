@@ -19,7 +19,10 @@
 
 // FRC includes
 #include "utils/PoseUtils.h"
-#include "wpi/driverstation/DriverStation.hpp"
+#include "wpi/driverstation/Alliance.hpp"
+#include "wpi/driverstation/MatchState.hpp"
+#include "wpi/driverstation/MatchType.hpp"
+#include "wpi/driverstation/RobotState.hpp"
 #include "wpi/framework/RobotBase.hpp"
 #include "wpi/math/geometry/Pose3d.hpp"
 #include "wpi/math/geometry/Rotation3d.hpp"
@@ -235,7 +238,7 @@ std::optional<VisionPose> DragonLimelight::GetMegaTag1Pose()
         return std::nullopt;
     }
 
-    auto pose3d = wpi::math::Pose3d{limelightMeasurement.pose};
+    const auto pose3d = wpi::math::Pose3d{limelightMeasurement.pose};
 
     wpi::units::time::millisecond_t currentTime = wpi::Timer::GetMonotonicTimestamp();
     wpi::units::time::millisecond_t timestamp = currentTime - wpi::units::millisecond_t(limelightMeasurement.timestampSeconds / 1000.0);
@@ -244,7 +247,7 @@ std::optional<VisionPose> DragonLimelight::GetMegaTag1Pose()
     double degStds = deviations.value().second;
 
     m_megatag1PosBool = true;
-    m_megatag1Pos = {pose3d, timestamp, {xyStds, xyStds, degStds}, PoseEstimationStrategy::MEGA_TAG};
+    m_megatag1Pos = VisionPose{pose3d, timestamp, {xyStds, xyStds, degStds}, PoseEstimationStrategy::MEGA_TAG};
 
     return m_megatag1Pos;
 }
@@ -523,9 +526,12 @@ void DragonLimelight::SetRobotPoseWithMegaTag1()
     }
 }
 
+/* SystemCore TO DO: Figure out how logging works in SystemCore
+
 void DragonLimelight::DataLog(uint64_t timestamp)
 {
     LogIntData(timestamp, std::string(m_loggingLimelightPath + m_networkTableName + m_loggingPipelineKey), static_cast<int>(m_pipeline));
     LogPose3dData(timestamp, std::string(m_loggingLimelightPath + m_networkTableName + m_loggingCameraPoseKey), m_megatag2Pos.estimatedPose);
     LogIntData(timestamp, std::string(m_loggingLimelightPath + m_networkTableName + m_loggingTagIDKey), static_cast<int>(LimelightHelpers::getRawFiducials(m_networkTableName).size()));
 }
+*/

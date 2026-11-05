@@ -19,7 +19,7 @@
 #include "wpi/math/geometry/Pose2d.hpp"
 #include "wpi/math/geometry/Rotation2d.hpp"
 #include "wpi/math/kinematics/ChassisVelocities.hpp"
-#include "wpi/math/trajectory/Trajectory.hpp"
+#include "wpi/math/trajectory/HolonomicTrajectory.hpp"
 #include "wpi/units/angle.hpp"
 #include "wpi/units/angular_velocity.hpp"
 #include "wpi/units/velocity.hpp"
@@ -40,7 +40,6 @@
 using std::string;
 using wpi::math::ChassisVelocities;
 using wpi::math::Rotation2d;
-using wpi::math::Trajectory;
 
 AutonPreviewer::AutonPreviewer(CyclePrimitives *cyclePrims) : m_selector(cyclePrims->GetAutonSelector()),
                                                               m_prevChoice(""),
@@ -70,18 +69,18 @@ void AutonPreviewer::CheckCurrentAuton()
 
 void AutonPreviewer::PopulateField()
 {
-    auto trajectories = GetTrajectories();
-    m_field->ResetField();
-    for (unsigned int i = 0; i < trajectories.size(); i++)
-    {
-        m_field->AddTrajectory("traj" + std::to_string(i), trajectories[i]);
-    }
+    // auto trajectories = GetTrajectories();
+    // m_field->ResetField();
+    // for (unsigned int i = 0; i < trajectories.size(); i++)
+    // {
+    //     m_field->AddTrajectory("traj" + std::to_string(i), trajectories[i]);
+    // }
 }
 
-std::vector<wpi::math::Trajectory> AutonPreviewer::GetTrajectories()
+std::vector<wpi::math::HolonomicTrajectory> AutonPreviewer::GetTrajectories()
 {
 
-    std::vector<wpi::math::Trajectory> trajectories;
+    std::vector<wpi::math::HolonomicTrajectory> trajectories;
 
     /* SystemCore TO DO: uncomment when choreo is added back as a dependency
     wpi::math::ChassisVelocities speeds;

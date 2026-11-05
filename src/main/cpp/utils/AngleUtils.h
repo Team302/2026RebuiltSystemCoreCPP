@@ -26,7 +26,7 @@ public:
     /// @returns wpi::units::angle::degree_t the angle to traverse to get from the startingAngle
     ///                                 to the targetAngle
     static wpi::units::angle::degree_t GetDeltaAngle(wpi::units::angle::degree_t startingAngle,
-                                                wpi::units::angle::degree_t targetAngle);
+                                                     wpi::units::angle::degree_t targetAngle);
 
     /// @brief make sure the angle is between -180.0_deg and 180.0_deg and if it isn't find
     ///        its equivalent angle within that range
