@@ -20,8 +20,8 @@
 // Team302 Includes
 #include "auton/PrimitiveParams.h"
 #include "auton/drivePrimitives/IPrimitive.h"
-#include "chassis/generated/CommandSwerveDrivetrain.h"
 #include "chassis/ChassisOptionEnums.h"
+#include "chassis/generated/CommandSwerveDrivetrain.h"
 #include "vision/DragonVision.h"
 
 // FRC,WPI Includes

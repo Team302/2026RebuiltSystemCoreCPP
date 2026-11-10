@@ -76,16 +76,16 @@ private:
     /// Get or create a FloatArrayLogEntry for the given signal path
     wpi::log::FloatArrayLogEntry &GetFloatArrayEntry(const std::string &signalID);
 
-    /// Get or create a StructLogEntry<Pose2d> for the given signal path
+    /// Get or create a StructLogEntry<wpi::math::Pose2d> for the given signal path
     wpi::log::StructLogEntry<wpi::math::Pose2d> &GetPose2dEntry(const std::string &signalID);
 
-    /// Get or create a StructLogEntry<Pose3d> for the given signal path
+    /// Get or create a StructLogEntry<wpi::math::Pose3d> for the given signal path
     wpi::log::StructLogEntry<wpi::math::Pose3d> &GetPose3dEntry(const std::string &signalID);
 
-    /// Get or create a StructLogEntry<ChassisSpeeds> for the given signal path
+    /// Get or create a StructLogEntry<wpi::math::ChassisSpeeds> for the given signal path
     wpi::log::StructLogEntry<wpi::math::ChassisVelocities> &GetChassisSpeedsEntry(const std::string &signalID);
 
-    /// Get or create a StructLogEntry<SwerveModuleState> for the given signal path
+    /// Get or create a StructLogEntry<wpi::math::SwerveModuleState> for the given signal path
     wpi::log::StructLogEntry<std::array<wpi::math::SwerveModuleVelocity, 4>> &GetSwerveModuleStateEntry(const std::string &signalID);
 
     std::unordered_map<std::string, std::unique_ptr<wpi::log::BooleanLogEntry>> m_boolEntries;

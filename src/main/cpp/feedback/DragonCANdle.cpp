@@ -43,7 +43,7 @@ void DragonCANdle::Initialize(int canID, int stripSize, const std::string &canBu
         return;
     }
 
-    m_candle = new hardware::CANdle(canID, canBus == "0" ? CANBus::Systemcore(0) : CANBus{canBus});
+    m_candle = new hardware::CANdle(canID, canBus == "0" ? CANBus{} : CANBus{canBus});
 
     configs::CANdleConfiguration configs{};
     configs.LED.BrightnessScalar = brightness;

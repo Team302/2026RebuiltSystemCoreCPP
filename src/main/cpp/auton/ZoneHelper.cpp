@@ -19,8 +19,6 @@
 #include <auton/ZoneParams.h>
 #include <auton/ZoneParser.h>
 
-using wpi::DriverStation;
-
 ZoneHelper::ZoneHelper()
 {
     m_chassis = ChassisConfigMgr::GetInstance()->GetSwerveChassis();

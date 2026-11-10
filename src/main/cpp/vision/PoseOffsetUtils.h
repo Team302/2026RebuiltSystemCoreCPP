@@ -19,9 +19,9 @@
 #include <memory>
 #include <utility>
 
+#include "vision/DragonVisionStruct.h"
 #include "wpi/units/angle.hpp"
 #include "wpi/units/length.hpp"
-#include "vision/DragonVisionStruct.h"
 
 class PoseOffsetUtils
 {

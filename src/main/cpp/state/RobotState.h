@@ -17,7 +17,10 @@
 #include <vector>
 
 #include "state/RobotStateChanges.h"
-#include "wpi/driverstation/DriverStation.hpp"
+#include "wpi/driverstation/Alliance.hpp"
+#include "wpi/driverstation/MatchState.hpp"
+#include "wpi/driverstation/MatchType.hpp"
+#include "wpi/driverstation/RobotState.hpp"
 #include "wpi/math/geometry/Pose2d.hpp"
 #include <wpi/units/angle.hpp>
 #include <wpi/units/angular_velocity.hpp>

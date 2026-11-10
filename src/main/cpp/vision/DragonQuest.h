@@ -20,17 +20,18 @@
 
 #include "state/IRobotStateChangeSubscriber.h"
 #include "utils/DragonField.h"
-#include "utils/logging/signals/DragonDataLogger.h"
+// #include "utils/logging/signals/DragonDataLogger.h" SystemCore TO DO: Figure out how logging works in SystemCore
 #include "vision/DragonVisionPoseEstimatorStruct.h"
 #include "vision/Questnavlib/QuestNav.h"
 #include "wpi/math/geometry/Pose2d.hpp"
 #include "wpi/math/geometry/Pose3d.hpp"
 #include "wpi/math/geometry/Transform3d.hpp"
 #include "wpi/nt/NetworkTable.hpp"
-#include "wpi/smartdashboard/SendableChooser.hpp"
-#include "wpi/smartdashboard/SmartDashboard.hpp"
+#include "wpi/tunables/Selectable.hpp"
 
-class DragonQuest : public IRobotStateChangeSubscriber, public DragonDataLogger
+using wpi::tunables::Selectable;
+
+class DragonQuest : public IRobotStateChangeSubscriber //, public DragonDataLogger SystemCore TO DO: Figure out how logging works in SystemCore
 {
 public:
     DragonQuest(
@@ -41,7 +42,7 @@ public:
         wpi::units::angle::degree_t mountingYaw,    /// <I> - Yaw of Quest
         wpi::units::angle::degree_t mountingRoll    /// <I> - Roll of Quest
     );
-    void DataLog(uint64_t timestamp) override;
+    // void DataLog(uint64_t timestamp) override; // SystemCore TO DO: Figure out how logging works in SystemCore
 
     bool HealthCheck() { return m_questNav.IsConnected(); };
 
@@ -92,8 +93,8 @@ private:
     wpi::math::Transform3d m_robotToQuestTransform;
 
     // ── Dashboard choosers ──
-    wpi::SendableChooser<bool> m_questEnabledChooser;
-    wpi::SendableChooser<bool> m_questEndgameEnabledChooser;
+    Selectable<bool> m_questEnabledChooser;
+    Selectable<bool> m_questEndgameEnabledChooser;
 
     // ── State flags ──
     bool m_hasReset = false;

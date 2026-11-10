@@ -14,8 +14,9 @@
 //====================================================================================================================================================
 
 #pragma once
-#include "wpi/system/Timer.hpp"
 #include "state/StateMgr.h"
+#include "wpi/system/Timer.hpp"
+#include "wpi/tunables/Tunable.hpp"
 
 class GameDataHelper : StateMgr
 {
@@ -46,4 +47,8 @@ private:
     std::string m_hubActiveNT = "Hub Active";
     std::string m_allianceShiftTime = "Time Left In Shift";
     std::string m_firstActiveHubNT = "First Active Hub";
+
+    wpi::tunables::TunableBool m_hubActiveTunable{false};
+    wpi::tunables::TunableDouble m_allianceShiftTimeTunable{25.0};
+    wpi::tunables::TunableString m_firstActiveHubTunable{"Undecided"};
 };

@@ -22,11 +22,12 @@
 #include "wpi/math/trajectory/Trajectory.hpp"
 #include "wpi/smartdashboard/Field2d.hpp"
 #include "wpi/smartdashboard/FieldObject2d.hpp"
+#include "wpi/tunables/Tunable.hpp"
 
 /// @class DragonField
-/// @brief Singleton class for managing field visualization in SmartDashboard.
+/// @brief Singleton class for managing field visualization in dashboard.
 /// @details This class provides a centralized interface for displaying robot position, field objects,
-///          and trajectories on the FRC SmartDashboard Field2d widget. It manages the lifecycle of
+///          and trajectories on the FRC dashboard Field2d widget. It manages the lifecycle of
 ///          field objects and provides methods to update their positions and visibility.
 class DragonField
 {
@@ -44,15 +45,20 @@ public:
     /// @brief Add a wpi::math::Trajectory to be displayed on the field.
     /// @param name The name identifier for the wpi::math::Trajectory.
     /// @param trajectory The wpi::math::Trajectory to display.
-    void AddTrajectory(const std::string &name, wpi::math::Trajectory trajectory);
+    template <typename SampleType>
+    void AddTrajectory(const std::string &name, const wpi::math::Trajectory<SampleType> &trajectory)
+    {
+        m_objects.emplace_back(m_field.GetObject(name));
+        m_field.GetObject(name)->SetTrajectory(trajectory);
+    }
 
     /// @brief Update the pose of a specific field object if it is enabled.
     /// @param name The name identifier of the object to update.
     /// @param pose The new pose for the object.
     void UpdateObject(const std::string &name, wpi::math::Pose2d pose);
 
-    /// @brief Update the enabled/disabled state of all field objects based on SmartDashboard values.
-    /// @details Reads boolean values from SmartDashboard for each registered object to determine
+    /// @brief Update the enabled/disabled state of all field objects based on dashboard values.
+    /// @details Reads boolean values from dashboard for each registered object to determine
     ///          whether they should be visible on the field display.
     void UpdateEnabledStates();
 
@@ -66,18 +72,19 @@ public:
 
 private:
     /// @brief Constructor for DragonField.
-    /// @details Initializes the Field2d object and registers it with SmartDashboard.
+    /// @details Initializes the Field2d object and registers it with dashboard.
     DragonField();
 
     /// @brief Destructor for DragonField.
     ~DragonField() = default;
 
-    wpi::Field2d m_field;                                          ///< The Field2d object used for visualization
-    std::vector<wpi::FieldObject2d *> m_objects;                   ///< List of field objects for trajectories
-    std::vector<std::pair<std::string, bool>> m_objectNameEnabled; ///< Map of object names to their enabled state
-    static DragonField *m_instance;                                ///< Singleton instance pointer
+    wpi::Field2d m_field;                                                                    ///< The Field2d object used for visualization
+    std::vector<wpi::FieldObject2d *> m_objects;                                             ///< List of field objects for trajectories
+    std::vector<std::pair<std::string, bool>> m_objectNameEnabled;                           ///< Map of object names to their enabled state
+    std::vector<std::pair<std::string, wpi::tunables::TunableBool>> m_objectEnabledTunables; ///< Dashboard toggles for object visibility
+    static DragonField *m_instance;                                                          ///< Singleton instance pointer
 
-    /// @brief Add a boolean selector to SmartDashboard for enabling/disabling a field object.
+    /// @brief Add a boolean selector to dashboard for enabling/disabling a field object.
     /// @param name The name identifier for the object.
     /// @param defaultValue The default enabled state for the selector.
     void AddSelector(const std::string &name, bool defaultValue);

@@ -15,12 +15,12 @@
 //====================================================================================================================================================
 
 // Team 302 includes
-#include "auton/PrimitiveFactory.h"
-#include "auton/PrimitiveEnums.h"
-#include "auton/drivePrimitives/AutonDrivePrimitive.h"
 #include "auton/drivePrimitives/IPrimitive.h"
 #include "auton/drivePrimitives/ResetPositionTrajectory.h"
 #include "auton/drivePrimitives/VisionDrivePrimitive.h"
+#include "auton/PrimitiveEnums.h"
+#include "auton/PrimitiveFactory.h"
+#include "auton/drivePrimitives/AutonDrivePrimitive.h"
 
 PrimitiveFactory *PrimitiveFactory::m_instance = nullptr;
 
