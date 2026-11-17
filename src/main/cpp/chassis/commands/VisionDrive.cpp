@@ -13,25 +13,63 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 //====================================================================================================================================================
 
-#include "chassis/commands/VisionDrive.h"
-#include "vision/PoseOffsetUtils.h"
+//====================================================================================================================================================
+/// @file VisionDrive.cpp
+/// @brief Base implementation for vision-guided autopilot driving with manual fallback.
+/// @details Configures command-level autopilot constraints/tolerances, computes autopilot
+///          outputs when derived classes provide targets, and otherwise applies driver field control.
+//====================================================================================================================================================
 
-// Note the simplified constructor and AddRequirements call
+#include "chassis/commands/VisionDrive.h"
+#include "utils/logging/debug/Logger.h"
+
+//------------------------------------------------------------------
+/// @brief      Constructs the VisionDrive base command.
+/// @param[in]  chassis Swerve drivetrain subsystem to control.
+//------------------------------------------------------------------
 VisionDrive::VisionDrive(subsystems::CommandSwerveDrivetrain *chassis) : m_chassis(chassis)
 {
     AddRequirements(m_chassis);
-
 }
 
+//------------------------------------------------------------------
+/// @brief      Initializes command-level autopilot profile and constraints.
+/// @details    Rebuilds constraints from command speed/accel limits, applies virtual
+///             tolerance hooks from derived commands, and logs effective tuning values.
+//------------------------------------------------------------------
 void VisionDrive::Initialize()
 {
     m_maxSpeed = GetMaxVelocity();
+    kMaxVelocity = m_maxSpeed;
+    kMaxAcceleration = kMaxAccelerationDefault;
+
+    m_autopilotConstraints = m_autopilotConstraints.WithAcceleration(kMaxAcceleration)
+                                 .WithVelocity(kMaxVelocity)
+                                 .WithJerkMetersPerSecondCubed(m_maxJerk);
+    m_autopilotProfile.WithErrorXY(GetAutopilotErrorXY())
+        .WithErrorTheta(GetAutopilotErrorTheta())
+        .WithBeelineRadius(GetAutopilotBeelineRadius())
+        .WithConstraints(m_autopilotConstraints);
+    m_autopilot = Autopilot(m_autopilotProfile);
+
+    Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, "VisionDrive", "AP ErrorXY (m)", m_autopilotProfile.GetErrorXY().value());
+    Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, "VisionDrive", "AP ErrorTheta (deg)", wpi::units::angle::degree_t(m_autopilotProfile.GetErrorTheta()).value());
+    Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, "VisionDrive", "AP BeelineRadius (m)", m_autopilotProfile.GetBeelineRadius().value());
+    Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, "VisionDrive", "AP MaxVelocity (mps)", m_autopilotConstraints.GetVelocity().value());
+    Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, "VisionDrive", "AP MaxAccel (mps2)", m_autopilotConstraints.GetAcceleration().value());
+    Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, "VisionDrive", "AP MaxJerk (mps3)", m_autopilotConstraints.GetJerkMetersPerSecondCubed());
 }
 
+//------------------------------------------------------------------
+/// @brief      Executes one control cycle.
+/// @details    If a derived command provides an autopilot target, computes field-relative
+///             setpoints with autopilot and applies them. Otherwise, falls back to manual
+///             field-centric joystick driving.
+//------------------------------------------------------------------
 void VisionDrive::Execute()
 {
-    m_RobotDriveRequest = GetRobotDriveRequest();
-    if (m_RobotDriveRequest.VelocityX == 0_mps && m_RobotDriveRequest.VelocityY == 0_mps && m_RobotDriveRequest.RotationalRate == 0_deg_per_s)
+    auto autopilotTarget = GetAutopilotTarget();
+    if (!autopilotTarget.has_value())
     {
         double forward = m_controller->GetAxisValue(TeleopControlFunctions::HOLONOMIC_DRIVE_FORWARD);
         double strafe = m_controller->GetAxisValue(TeleopControlFunctions::HOLONOMIC_DRIVE_STRAFE);
@@ -44,15 +82,22 @@ void VisionDrive::Execute()
     }
     else
     {
-        if (m_visionCacheI < 5)
-        {
-            m_chassis->SetControl(m_RobotDriveRequest);
-            m_visionCacheI = 0;
-        }
-        m_visionCacheI++;
+        auto currentPose = m_chassis->GetPose();
+        auto robotRelativeSpeeds = m_chassis->GetState().Velocity;
+        auto output = m_autopilot.Calculate(currentPose, robotRelativeSpeeds, autopilotTarget.value());
+
+        m_chassis->SetControl(
+            m_driveRequest.WithVelocityX(output.vx)
+                .WithVelocityY(output.vy)
+                .WithTargetDirection(output.targetAngle)
+                .WithForwardPerspective(ctre::phoenix6::swerve::requests::ForwardPerspectiveValue::BlueAlliance));
     }
 }
 
+//------------------------------------------------------------------
+/// @brief      VisionDrive commands run until interrupted.
+/// @return     Always false.
+//------------------------------------------------------------------
 bool VisionDrive::IsFinished()
 {
     // A default drive command should never finish on its own.
@@ -60,6 +105,10 @@ bool VisionDrive::IsFinished()
     return false;
 }
 
+//------------------------------------------------------------------
+/// @brief      Stops drivetrain motion when command ends.
+/// @param[in]  interrupted True if interrupted by another command.
+//------------------------------------------------------------------
 void VisionDrive::End(bool interrupted)
 {
     m_chassis->SetControl(swerve::requests::SwerveDriveBrake{});

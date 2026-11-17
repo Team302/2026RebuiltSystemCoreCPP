@@ -20,36 +20,40 @@
 DriveToFuel::DriveToFuel(subsystems::CommandSwerveDrivetrain *chassis) : wpi::cmd::CommandHelper<VisionDrive, DriveToFuel>(chassis)
 {
     m_vision = DragonVision::GetDragonVision();
-    m_vision->SetPipeline(DRAGON_LIMELIGHT_CAMERA_USAGE::OBJECT_DETECTION, DRAGON_LIMELIGHT_PIPELINE::FUEL_PL);
+    if (m_vision != nullptr)
+    {
+        m_vision->SetPipeline(DRAGON_LIMELIGHT_CAMERA_USAGE::OBJECT_DETECTION, DRAGON_LIMELIGHT_PIPELINE::FUEL_PL);
+    }
 }
 
-swerve::requests::RobotCentric DriveToFuel::GetRobotDriveRequest()
+std::optional<APTarget> DriveToFuel::GetAutopilotTarget()
 {
     if (m_vision == nullptr)
     {
-        return swerve::requests::RobotCentric{};
+        return std::nullopt;
     }
     m_vision->SetPipeline(DRAGON_LIMELIGHT_CAMERA_USAGE::OBJECT_DETECTION, DRAGON_LIMELIGHT_PIPELINE::FUEL_PL);
 
     m_visionCache = m_vision->GetObjectDetectionTargetInfo(VisionTargetOption::CLOSEST_VALID_TARGET, std::vector<int>{});
     if (!m_visionCache.empty() && m_visionCache[0].get() != nullptr)
     {
-        wpi::units::angular_velocity::degrees_per_second_t rotRate = wpi::units::degrees_per_second_t(m_yawController.Calculate(m_visionCache[0]->objectDetectionData.targetGroupHorizontalAngle.value()));
-        rotRate = std::clamp(rotRate, -m_maxRotationalSpeed, m_maxRotationalSpeed);
-
         auto targetinfo = PoseOffsetUtils::CalculateXYDistanceFromObject(*m_visionCache[0], 6_in);
         wpi::units::length::meter_t xDist = -targetinfo.first;
         xDist = std::clamp(xDist, -m_XdistLimit, 0_m);
         xDist += m_IntakeXOffset;
-        wpi::units::velocity::meters_per_second_t xspeed = wpi::units::meters_per_second_t(m_xController.Calculate(xDist.value()));
-        xspeed = std::clamp(xspeed, -m_maxXSpeed, m_maxXSpeed);
 
-        auto request = swerve::requests::RobotCentric{}.WithVelocityX(xspeed).WithVelocityY(0.0_mps).WithRotationalRate(rotRate);
-        request.Deadband = 0.1_mps;
-        return request;
+        auto currentPose = m_chassis->GetPose();
+        wpi::math::Translation2d robotRelativeOffset{-xDist, 0_m};
+        auto fieldRelativeOffset = robotRelativeOffset.RotateBy(currentPose.Rotation());
+
+        auto yawError = m_visionCache[0]->objectDetectionData.targetGroupHorizontalAngle;
+        auto desiredHeading = currentPose.Rotation() - wpi::math::Rotation2d{yawError};
+        wpi::math::Pose2d targetPose{currentPose.Translation() + fieldRelativeOffset, desiredHeading};
+
+        return APTarget(targetPose);
     }
     else
     {
-        return swerve::requests::RobotCentric{};
+        return std::nullopt;
     }
 }

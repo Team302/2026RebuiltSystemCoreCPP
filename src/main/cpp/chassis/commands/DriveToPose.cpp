@@ -16,12 +16,10 @@
 //====================================================================================================================================================
 /// @file DriveToPose.cpp
 /// @brief Implementation of DriveToPose command for autonomous pose-based navigation
-/// @details This command provides a base class for driving the robot to specific field poses using a combination
-///          of feedforward and PID control. The control system uses:
-///          - Separate ProfiledPIDControllers for X and Y translation
-///          - Feedforward velocity scaling based on distance to target
-///          - Heading control to face a target direction
-///          - Adaptive PID reset to handle large position errors
+/// @details This command uses the Team 302 C++ Autopilot classes to generate field-relative
+///          translational and heading setpoints toward one or two target poses. Derived classes
+///          provide the target pose(s), while this base class handles target staging, control
+///          application, completion checks, and state publication.
 ///
 ///          The command is designed to be extended by derived classes that provide specific target poses
 ///          for different field elements or game-specific locations.
@@ -43,19 +41,19 @@ using wpi::units::angle::radian_t;
 using wpi::units::length::meter_t;
 using wpi::units::velocity::meters_per_second_t;
 
-static constexpr meter_t m_autopilotXYError{0.02};
-static constexpr degree_t m_autopilotThetaError{0.5};
-static constexpr meter_t m_autopilotBeelineRadius{0.08};
+static constexpr meter_t AUTOPILOT_XY_ERROR{0.02};
+static constexpr degree_t AUTOPILOT_THETA_ERROR{0.5};
+static constexpr meter_t AUTOPILOT_BEELINE_RADIUS{0.08};
+static constexpr double ROTATION_KP{4.5};
+static constexpr double ROTATION_KI{0.0};
+static constexpr double ROTATION_KD{0.0};
 
 //------------------------------------------------------------------
 /// @brief      Constructor for DriveToPose command
 /// @param[in]  chassis - Pointer to the swerve drive subsystem used for navigation
-/// @details    Initializes the command with the following configuration:
-///
-///             **PID Controller Setup:**
-///             - Creates separate ProfiledPIDControllers for X and Y axes
-///             - Configures I-Zone (integral zone) to prevent integral windup
-///             - Uses trapezoidal motion profiles for smooth acceleration/deceleration
+/// @details    Initializes default autopilot profile parameters (XY/theta tolerances,
+///             beeline radius), stores initial pose for movement detection, and captures
+///             chassis subsystem ownership.
 ///
 ///             **Initial State:**
 ///             - Captures current robot pose as the previous pose reference
@@ -63,10 +61,7 @@ static constexpr meter_t m_autopilotBeelineRadius{0.08};
 ///             - Registers chassis as a required subsystem
 ///
 ///             **Control Strategy:**
-///             The command combines feedforward and feedback control:
-///             - Feedforward: Provides base velocity towards target (scaled by distance)
-///             - PID Feedback: Applies corrections for precise positioning
-///             - Heading Control: Rotates robot to face target direction
+///             Motion setpoints are generated each cycle by `Autopilot::Calculate()`.
 ///
 /// @note       The command requires exclusive access to the chassis subsystem
 /// @see        Initialize() for per-run setup when command is scheduled
@@ -75,13 +70,10 @@ DriveToPose::DriveToPose(subsystems::CommandSwerveDrivetrain *chassis) : m_chass
 {
     AddRequirements(m_chassis);
 
-    m_autopilotProfile.WithErrorXY(m_autopilotXYError)
-        .WithErrorTheta(m_autopilotThetaError)
+    m_autopilotProfile.WithErrorXY(AUTOPILOT_XY_ERROR)
+        .WithErrorTheta(AUTOPILOT_THETA_ERROR)
         .WithConstraints(m_autopilotConstraints)
-        .WithBeelineRadius(m_autopilotBeelineRadius);
-
-    // Store initial pose for movement detection
-    m_prevPose = m_chassis != nullptr ? m_chassis->GetPose() : wpi::math::Pose2d();
+        .WithBeelineRadius(AUTOPILOT_BEELINE_RADIUS);
 }
 
 //------------------------------------------------------------------
@@ -114,21 +106,11 @@ void DriveToPose::Initialize()
     // does not work during base-class construction — derived overrides (e.g. DriveOverBump)
     kMaxVelocity = GetMaxVelocity();
     kMaxAcceleration = GetMaxAcceleration();
-    // m_translationConstraints = wpi::math::TrapezoidProfile<wpi::units::length::meters>::Constraints(kMaxVelocity, kMaxAcceleration);
-    // m_translationPIDX = wpi::math::ProfiledPIDController<wpi::units::length::meters>(m_translationKP, m_translationKI, m_translationKD, m_translationConstraints, 20_ms);
-    // m_translationPIDY = wpi::math::ProfiledPIDController<wpi::units::length::meters>(m_translationKP, m_translationKI, m_translationKD, m_translationConstraints, 20_ms);
-
-    m_autopilotConstraints.WithAcceleration(kMaxAcceleration)
-        .WithVelocity(kMaxVelocity)
-        .WithJerkMetersPerSecondCubed(m_maxJerk);
-
-    // Configure integral zones to prevent windup when far from target
-    // Must be applied after controller reconstruction above so the setting is not overwritten
-    // m_translationPIDX.SetIZone(0.5);
-    // m_translationPIDY.SetIZone(0.5);
-
-    // Calculate the range over which feedforward velocity is ramped
-    // m_feedForwardRange = m_ffMaxRadius - m_ffMinRadius;
+    m_autopilotConstraints = m_autopilotConstraints.WithAcceleration(kMaxAcceleration)
+                                 .WithVelocity(kMaxVelocity)
+                                 .WithJerkMetersPerSecondCubed(m_maxJerk);
+    m_autopilotProfile.WithConstraints(m_autopilotConstraints);
+    m_autopilot = Autopilot(m_autopilotProfile);
 
     // Get the target pose (may be overridden by derived classes)
     auto poses = GetDriveToPoses();
@@ -156,10 +138,8 @@ void DriveToPose::Initialize()
     // Set current target speed based on which pose we're navigating to
     m_currentTargetSpeed = m_beforeMidPose ? m_midPointSpeed : m_endPointSpeed;
 
-    // Configure controllers with the target pose
-    // SetTargetPose(m_beforeMidPose ? m_midPose : m_endPose);
-    m_autopilotTarget.WithReference(m_beforeMidPose ? m_midPose : m_endPose)
-        .WithVelocity(m_currentTargetSpeed);
+    // Configure autopilot target for the active stage
+    SetTargetPose(m_beforeMidPose ? m_midPose : m_endPose);
 
     // Notify robot state that navigation has started
     RobotState::GetInstance()->PublishStateChange(RobotStateChanges::DriveToFieldElement_Bool, true);
@@ -167,19 +147,14 @@ void DriveToPose::Initialize()
 }
 
 //------------------------------------------------------------------
-/// @brief      Updates the target pose and resets controllers
+/// @brief      Updates the active target pose and autopilot target
 /// @param[in]  endPose - The new target pose to navigate to
 /// @details    This method allows the target pose to be changed during command execution,
 ///             useful for multi-stage navigation or dynamic target updates.
 ///
-///             **Controller Reset:**
-///             - Resets both X and Y PID controllers with current position and velocity
-///             - Prevents control discontinuities when changing targets
-///             - Maintains smooth motion by starting from current state
-///
-///             **Goal Update:**
-///             - Sets new X and Y position goals for the PID controllers
-///             - Controllers will now navigate toward the new target
+///             **Target Update:**
+///             - Stores the new pose in `m_targetPose`
+///             - Rebuilds `m_autopilotTarget` with updated reference and stage speed
 ///
 ///             This is used internally during Initialize() and can be called by derived classes
 ///             to implement multi-waypoint navigation (e.g., DriveOverBump's two-stage approach).
@@ -192,54 +167,27 @@ void DriveToPose::SetTargetPose(const wpi::math::Pose2d &pose)
     m_targetPose = pose;
     if (m_chassis != nullptr)
     {
-
-        // Get current robot velocities for smooth controller reset
-        // auto speeds = m_chassis->GetState().Velocity;
-
-        // Reset PID controllers with current state to prevent discontinuities
-        // m_translationPIDX.Reset(m_currentPose.X(), speeds.vx);
-        // m_translationPIDY.Reset(m_currentPose.Y(), speeds.vy);
-
         // Update current pose and set new controller goals
         m_currentPose = m_chassis->GetPose();
-        // m_translationPIDX.SetGoal(m_targetPose.X());
-        // m_translationPIDY.SetGoal(m_targetPose.Y());
-        m_autopilotTarget.WithReference(m_targetPose)
-            .WithVelocity(m_currentTargetSpeed);
+        m_autopilotTarget = m_autopilotTarget.WithReference(m_targetPose)
+                                .WithVelocity(m_currentTargetSpeed);
     }
 }
 
 //------------------------------------------------------------------
 /// @brief      Executes the command periodically during autonomous navigation
 /// @details    Called repeatedly by the command scheduler (typically every 20ms) while the command is active.
-///             Implements a hybrid control strategy combining feedforward and feedback control:
+///             Uses `Autopilot::Calculate()` to obtain field-relative translational setpoints and
+///             heading target, then applies those values to the drivetrain request.
 ///
 ///             **Control Flow:**
 ///             1. Update current robot pose from odometry/vision fusion
-///             2. Calculate feedforward velocities based on distance to target
-///             3. Determine if PID reset is needed (large position error)
-///             4. Apply PID corrections for fine positioning
-///             5. Clamp velocities to maximum limits
-///             6. Send combined control to drivetrain with heading control
-///             7. Log error and status for debugging
-///
-///             **Adaptive PID Reset:**
-///             When distance error exceeds m_pidResetThreshold, the PID controllers are reset
-///             to prevent integral windup. This happens when:
-///             - Target is changed dynamically (multi-stage navigation)
-///             - Robot is bumped or pushed off course
-///             - Initial error is large at command start
-///
-///             **Control Modes:**
-///             - Large error: Feedforward only, PID reset
-///             - Small error: Feedforward + PID corrections
-///
-///             **Heading Control:**
-///             Robot rotation is controlled separately to face m_targetPose.Rotation() using
-///             a heading PID controller with gains.
+///             2. Build robot-relative speed input from chassis state
+///             3. Run autopilot calculate
+///             4. Apply output to field-centric-facing-angle request
+///             5. Log velocity/error values for tuning
 ///
 /// @note       All movements are field-centric relative to blue alliance perspective
-/// @see        CalculateFeedForward() for feedforward velocity calculation
 /// @see        IsFinished() for completion detection
 //------------------------------------------------------------------
 void DriveToPose::Execute()
@@ -249,34 +197,18 @@ void DriveToPose::Execute()
     {
         // Update current position from odometry
         m_currentPose = m_chassis->GetPose();
-
-        // Calculate base feedforward velocities toward target
-        CalculateFeedForward(speeds);
-
-        // Adaptive control: Reset PID when error is large, apply corrections when error is small
-        if (m_distanceError > m_pidResetThreshold)
-        {
-            // Large error: Reset PIDs to prevent windup, rely on feedforward
-            m_translationPIDX.Reset(m_currentPose.X(), speeds.vx);
-            m_translationPIDY.Reset(m_currentPose.Y(), speeds.vy);
-        }
-        else
-        {
-            // Small error: Add PID corrections for precise positioning
-            speeds.vx += wpi::units::velocity::meters_per_second_t(m_translationPIDX.Calculate(m_currentPose.X(), m_targetPose.X()));
-            speeds.vy += wpi::units::velocity::meters_per_second_t(m_translationPIDY.Calculate(m_currentPose.Y(), m_targetPose.Y()));
-
-            // Clamp velocities to safe maximum
-            speeds.vx = std::clamp(speeds.vx, -kMaxVelocity, kMaxVelocity);
-            speeds.vy = std::clamp(speeds.vy, -kMaxVelocity, kMaxVelocity);
-        }
+        auto robotRelativeSpeeds = m_chassis->GetState().Velocity;
+        auto output = m_autopilot.Calculate(m_currentPose, robotRelativeSpeeds, m_autopilotTarget);
+        speeds.vx = output.vx;
+        speeds.vy = output.vy;
+        m_distanceError = m_currentPose.Translation().Distance(m_targetPose.Translation());
 
         // Send control request to drivetrain with heading control
         m_chassis->SetControl(
             m_driveRequest.WithVelocityX(speeds.vx)
                 .WithVelocityY(speeds.vy)
-                .WithTargetDirection(m_targetPose.Rotation().Degrees())
-                .WithHeadingPID(m_rotationKP, m_rotationKI, m_rotationKD)
+                .WithTargetDirection(output.targetAngle)
+                .WithHeadingPID(ROTATION_KP, ROTATION_KI, ROTATION_KD)
                 .WithForwardPerspective(ctre::phoenix6::swerve::requests::ForwardPerspectiveValue::BlueAlliance));
     }
 
@@ -289,8 +221,7 @@ void DriveToPose::Execute()
 //------------------------------------------------------------------
 /// @brief      Determines if the command has completed navigation to the target pose
 /// @return     bool - true if navigation is complete or robot is stuck, false to continue execution
-/// @details    Implements a two-condition completion check to handle both successful completion
-///             and stuck robot detection:
+/// @details    Uses autopilot target completion plus stuck detection:
 ///
 ///             **Condition 1: Target is at the origin**
 ///             - Checks if the end pose is at the origin (0,0) with a small tolerance
@@ -298,8 +229,7 @@ void DriveToPose::Execute()
 ///               center cannot be at the origin of the field).
 ///
 ///             **Condition 2: Target Reached**
-///             - Compares current pose to target pose using m_distanceThreshold
-///             - Returns true if robot is within tolerance of target position
+///             - Uses `Autopilot::AtTarget()` with profile tolerances
 ///             - Indicates successful navigation completion
 ///
 ///             **Condition 3: Robot Stopped Moving**
@@ -310,15 +240,14 @@ void DriveToPose::Execute()
 ///             **Debug Logging:**
 ///             - Logs "Is Done" status (target reached)
 ///             - Logs "Is SamePose" status (movement detection)
-///             - Useful for tuning distance thresholds and diagnosing navigation issues
+///             - Useful for tuning autopilot profile and diagnosing navigation issues
 ///
 ///             The stuck detection provides graceful failure handling - if the robot can't reach
 ///             the target (blocked by game pieces, defense, field obstacles), the command will
 ///             eventually timeout rather than running indefinitely.
 ///
-/// @note       Updates m_prevPose each cycle for next iteration's comparison
-/// @note       Distance threshold (m_distanceThreshold) can be customized via SetDistanceThreshold()
-/// @see        SetDistanceThreshold() for adjusting the completion distance threshold
+/// @note       Legacy distance-threshold field is retained for compatibility, but primary completion
+///             uses autopilot profile tolerances.
 //------------------------------------------------------------------
 bool DriveToPose::IsFinished()
 {
@@ -329,13 +258,8 @@ bool DriveToPose::IsFinished()
         return true;
     }
 
-    // Determine which distance threshold to use based on whether we have speed targets
-    auto distanceThreshold = (m_beforeMidPose && m_midPointSpeed > 0_mps) || (!m_beforeMidPose && m_endPointSpeed > 0_mps)
-                                 ? m_distanceThresholdWithSpeed
-                                 : m_distanceThreshold;
-
-    // Check if we've reached the target pose within tolerance
-    bool isDone = PoseUtils::IsSamePose(m_currentPose, m_targetPose, distanceThreshold);
+    // Check if we've reached the target pose within autopilot profile tolerances
+    bool isDone = m_autopilot.AtTarget(m_currentPose, m_autopilotTarget);
     Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, "DriveToPose", "Is Done", isDone);
 
     // Handle transition from mid pose to end pose
@@ -358,8 +282,6 @@ bool DriveToPose::IsFinished()
     // Check if robot has stopped moving (stuck or blocked)
     bool isSamePose = m_chassis->IsSamePose();
     Logger::GetLogger()->LogData(LOGGER_LEVEL::PRINT, "DriveToPose", "Is SamePose", isSamePose);
-
-    m_prevPose = m_currentPose; // Update for next cycle
 
     return (m_isFinished = isDone || isSamePose);
 }
@@ -404,76 +326,6 @@ void DriveToPose::End(bool interrupted)
     RobotState::GetInstance()->PublishStateChange(RobotStateChanges::DriveToFieldElement_Bool, false);
 }
 
-//------------------------------------------------------------------
-/// @brief      Calculates feedforward velocity component toward the target pose
-/// @param[out] wpi::math::ChassisVelocities - Reference to chassis speeds structure that will be populated
-///                             with calculated feedforward velocities (vx and vy)
-/// @details    Implements a distance-based feedforward velocity profile that provides smooth
-///             approach behavior and reduces overshoot:
-///
-///             **Distance-Based Scaling:**
-///             The feedforward velocity is scaled based on distance to target using three zones:
-///
-///             1. **Near Target (distance ≤ m_ffMinRadius = 0.0m):**
-///                - feedforwardSpeed = 0 m/s
-///                - Relies entirely on PID for final positioning
-///                - Prevents overshoot from feedforward
-///
-///             2. **Ramping Zone:**
-///                - feedforwardSpeed linearly scaled from 0 to kMaxVelocity
-///                - Scale factor = (distance - minRadius) / (maxRadius - minRadius)
-///                - Provides smooth acceleration as robot approaches target
-///
-///             3. **Far From Target (distance > m_ffMaxRadius):**
-///                - feedforwardSpeed = kMaxVelocity
-///                - Full speed when target is distant
-///                - Minimizes navigation time for long distances
-///
-///             **Velocity Decomposition:**
-///             The calculated speed is directed along the angle to the target:
-///             - vx = feedforwardSpeed × cos(angleToTarget)
-///             - vy = feedforwardSpeed × sin(angleToTarget)
-///
-///             This provides the base velocity that PID corrections are added to in Execute().
-///
-/// @note       Distance error (m_distanceError) is updated and used by Execute() for PID reset logic
-/// @note       Feedforward range (m_feedForwardRange) is precomputed in constructor
-/// @see        Execute() for how feedforward combines with PID control
-//------------------------------------------------------------------
-void DriveToPose::CalculateFeedForward(wpi::math::ChassisVelocities &speeds)
-{
-    if (m_chassis != nullptr)
-    {
-        // Calculate Euclidean distance from current position to target
-        m_distanceError = m_currentPose.Translation().Distance(m_currentTargetSpeed > 0_mps ? CalculatePoseWithTargetSpeed(m_targetPose, m_currentTargetSpeed).Translation() : m_targetPose.Translation());
-
-        // Determine feedforward speed based on distance using ramped profile
-        wpi::units::velocity::meters_per_second_t feedforwardSpeed = 0.0_mps;
-        if (m_distanceError > m_ffMinRadius)
-        {
-            // Scale feedforward linearly within the ramp range, clamp to [0.0, 1.0]
-            double feedForwardScale = std::clamp(((m_distanceError - m_ffMinRadius) / (m_feedForwardRange)).value(), 0.0, 1.0);
-            feedforwardSpeed = kMaxVelocity * feedForwardScale;
-        }
-        // else: Within minimum radius, feedforward = 0 (rely on PID only)
-
-        // Calculate direction vector from current position to target
-        wpi::math::Translation2d translationError = m_targetPose.Translation() - m_currentPose.Translation();
-        auto angleToTarget = translationError.Angle();
-
-        if (!angleToTarget.has_value())
-        {
-            speeds.vx = 0.0_mps;
-            speeds.vy = 0.0_mps;
-            return;
-        }
-
-        // Decompose feedforward velocity into X and Y components
-        speeds.vx = feedforwardSpeed * angleToTarget->Cos();
-        speeds.vy = feedforwardSpeed * angleToTarget->Sin();
-    }
-}
-
 /**
  * @brief Determines whether the midpoint target should be skipped based on the robot's alignment with the end pose.
  *
@@ -495,19 +347,4 @@ bool DriveToPose::ShouldSkipMidPoint() const
     auto angleToEnd = wpi::units::math::abs(AngleUtils::GetEquivAngle(rotationToEnd->Degrees()));
     angleToEnd = std::min(angleToEnd, 180.0_deg - angleToEnd);
     return angleToEnd < m_angleTolerance;
-}
-
-wpi::math::Pose2d DriveToPose::CalculatePoseWithTargetSpeed(const wpi::math::Pose2d &targetPose, const wpi::units::velocity::meters_per_second_t &speed) const
-{
-    wpi::units::length::meter_t requiredDistance = ((speed / kMaxVelocity) * m_feedForwardRange) + m_ffMinRadius;
-
-    wpi::math::Translation2d translationError = targetPose.Translation() - m_currentPose.Translation();
-    auto approachAngle = translationError.Angle();
-    if (!approachAngle.has_value())
-    {
-        return targetPose;
-    }
-    wpi::math::Translation2d lookAheadOffset{requiredDistance, *approachAngle};
-
-    return wpi::math::Pose2d(targetPose.Translation() + lookAheadOffset, targetPose.Rotation());
 }
