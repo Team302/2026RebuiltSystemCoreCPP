@@ -41,10 +41,10 @@ deploy {
 def deployArtifact = deploy.targets.systemcore.artifacts.wpilibCpp
 
 // Set this to true to enable desktop support.
-def includeDesktopSupport = true
+def includeDesktopSupport = false
 
 // Set to true to run simulation in debug mode
-wpi.cpp.debugSimulation = true
+wpi.cpp.debugSimulation = false
 
 // Default enable simgui
 wpi.sim.addGui().defaultEnabled = true
