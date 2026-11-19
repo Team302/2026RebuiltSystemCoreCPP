@@ -14,11 +14,14 @@
 //====================================================================================================================================================
 #pragma once
 
+#include "chassis/autopilot/APConstraints.h"
+#include "chassis/autopilot/APProfile.h"
+#include "chassis/autopilot/APTarget.h"
+#include "chassis/autopilot/Autopilot.h"
 #include "chassis/generated/CommandSwerveDrivetrain.h"
 #include "wpi/commands2/Command.hpp"
 #include "wpi/commands2/CommandHelper.hpp"
 #include "wpi/math/geometry/Pose2d.hpp"
-#include <wpi/math/controller/ProfiledPIDController.hpp>
 
 struct DriveToPoses
 {
@@ -31,25 +34,23 @@ struct DriveToPoses
 
 //====================================================================================================================================================
 /// @class DriveToPose
-/// @brief Base command class for autonomous navigation to field poses using hybrid feedforward+PID control
+/// @brief Base command class for autonomous navigation to field poses using Autopilot setpoint generation
 ///
 /// This command implements a sophisticated control strategy for driving a swerve drivetrain to specific
 /// field poses with high accuracy and smooth motion profiles. It serves as a base class that can be
 /// extended for navigation to specific field elements or game pieces.
 ///
 /// **Control Architecture:**
-/// The command uses a hybrid control approach combining:
-/// - **Feedforward Control:** Distance-based velocity scaling for efficient long-range travel
-/// - **PID Feedback:** Separate ProfiledPIDControllers for X and Y translation for precise positioning
-/// - **Heading Control:** Independent rotation control to face target direction
-/// - **Adaptive Reset:** Automatic PID reset when error exceeds threshold to prevent windup
+/// The command delegates translational and heading setpoint generation to `Autopilot`:
+/// - Builds `APConstraints` and `APProfile` from command limits and tolerances
+/// - Updates an `APTarget` for the active stage (midpoint or endpoint)
+/// - Calls `Autopilot::Calculate()` each cycle to get field-relative X/Y velocity and heading
+/// - Uses `Autopilot::AtTarget()` for completion checks
 ///
 /// **Motion Profile:**
-/// - Maximum velocity: 4 m/s
-/// - Maximum acceleration: 4 m/s² (trapezoidal profile)
-/// - Feedforward ramp: 0-1.25m from target (linear scaling)
-/// - PID active when error < 0.25m
-/// - Completion threshold: 0.25 inches (customizable)
+/// - Maximum velocity/acceleration come from `GetMaxVelocity()` / `GetMaxAcceleration()`
+/// - Autopilot profile defaults are configured in constructor and refreshed in `Initialize()`
+/// - Completion tolerances are based on autopilot XY/theta profile tolerances
 ///
 /// **Extensibility:**
 /// Derived classes override GetDriveToPoses() to provide specific target calculations:
@@ -70,14 +71,9 @@ public:
     //------------------------------------------------------------------
     /// @brief      Constructs a DriveToPose command for autonomous navigation
     /// @param[in]  chassis - Pointer to the swerve drive subsystem that will execute the motion
-    /// @details    Initializes the command with ProfiledPID controllers for X and Y translation,
-    ///             configures I-Zone to prevent integral windup, and captures initial robot state.
-    ///             The command requires exclusive access to the chassis subsystem during execution.
-    ///
-    ///             **Controller Configuration:**
-    ///             - X/Y PID gains: kP, kI, kD
-    ///             - Trapezoidal constraints: max velocity, max acceleration
-    ///             - I-Zone: (prevents integral accumulation when far from target)
+    /// @details    Captures chassis dependency and initializes default autopilot profile values
+    ///             (error XY, error theta, and beeline radius). The command requires
+    ///             exclusive access to the chassis subsystem during execution.
     ///
     /// @note       Derived classes should call this constructor via initializer list
     /// @see        Initialize() for per-execution setup
@@ -90,8 +86,8 @@ public:
 
     //------------------------------------------------------------------
     /// @brief      Initializes the command when scheduled
-    /// @details    Called once when the command starts. Gets the target pose,
-    ///             resets movement detection, configures controllers, and publishes
+    /// @details    Called once when the command starts. Refreshes autopilot constraints,
+    ///             acquires target pose(s), configures the active stage target, and publishes
     ///             state changes to notify other subsystems that navigation is active.
     /// @see        GetDriveToPoses() for target determination
     //------------------------------------------------------------------
@@ -99,10 +95,8 @@ public:
 
     //------------------------------------------------------------------
     /// @brief      Executes the command periodically (every 20ms)
-    /// @details    Updates robot pose, calculates feedforward and PID corrections,
-    ///             applies velocity clamping, and sends control requests to the drivetrain.
-    ///             Implements adaptive PID reset when error exceeds threshold.
-    /// @see        CalculateFeedForward() for velocity calculation
+    /// @details    Updates robot pose, calls `Autopilot::Calculate()` for X/Y/heading setpoints,
+    ///             applies the resulting request to the drivetrain, and logs motion/error telemetry.
     /// @see        IsFinished() for completion detection
     //------------------------------------------------------------------
     void Execute() override;
@@ -110,9 +104,8 @@ public:
     //------------------------------------------------------------------
     /// @brief      Checks if navigation is complete
     /// @return     true if target reached or robot is stuck, false to continue
-    /// @details    Returns true when robot is within distance threshold of target
-    ///             or when robot has stopped moving (stuck detection).
-    /// @see        SetDistanceThreshold() to adjust completion tolerance
+    /// @details    Returns true when the autopilot target is reached or when robot is detected
+    ///             as stuck (same-pose detection). Supports midpoint-to-endpoint transition logic.
     //------------------------------------------------------------------
     bool IsFinished() override;
 
@@ -147,11 +140,8 @@ protected:
     /// @brief      Updates the target pose during execution
     /// @param[in]  endPose - The new target pose to navigate to
     /// @details    Allows dynamic target changes during command execution.
-    ///             Resets PID controllers with current state to ensure smooth
-    ///             transition to the new target. Used for multi-stage navigation
-    ///             or reactive path planning.
-    ///
-    /// @note       PID controllers are reset to prevent control discontinuities
+    ///             Updates cached target pose and rebuilds the autopilot target with
+    ///             the current stage velocity. Used for multi-stage navigation.
     /// @see        DriveOverBump::IsFinished() for example usage
     //------------------------------------------------------------------
     void SetTargetPose(const wpi::math::Pose2d &endPose);
@@ -159,9 +149,9 @@ protected:
     //------------------------------------------------------------------
     /// @brief      Sets the distance threshold for completion detection
     /// @param[in]  distanceThreshold - Distance tolerance in inches for considering target reached
-    /// @details    Customizes how close the robot must be to the target before
-    ///             IsFinished() returns true. Smaller values provide higher precision
-    ///             but may increase settling time.
+    /// @details    Legacy completion distance setter retained for compatibility with
+    ///             existing derived classes. Final completion now uses autopilot profile
+    ///             tolerances in `Autopilot::AtTarget()`.
     ///
     /// @note       Derived classes should call this in their constructors or
     ///  initialization methods
@@ -198,22 +188,6 @@ protected:
 private:
     bool ShouldSkipMidPoint() const;
 
-    ///------------------------------------------------------------------
-    /// @brief      Calculates a target pose with a specified approach speed
-    /// @param[in]  pose - The target pose to calculate from
-    /// @param[in]  speed - The desired approach speed toward the target
-    /// @return     A new wpi::math::Pose2d that is through the target pose but with a velocity component for feedforward control
-    /// @details    This method computes a pose that is effectively a "lookahead" point along the path to the target, that is at the specified speed at the given pose. This allows the feedforward control to generate velocity commands that are appropriate for the distance to the target.
-    wpi::math::Pose2d CalculatePoseWithTargetSpeed(const wpi::math::Pose2d &pose, const wpi::units::velocity::meters_per_second_t &speed) const;
-
-    //------------------------------------------------------------------
-    /// @brief      Calculates feedforward velocity component toward target
-    /// @param[out] wpi::math::ChassisVelocities - Reference to populate with feedforward velocities
-    /// @details    Implements distance-based velocity scaling with three zones
-    /// @see        Execute() for how feedforward combines with PID
-    //------------------------------------------------------------------
-    void CalculateFeedForward(wpi::math::ChassisVelocities &speeds);
-
     //------------------------------------------------------------------
     // Subsystem and Control Request Members
     //------------------------------------------------------------------
@@ -228,14 +202,8 @@ private:
     // Pose Tracking Members
     //------------------------------------------------------------------
 
-    /// @brief Flag indicating if robot pose hasn't changed (for stuck detection)
-    bool m_isSamePose = false;
-
     /// @brief Cached result of last IsFinished() evaluation, used by End() to avoid redundant recomputation
     bool m_isFinished = false;
-
-    /// @brief Robot pose from previous cycle for movement detection
-    wpi::math::Pose2d m_prevPose;
 
     /// @brief Current robot pose from odometry/vision fusion
     wpi::math::Pose2d m_currentPose;
@@ -257,13 +225,8 @@ private:
     // Threshold and Range Constants
     //------------------------------------------------------------------
 
-    /// @brief Distance threshold for considering target reached
+    /// @brief Legacy distance threshold retained for compatibility with existing derived classes.
     wpi::units::length::inch_t m_distanceThreshold{0.25};
-    wpi::units::length::inch_t m_distanceThresholdWithSpeed{12.0};
-
-    /// @brief Minimum radius for feedforward activation
-    static constexpr wpi::units::length::inch_t m_ffMinRadius{0.0};
-    static constexpr wpi::units::length::meter_t m_ffMaxRadius{1.0};
 
     //------------------------------------------------------------------
     // Velocity and Acceleration Limits
@@ -276,71 +239,17 @@ private:
     wpi::units::acceleration::meters_per_second_squared_t kMaxAcceleration;
     static constexpr wpi::units::acceleration::meters_per_second_squared_t kMaxAccelerationDefault = 3_mps_sq;
 
-    //------------------------------------------------------------------
-    // NetworkTables Keys (Legacy)
-    //------------------------------------------------------------------
+    double m_maxJerk = 2.0; // Maximum jerk for motion profile (m/s^3)
 
-    /// @brief NetworkTables key for integral gain tuning (not actively used)
-    std::string m_iGainKey = "I_Gain";
-
-    /// @brief NetworkTables key for proportional gain tuning (not actively used)
-    std::string m_pGainKey = "P_Gain";
-
-    //------------------------------------------------------------------
-    // Translation PID Gains
-    //------------------------------------------------------------------
-
-    /// @brief Proportional gain for X and Y translation controllers
-    double m_translationKP = 3.0;
-
-    /// @brief Integral gain for X and Y translation controllers (disabled)
-    double m_translationKI = 0.0;
-
-    /// @brief Derivative gain for X and Y translation controllers
-    double m_translationKD = 0.0;
-
-    //------------------------------------------------------------------
-    // Rotation PID Gains
-    //------------------------------------------------------------------
-
-    /// @brief Proportional gain for heading controller
-    double m_rotationKP = 4.5;
-
-    /// @brief Integral gain for heading controller (disabled)
-    double m_rotationKI = 0.0;
-
-    /// @brief Derivative gain for heading controller (disabled)
-    double m_rotationKD = 0.0;
     //------------------------------------------------------------------
     // Runtime State Variables
     //------------------------------------------------------------------
 
-    /// @brief Current distance error from robot to target (updated in CalculateFeedForward)
+    /// @brief Current distance error from robot to target (updated in Execute)
     wpi::units::length::meter_t m_distanceError{0.0};
 
-    /// @brief Threshold for PID reset - when error exceeds this, PID resets to prevent windup
-    wpi::units::length::meter_t m_pidResetThreshold{0.25};
-
-    /// @brief Precomputed feedforward range (m_ffMaxRadius - m_ffMinRadius) for scaling calculations
-    wpi::units::length::meter_t m_feedForwardRange;
-
-    //------------------------------------------------------------------
-    // PID Controllers
-    //------------------------------------------------------------------
-
-    // /// @brief Trapezoidal motion profile constraints for both X and Y controllers
-    // wpi::math::TrapezoidProfile<wpi::units::length::meters>::Constraints m_translationConstraints{kMaxVelocityDefault, kMaxAccelerationDefault};
-
-    // /// @brief Profiled PID controller for X-axis translation with tkMaxAccelerationrapezoidal velocity profiles
-    // wpi::math::ProfiledPIDController<wpi::units::length::meters> m_translationPIDX{m_translationKP, m_translationKI, m_translationKD, m_translationConstraints, 20_ms};
-
-    // /// @brief Profiled PID controller for Y-axis translation with trapezoidal velocity profiles
-    // wpi::math::ProfiledPIDController<wpi::units::length::meters> m_translationPIDY{m_translationKP, m_translationKI, m_translationKD, m_translationConstraints, 20_ms};
-
-    /// @brief Trapezoidal motion profile constraints for both X and Y controllers
-    wpi::math::TrapezoidProfile<wpi::units::length::meters>::Constraints m_translationConstraints{kMaxVelocityDefault, kMaxAccelerationDefault};
-    /// @brief Profiled PID controller for X-axis translation with trapezoidal velocity profiles
-    wpi::math::ProfiledPIDController<wpi::units::length::meters> m_translationPIDX{m_translationKP, m_translationKI, m_translationKD, m_translationConstraints, 20_ms};
-    /// @brief Profiled PID controller for Y-axis translation with trapezoidal velocity profiles
-    wpi::math::ProfiledPIDController<wpi::units::length::meters> m_translationPIDY{m_translationKP, m_translationKI, m_translationKD, m_translationConstraints, 20_ms};
+    APConstraints m_autopilotConstraints{kMaxVelocityDefault, kMaxAccelerationDefault, m_maxJerk};
+    APProfile m_autopilotProfile{m_autopilotConstraints};
+    Autopilot m_autopilot{m_autopilotProfile};
+    APTarget m_autopilotTarget{wpi::math::Pose2d{}};
 };

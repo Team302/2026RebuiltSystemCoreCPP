@@ -18,38 +18,35 @@
 
 #include "chassis/commands/VisionDrive.h"
 #include "chassis/generated/CommandSwerveDrivetrain.h"
-#include "wpi/commands2/CommandHelper.hpp"
 #include "vision/DragonVision.h"
+#include "wpi/commands2/CommandHelper.hpp"
 
 class DriveToFuel : public wpi::cmd::CommandHelper<VisionDrive, DriveToFuel>
 {
 public:
+    /// @brief Constructs vision-based drive-to-fuel alignment command.
+    /// @param chassis Swerve drivetrain used for autopilot control.
     DriveToFuel(subsystems::CommandSwerveDrivetrain *chassis);
 
 protected:
-    swerve::requests::RobotCentric GetRobotDriveRequest() override;
+    /// @brief Builds an autopilot target from the closest valid fuel target observation.
+    /// @return Target pose when vision has a valid object; std::nullopt otherwise.
+    std::optional<APTarget> GetAutopilotTarget() override;
+
+    /// @brief Uses tighter XY tolerance for more repeatable approach distance.
+    wpi::units::length::meter_t GetAutopilotErrorXY() const override { return 0.03_m; }
+
+    /// @brief Uses tight heading tolerance to improve fuel alignment.
+    wpi::units::angle::radian_t GetAutopilotErrorTheta() const override { return 0.25_deg; }
+
+    /// @brief Smaller beeline radius for smoother close-in corrections.
+    wpi::units::length::meter_t GetAutopilotBeelineRadius() const override { return 0.06_m; }
 
 private:
     DragonVision *m_vision = nullptr;
 
-    static constexpr double kPDrive{2};
-    static constexpr double kIDrive{0.0};
-    static constexpr double kDDrive{0.0};
-
-    static constexpr double kPYaw{3};
-    static constexpr double kIYaw{0.0};
-    static constexpr double kDYaw{0.0};
-
-    wpi::math::PIDController m_xController{kPDrive, kIDrive, kDDrive};
-    wpi::math::PIDController m_yController{kPDrive, kIDrive, kDDrive};
-    wpi::math::PIDController m_yawController{kPYaw, kIYaw, kDYaw};
-
     static constexpr wpi::units::length::meter_t m_XdistLimit = 5_m;
     static constexpr wpi::units::length::meter_t m_IntakeXOffset = 0.5_m;
-
-    static constexpr wpi::units::velocity::meters_per_second_t m_maxXSpeed = 3_mps;
-    static constexpr wpi::units::angular_velocity::degrees_per_second_t m_maxRotationalSpeed = 45_deg_per_s;
-    int m_visionCacheI = 0;
 
     std::vector<std::unique_ptr<DragonVisionStruct>> m_visionCache;
 };
