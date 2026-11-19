@@ -434,11 +434,18 @@ void DriveToPose::CalculateFeedForward(wpi::math::ChassisVelocities &speeds)
 
         // Calculate direction vector from current position to target
         wpi::math::Translation2d translationError = m_targetPose.Translation() - m_currentPose.Translation();
-        wpi::math::Rotation2d angleToTarget = translationError.Angle();
+        auto angleToTarget = translationError.Angle();
+
+        if (!angleToTarget.has_value())
+        {
+            speeds.vx = 0.0_mps;
+            speeds.vy = 0.0_mps;
+            return;
+        }
 
         // Decompose feedforward velocity into X and Y components
-        speeds.vx = feedforwardSpeed * angleToTarget.Cos();
-        speeds.vy = feedforwardSpeed * angleToTarget.Sin();
+        speeds.vx = feedforwardSpeed * angleToTarget->Cos();
+        speeds.vy = feedforwardSpeed * angleToTarget->Sin();
     }
 }
 
@@ -456,7 +463,11 @@ bool DriveToPose::ShouldSkipMidPoint() const
 {
     auto currentPose = m_chassis->GetPose();
     auto rotationToEnd = (currentPose.Translation() - m_endPose.Translation()).Angle();
-    auto angleToEnd = wpi::units::math::abs(AngleUtils::GetEquivAngle(rotationToEnd.Degrees()));
+    if (!rotationToEnd.has_value())
+    {
+        return true;
+    }
+    auto angleToEnd = wpi::units::math::abs(AngleUtils::GetEquivAngle(rotationToEnd->Degrees()));
     angleToEnd = std::min(angleToEnd, 180.0_deg - angleToEnd);
     return angleToEnd < m_angleTolerance;
 }
@@ -466,8 +477,12 @@ wpi::math::Pose2d DriveToPose::CalculatePoseWithTargetSpeed(const wpi::math::Pos
     wpi::units::length::meter_t requiredDistance = ((speed / kMaxVelocity) * m_feedForwardRange) + m_ffMinRadius;
 
     wpi::math::Translation2d translationError = targetPose.Translation() - m_currentPose.Translation();
-    wpi::math::Rotation2d approachAngle = translationError.Angle();
-    wpi::math::Translation2d lookAheadOffset{requiredDistance, approachAngle};
+    auto approachAngle = translationError.Angle();
+    if (!approachAngle.has_value())
+    {
+        return targetPose;
+    }
+    wpi::math::Translation2d lookAheadOffset{requiredDistance, *approachAngle};
 
     return wpi::math::Pose2d(targetPose.Translation() + lookAheadOffset, targetPose.Rotation());
 }

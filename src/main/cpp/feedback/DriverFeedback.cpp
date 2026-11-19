@@ -13,7 +13,10 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 //====================================================================================================================================================
 
-#include "wpi/driverstation/DriverStation.hpp"
+#include "wpi/driverstation/Alliance.hpp"
+#include "wpi/driverstation/MatchState.hpp"
+#include "wpi/driverstation/MatchType.hpp"
+#include "wpi/driverstation/RobotState.hpp"
 #include "wpi/nt/NetworkTable.hpp"
 #include "wpi/nt/NetworkTableEntry.hpp"
 #include "wpi/nt/NetworkTableInstance.hpp"
@@ -32,8 +35,6 @@
 #include "mechanisms/configs/MechanismConfigMgr.h"
 #include "mechanisms/intake/Intake.h"
 #include "mechanisms/launcher/Launcher.h"
-
-using wpi::DriverStation;
 
 /// Singleton instance pointer.
 DriverFeedback *DriverFeedback::m_instance = nullptr;

@@ -83,7 +83,7 @@ class TunerConstants9999
 public:
     // CAN bus that the devices are located on;
     // All swerve devices must share the same CAN bus
-    static inline const CANBus kCANBus{kCANBusName, "./logs/example.hoot"};
+    static inline const CANBus kCANBus{kCANBusName};
 
     // Theoretical free speed (m/s) at 12 V applied output;
     // This needs to be tuned to your individual robot
@@ -111,10 +111,10 @@ private:
     static constexpr wpi::units::volt_t kDriveFrictionVoltage = 0.2_V;
 
 public:
-    static constexpr swerve::SwerveDrivetrainConstants DrivetrainConstants = swerve::SwerveDrivetrainConstants{}
-                                                                                 .WithCANBusName(kCANBusName)
-                                                                                 .WithPigeon2Id(kPigeonId)
-                                                                                 .WithPigeon2Configs(pigeonConfigs);
+    static inline const swerve::SwerveDrivetrainConstants DrivetrainConstants = swerve::SwerveDrivetrainConstants{}
+                                                                                    .WithNetwork(kCANBus)
+                                                                                    .WithPigeon2Id(kPigeonId)
+                                                                                    .WithPigeon2Configs(pigeonConfigs);
 
 private:
     static constexpr swerve::SwerveModuleConstantsFactory ConstantCreator =

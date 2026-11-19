@@ -13,8 +13,11 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 //====================================================================================================================================================
 #pragma once
+#include <array>
 #include <filesystem>
 #include <iostream>
+#include <string>
+#include <vector>
 
 #include "wpi/math/geometry/Pose2d.hpp"
 #include <wpi/math/geometry/Pose3d.hpp>
@@ -23,7 +26,7 @@
 #include "RobinHood/robin_hood.h"
 
 #include "fielddata/FieldAprilTagIDs.h"
-#include "wpi/apriltag/AprilTagFieldLayout.hpp"
+#include "wpi/fields/fields.hpp"
 
 #include "wpi/units/angle.hpp"
 #include "wpi/units/base.hpp"
@@ -84,15 +87,16 @@ public:
 private:
     // make a singleton
     static FieldConstants *m_instance;
-    std::vector<wpi::apriltag::AprilTag> m_aprilTagVector;
+    std::vector<wpi::fields::FieldTag> m_aprilTagVector;
     const std::string m_fieldFilePath = "/home/lvuser/FieldData/output.json";
+
     // make constructor private
     FieldConstants();
     // make singleton copy constructor private
     FieldConstants(const FieldConstants &) = delete;
     FieldConstants &operator=(const FieldConstants &) = delete;
     wpi::math::Pose3d GetAprilTagPoseFromLayout(int tagID);
-    wpi::apriltag::AprilTagFieldLayout m_fieldLayout = wpi::apriltag::AprilTagFieldLayout::LoadField(wpi::apriltag::AprilTagField::k2026RebuiltWelded); // change this guy for andymark field
+    wpi::fields::Field m_fieldLayout = wpi::fields::GetField(wpi::fields::FieldId::FRC_2026_REBUILT_WELDED); // change this guy for andymark field
 
     void ReadFieldCalibrationData();
 

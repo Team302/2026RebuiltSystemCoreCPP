@@ -20,7 +20,6 @@
 #include "utils/FMSData.h"
 #include "wpi/math/geometry/Pose2d.hpp"
 
-using wpi::DriverStation;
 TowerHelper *TowerHelper::m_instance = nullptr;
 
 //------------------------------------------------------------------

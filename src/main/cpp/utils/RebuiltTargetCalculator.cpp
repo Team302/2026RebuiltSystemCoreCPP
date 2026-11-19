@@ -291,7 +291,6 @@ void RebuiltTargetCalculator::UpdateTargetOffset()
         // Passing target offsets — use cached alliance sign
         auto xSign = isBlue ? 1_in : -1_in;
         auto ySign = isBlue ? -1_in : 1_in;
-
         auto depotX = teleopControl->GetAxisValue(TeleopControlFunctions::UPDATE_DEPOT_PASSING_TARGET_X);
         m_passingDepotTargetXOffset = abs(depotX) > 0.1 ? (m_passingDepotTargetXOffset + depotX * xSign) : m_passingDepotTargetXOffset;
 

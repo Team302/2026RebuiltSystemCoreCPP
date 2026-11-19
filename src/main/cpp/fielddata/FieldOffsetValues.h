@@ -620,7 +620,7 @@ private:
     static constexpr wpi::units::length::inch_t SWEEP_LANE_WIDTH = 36.0_in;   // Width of each lane in the sweep behind hub path (inches)
     static constexpr wpi::units::length::inch_t SWEEP_START_OFFSET = 48.0_in; // Starting offset for the sweep lanes (inches)
     static constexpr wpi::units::length::inch_t SWEEP_MIDDLE_EXTRA = 6.0_in;  // additional offset to make sure we are past the center line
-    static constexpr double SWEEP_BY_TOWER_FACTOR = 1.2;                 /// Sweep under tower
+    static constexpr double SWEEP_BY_TOWER_FACTOR = 1.2;                      /// Sweep under tower
     static constexpr wpi::units::length::inch_t ALONG_WALL_BETWEEN_TRENCHES_Y_OFFSET = 2.0_in;
     static constexpr wpi::units::length::inch_t ACROSS_FIELD_BETWEEN_TRENCHES_Y_OFFSET = 6.0_in;
 };

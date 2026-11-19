@@ -64,7 +64,7 @@ private:
     DragonField *m_field;
     AutonPreviewer *m_previewer;
     RobotState *m_robotState;
-    DragonDataLoggerMgr *m_datalogger;
+    // DragonDataLoggerMgr *m_datalogger; // SystemCore TO DO: Figure out how logging works in SystemCore
     bool m_isFMSAttached = false;
     bool m_rewindLatch = false;
     DragonVisionPoseEstimatorContainer *m_dragonVisionPoseEstimator;

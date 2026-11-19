@@ -31,15 +31,16 @@
 // FRC includes
 #include "wpi/nt/NetworkTable.hpp"
 #include "wpi/nt/NetworkTableInstance.hpp"
+#include "wpi/tunables/Tunables.hpp"
 #include <wpi/nt/NetworkTableEntry.hpp>
-#include <wpi/smartdashboard/SendableChooser.hpp>
-#include <wpi/smartdashboard/SmartDashboard.hpp>
+#include <wpi/tunables/Selectable.hpp>
 
 // Team 302 includes
 #include "utils/logging/debug/Logger.h"
 
 // Third Party Includes
 using namespace std;
+using wpi::tunables::Selectable;
 
 /// @brief Find or create the singleton Logger
 /// @returns Logger* pointer to the Logger
@@ -228,19 +229,19 @@ bool Logger::ShouldDisplayIt(LOGGER_LEVEL level, const string &group, const stri
 void Logger::PutLoggingSelectionsOnDashboard()
 {
     // set up option menu
-    m_optionChooser.SetDefaultOption("EAT_IT", LOGGER_OPTION::EAT_IT);
-    m_optionChooser.AddOption("DASHBOARD", LOGGER_OPTION::DASHBOARD);
-    m_optionChooser.AddOption("CONSOLE", LOGGER_OPTION::CONSOLE);
-    wpi::SmartDashboard::PutData("Logging Options", &m_optionChooser);
+    m_optionChooser.AddDefault("EAT_IT", LOGGER_OPTION::EAT_IT);
+    m_optionChooser.Add("DASHBOARD", LOGGER_OPTION::DASHBOARD);
+    m_optionChooser.Add("CONSOLE", LOGGER_OPTION::CONSOLE);
+    wpi::tunables::Publish("Logging Options", m_optionChooser);
 
     // set up level menu
-    m_levelChooser.SetDefaultOption("ERROR_ONCE", LOGGER_LEVEL::ERROR_ONCE);
-    m_levelChooser.AddOption("ERROR", LOGGER_LEVEL::ERROR);
-    m_levelChooser.AddOption("WARNING_ONCE", LOGGER_LEVEL::WARNING_ONCE);
-    m_levelChooser.AddOption("WARNING", LOGGER_LEVEL::WARNING);
-    m_levelChooser.AddOption("PRINT_ONCE", LOGGER_LEVEL::PRINT_ONCE);
-    m_levelChooser.AddOption("PRINT", LOGGER_LEVEL::PRINT);
-    wpi::SmartDashboard::PutData("Logging Levels", &m_levelChooser);
+    m_levelChooser.AddDefault("ERROR_ONCE", LOGGER_LEVEL::ERROR_ONCE);
+    m_levelChooser.Add("ERROR", LOGGER_LEVEL::ERROR);
+    m_levelChooser.Add("WARNING_ONCE", LOGGER_LEVEL::WARNING_ONCE);
+    m_levelChooser.Add("WARNING", LOGGER_LEVEL::WARNING);
+    m_levelChooser.Add("PRINT_ONCE", LOGGER_LEVEL::PRINT_ONCE);
+    m_levelChooser.Add("PRINT", LOGGER_LEVEL::PRINT);
+    wpi::tunables::Publish("Logging Levels", m_levelChooser);
 
     auto table = wpi::nt::NetworkTableInstance::GetDefault().GetTable("ArrivedAt");
     auto keys = table->GetKeys(0);

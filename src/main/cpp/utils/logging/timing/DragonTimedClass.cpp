@@ -14,16 +14,20 @@
 //====================================================================================================================================================
 
 // FRC includes
-#include <wpi/smartdashboard/SmartDashboard.hpp>
+#include <wpi/tunables/Selectable.hpp>
 
 // Team 302 includes
 #include "utils/logging/debug/Logger.h"
 #include "utils/logging/timing/DragonTimedClass.h"
 #include "wpi/system/Timer.hpp"
+#include "wpi/tunables/Tunables.hpp"
+
+using wpi::tunables::Selectable;
 
 // static member definitions
 DragonTimedClass::TimingLogOption DragonTimedClass::s_option = DragonTimedClass::TimingLogOption::OFF;
-wpi::SendableChooser<DragonTimedClass::TimingLogOption> DragonTimedClass::s_chooser;
+wpi::tunables::Selectable<DragonTimedClass::TimingLogOption> DragonTimedClass::s_chooser; ///< Dashboard chooser.
+
 int DragonTimedClass::s_cyclingCounter = 0;
 
 /// @brief Construct the timed class.
@@ -38,10 +42,10 @@ DragonTimedClass::DragonTimedClass(const std::string &className) : m_className(c
 /// @brief Publish the timing-destination chooser to the dashboard. Call once at startup.
 void DragonTimedClass::PutTimingSelectionOnDashboard()
 {
-    s_chooser.SetDefaultOption("OFF", TimingLogOption::OFF);
-    s_chooser.AddOption("NETWORK_TABLE", TimingLogOption::NETWORK_TABLE);
-    s_chooser.AddOption("DATA_FILE", TimingLogOption::DATA_FILE);
-    wpi::SmartDashboard::PutData("Timing Logging", &s_chooser);
+    s_chooser.AddDefault("OFF", TimingLogOption::OFF);
+    s_chooser.Add("NETWORK_TABLE", TimingLogOption::NETWORK_TABLE);
+    s_chooser.Add("DATA_FILE", TimingLogOption::DATA_FILE);
+    wpi::tunables::Publish("Timing Logging", s_chooser);
 
     s_cyclingCounter = 0;
 }
@@ -113,7 +117,7 @@ void DragonTimedClass::LogTiming(double elapsedMs) const
 /// @brief Hook for future on-robot data-file logging.
 void DragonTimedClass::LogTimingToDataFile(double elapsedMs) const
 {
-    // SystemCore TO DO: data-file logging is currently disabled. When the data logger is brought
+    // SystemCore TO DO: data-file logging is currently disabled. When the data Logger is brought
     // online, record m_className, m_currentActivity, and elapsedMs here (see DragonDataLoggerMgr).
     (void)elapsedMs; // avoid unused parameter warning
 }

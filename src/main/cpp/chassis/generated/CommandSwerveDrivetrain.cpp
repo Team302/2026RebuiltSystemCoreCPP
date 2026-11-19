@@ -19,7 +19,7 @@ void CommandSwerveDrivetrain::Periodic()
     {
         auto const allianceColor = FMSData::GetAllianceColor();
 
-        SetOperatorPerspectiveForward(
+        SetOperatorForwardDirection(
             allianceColor == wpi::Alliance::RED
                 ? kRedAlliancePerspectiveRotation
                 : kBlueAlliancePerspectiveRotation);

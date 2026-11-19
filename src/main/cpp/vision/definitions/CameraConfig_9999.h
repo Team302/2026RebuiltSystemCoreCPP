@@ -14,8 +14,8 @@
 //====================================================================================================================================================
 
 #pragma once
-#include "wpi/units/length.hpp"
 #include "vision/definitions/CameraConfig.h"
+#include "wpi/units/length.hpp"
 
 class CameraConfig_9999 : public CameraConfig
 {

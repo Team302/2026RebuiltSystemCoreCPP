@@ -15,6 +15,7 @@
 
 #pragma once
 #include "state/StateMgr.h"
+#include "wpi/tunables/Tunable.hpp"
 #include <string>
 
 class SweepLaneChanger : public StateMgr
@@ -35,6 +36,7 @@ private:
     bool m_isDecrementPressed = false;
 
     const std::string m_sweepLaneNT = "SweepLane";
+    wpi::tunables::TunableDouble m_sweepLaneTunable{0.0};
 
     static constexpr int m_minLanes = 0;
     static constexpr int m_maxLanes = 3;

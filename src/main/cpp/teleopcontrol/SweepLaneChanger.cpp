@@ -16,9 +16,9 @@
 #include <algorithm>
 
 #include "teleopcontrol/SweepLaneChanger.h"
-#include "wpi/smartdashboard/SmartDashboard.hpp"
 #include "teleopcontrol/TeleopControl.h"
 #include "utils/PeriodicLooper.h"
+#include "wpi/tunables/Tunables.hpp"
 #include <algorithm>
 
 SweepLaneChanger *SweepLaneChanger::m_instance = nullptr;
@@ -34,7 +34,8 @@ SweepLaneChanger *SweepLaneChanger::GetInstance()
 SweepLaneChanger::SweepLaneChanger()
 {
     PeriodicLooper::GetInstance()->RegisterAll(this);
-    wpi::SmartDashboard::PutNumber(m_sweepLaneNT, m_lane);
+    wpi::tunables::Publish(m_sweepLaneNT, m_sweepLaneTunable);
+    m_sweepLaneTunable = static_cast<double>(m_lane);
 }
 
 void SweepLaneChanger::RunCurrentState()
@@ -79,5 +80,5 @@ void SweepLaneChanger::RunCurrentState()
 void SweepLaneChanger::SetLane(int lane)
 {
     m_lane = std::clamp(lane, m_minLanes, m_maxLanes);
-    wpi::SmartDashboard::PutNumber(m_sweepLaneNT, m_lane);
+    m_sweepLaneTunable = static_cast<double>(m_lane);
 }

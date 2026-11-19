@@ -1,6 +1,6 @@
 #include "chassis/generated/Telemetry.h"
 #include "utils/logging/debug/Logger.h"
-#include <wpi/smartdashboard/SmartDashboard.hpp>
+#include "wpi/telemetry/Telemetry.hpp"
 
 using namespace ctre::phoenix6;
 
@@ -9,7 +9,7 @@ Telemetry::Telemetry()
     /* Set up the module state Mechanism2d telemetry */
     for (size_t i = 0; i < m_moduleSpeeds.size(); ++i)
     {
-        wpi::SmartDashboard::PutData("Module " + std::to_string(i), &m_moduleMechanisms[i]);
+        wpi::telemetry::Log("Module " + std::to_string(i), m_moduleMechanisms[i]);
     }
 }
 
@@ -69,18 +69,20 @@ void Telemetry::Telemeterize(subsystems::CommandSwerveDrivetrain::SwerveDriveSta
     Logger->LogData(LOGGER_LEVEL::PRINT, std::string("SwerveTelemetry"), std::string("OdometryPeriod"), m_cachedOdometryPeriod.value());
 }
 
-void Telemetry::DataLog(uint64_t timestamp)
-{
+/* SystemCore TO DO: Figure out how logging works in SystemCore
+ void Telemetry::DataLog(uint64_t timestamp)
+ {
 
-    LogPose2dData(timestamp, m_loggingPose2d, m_cachedPose);
+LogPose2dData(timestamp, m_loggingPose2d, m_cachedPose);
 
-    LogChassisSpeedsData(timestamp, m_loggingChassisVelocities, m_cachedSpeeds);
+LogChassisVelocitiesData(timestamp, m_loggingChassisVelocities, m_cachedSpeeds);
 
-    // Log module states
-    LogSwerveModuleStateData(timestamp, m_loggingModuleActual, m_cachedModuleStates);
+// Log module states
+LogSwerveModuleStateData(timestamp, m_loggingModuleActual, m_cachedModuleStates);
 
-    // Log module targets
-    LogSwerveModuleStateData(timestamp, m_loggingModuleTarget, m_cachedModuleTargets);
-    // OdometryPeriod logged as a double
-    LogDoubleData(timestamp, m_loggingOdometryPeriod, m_cachedOdometryPeriod.value(), m_loggingSeconds);
+// Log module targets
+LogSwerveModuleStateData(timestamp, m_loggingModuleTarget, m_cachedModuleTargets);
+// OdometryPeriod logged as a double
+LogDoubleData(timestamp, m_loggingOdometryPeriod, m_cachedOdometryPeriod.value(), m_loggingSeconds);
 }
+*/

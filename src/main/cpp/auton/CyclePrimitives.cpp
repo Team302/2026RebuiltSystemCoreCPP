@@ -18,7 +18,10 @@
 #include <string>
 
 // FRC includes
-#include "wpi/driverstation/DriverStation.hpp"
+#include "wpi/driverstation/Alliance.hpp"
+#include "wpi/driverstation/MatchState.hpp"
+#include "wpi/driverstation/MatchType.hpp"
+#include "wpi/driverstation/RobotState.hpp"
 #include "wpi/system/Timer.hpp"
 
 // Team 302 includes
@@ -45,7 +48,6 @@
 
 using std::make_unique;
 using std::string;
-using wpi::DriverStation;
 using wpi::Timer;
 
 #include <pugixml/pugixml.hpp>
@@ -247,10 +249,11 @@ bool CyclePrimitives::SetMechanismStatesFromZone(std::pair<ZoneParams *, bool> *
     return false; // Return false if no mechanism states were changed
 }
 
+/* SystemCore TO DO: Figure out how logging works in SystemCore
 void CyclePrimitives::DataLog(uint64_t timestamp)
 {
     if (m_autonSelector != nullptr)
     {
         LogStringData(timestamp, "/Auton/PathName", m_autonSelector->GetSelectedAutoFile());
     }
-}
+}*/

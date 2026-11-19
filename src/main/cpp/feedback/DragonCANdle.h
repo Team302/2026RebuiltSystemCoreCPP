@@ -20,7 +20,10 @@
 
 #include <ctre/phoenix6/CANdle.hpp>
 
-#include <wpi/driverstation/DriverStation.hpp>
+#include "wpi/driverstation/MatchState.hpp"
+#include "wpi/driverstation/RobotState.hpp"
+#include "wpi/driverstation/Alliance.hpp"
+#include "wpi/driverstation/MatchType.hpp"
 #include <wpi/hardware/led/AddressableLED.hpp>
 #include <wpi/simulation/AddressableLEDSim.hpp>
 #include <wpi/system/Timer.hpp>

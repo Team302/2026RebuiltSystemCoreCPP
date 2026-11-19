@@ -24,8 +24,6 @@
 #include "utils/DragonField.h"
 #include "wpi/framework/RobotBase.hpp"
 
-using wpi::DriverStation;
-
 RobotState *RobotState::m_instance = nullptr;
 
 RobotState *RobotState::GetInstance()
@@ -67,7 +65,7 @@ void RobotState::Run()
 {
     PublishGameStateChanges();
     // commented for week 1
-    //  if (DriverStation::IsTeleopEnabled())
+    //  if (RobotState::IsTeleopEnabled())
     //  {
     //      auto controller = TeleopControl::GetInstance();
     //      if (controller != nullptr)
